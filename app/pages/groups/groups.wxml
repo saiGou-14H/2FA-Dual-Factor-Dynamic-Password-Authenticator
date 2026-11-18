@@ -8,6 +8,26 @@
   </view>
 
   <scroll-view class="content" scroll-y>
+    <!-- 新建分组（置顶） -->
+    <view class="create-card">
+      <input
+        class="create-input"
+        value="{{groupName}}"
+        maxlength="20"
+        placeholder="输入新分组名称"
+        placeholder-class="placeholder"
+        bindinput="onGroupName"
+        confirm-type="done"
+        bindconfirm="createGroup"
+      />
+      <view class="create-button {{groupName ? '' : 'is-idle'}}" bindtap="createGroup">创建</view>
+    </view>
+
+    <view class="list-head">
+      <text class="list-title">分组</text>
+      <text class="list-sub">共 {{groups.length}} 个 · 按住左侧拖动排序</text>
+    </view>
+
     <view class="group-list">
       <view class="group-row {{dragId === item.id ? 'is-source' : ''}}" wx:for="{{groups}}" wx:key="id">
         <view class="drag-handle"
@@ -49,20 +69,11 @@
       </view>
     </view>
 
-    <view class="create-section">
-      <view class="section-title">新建分组</view>
-      <view class="create-row">
-        <input class="create-input" value="{{groupName}}" maxlength="20" placeholder="输入分组名称" placeholder-class="placeholder" bindinput="onGroupName" confirm-type="done" bindconfirm="createGroup" />
-        <view class="create-button" bindtap="createGroup">创建</view>
-      </view>
-    </view>
-
     <view class="notice">
       <text class="notice-icon">i</text>
       <text>删除非空分组前，先选择账号迁入的分组。</text>
     </view>
 
-    <view class="order-hint">拖动左侧把手或点箭头调整顺序，改动即时生效</view>
     <view class="bottom-space"></view>
   </scroll-view>
 
