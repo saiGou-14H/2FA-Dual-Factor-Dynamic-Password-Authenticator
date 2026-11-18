@@ -83,85 +83,77 @@ page {
 
 /* ============================================================
    眼睛图标（显示 / 隐藏验证码）
-   A：ico-eye      杏仁眼（默认，线框 + 瞳孔，隐藏时瞳孔收成斜杠）
-   B：ico-eye-b    胶囊开关（像 iOS 开关，圆点左右滑动）
-   切换方式：把 wxml 里的 ico-eye 改成 ico-eye-b 即可
+   A：ico-eye        真矢量 SVG（Lucide 几何），默认
+   B：ico-eye-b      胶囊开关（纯 CSS，备选）
+   切换方式：把 wxml 里的 ico-eye 改成 ico-eye-b
    ============================================================ */
 
-/* ---------- A. 杏仁眼 ---------- */
+/* ---------- A. SVG 矢量图标 ---------- */
+/* 显示中：睁眼 */
 .ico-eye {
-  position: relative;
-  width: 30rpx;
-  height: 30rpx;
-  border: 3rpx solid currentColor;
-  /* 对角圆角 + 旋转 45°，得到杏仁形（两端尖、中间鼓） */
-  border-radius: 0 50% 0 50%;
-  transform: rotate(45deg);
-  box-sizing: border-box;
-  transition: opacity 0.2s ease, transform 0.24s ease;
-}
-
-/* 瞳孔 */
-.ico-eye::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 9rpx;
-  height: 9rpx;
-  margin: -4.5rpx 0 0 -4.5rpx;
-  border-radius: 50%;
-  background: currentColor;
-  transition: width 0.22s ease, height 0.22s ease,
-              margin 0.22s ease, border-radius 0.22s ease, transform 0.22s ease;
-}
-
-/* 隐藏态：轮廓变淡，瞳孔拉成一道斜杠 */
-.ico-eye.off {
-  opacity: 0.62;
-}
-
-.ico-eye.off::after {
   width: 40rpx;
-  height: 3rpx;
-  margin: -1.5rpx 0 0 -20rpx;
-  border-radius: 3rpx;
-  /* 父级已旋转 45°，这里再转 -90° → 屏幕上呈 -45° 斜杠 */
-  transform: rotate(-90deg);
+  height: 40rpx;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='2.9'/%3E%3C/svg%3E");
+  transition: opacity 0.18s ease;
 }
 
-/* ---------- B. 胶囊开关 ---------- */
+/* 已隐藏：划掉的眼睛 */
+.ico-eye.off {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.9 9.9a2.9 2.9 0 1 0 4.1 4.1'/%3E%3Cpath d='M10.7 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a13.2 13.2 0 0 1-1.7 2.7'/%3E%3Cpath d='M6.6 6.6A13.4 13.4 0 0 0 2 12s3.5 7 10 7a9.8 9.8 0 0 0 5.4-1.6'/%3E%3Cline x1='3' y1='3' x2='21' y2='21'/%3E%3C/svg%3E");
+}
+
+/* 品牌色版本（卡片内小按钮用） */
+.ico-eye-brand {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z'/%3E%3Ccircle cx='12' cy='12' r='2.9'/%3E%3C/svg%3E");
+}
+
+.ico-eye-brand.off {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.9 9.9a2.9 2.9 0 1 0 4.1 4.1'/%3E%3Cpath d='M10.7 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a13.2 13.2 0 0 1-1.7 2.7'/%3E%3Cpath d='M6.6 6.6A13.4 13.4 0 0 0 2 12s3.5 7 10 7a9.8 9.8 0 0 0 5.4-1.6'/%3E%3Cline x1='3' y1='3' x2='21' y2='21'/%3E%3C/svg%3E");
+}
+
+/* 卡片内小号 */
+.ico-eye-s {
+  width: 34rpx;
+  height: 34rpx;
+}
+
+/* ---------- B. 胶囊开关（备选，纯 CSS） ---------- */
 .ico-eye-b {
   position: relative;
-  width: 42rpx;
+  width: 44rpx;
   height: 26rpx;
-  border: 3rpx solid currentColor;
+  border: 2rpx solid var(--faint);
   border-radius: 13rpx;
   box-sizing: border-box;
-  transition: opacity 0.2s ease;
+  background: transparent;
 }
 
 .ico-eye-b::after {
   content: '';
   position: absolute;
   top: 50%;
-  left: 1rpx;
+  left: 3rpx;
   width: 16rpx;
   height: 16rpx;
   margin-top: -8rpx;
   border-radius: 50%;
-  background: currentColor;
+  background: var(--faint);
   transition: left 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
-              right 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.ico-eye-b.off {
-  opacity: 0.62;
+              right 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+              background 0.2s ease;
 }
 
 .ico-eye-b.off::after {
   left: auto;
-  right: 1rpx;
+  right: 3rpx;
+  background: var(--brand);
+}
+
+.ico-eye-b.off {
+  border-color: var(--brand);
 }
 
 /* 复制（两个矩形） */

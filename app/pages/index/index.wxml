@@ -14,7 +14,7 @@
     <view class="search-clear" wx:if="{{query}}" bindtap="clearSearch">×</view>
     <view class="search-divider"></view>
     <view class="search-toggle" bindtap="toggleAll" aria-label="显示或隐藏验证码">
-      <!-- 图标风格：ico-eye（杏仁眼，默认）/ ico-eye-b（胶囊开关） -->
+      <!-- 图标风格：ico-eye（矢量睁眼/闭眼，默认）/ ico-eye-b（胶囊开关） -->
       <view class="ico ico-eye {{hideAll ? 'off' : ''}}"></view>
     </view>
   </view>
