@@ -377,5 +377,3 @@
 .fab:active { transform: scale(0.92); }
 .fab .ico-plus { color: #fff; }
 .fab.is-open { transform: rotate(45deg); }
-
-}
