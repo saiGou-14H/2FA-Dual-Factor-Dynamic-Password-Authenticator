@@ -282,6 +282,7 @@
   left: 0;
   right: 0;
   bottom: 0;
+  animation: sheet-up var(--dur-2) var(--ease) both;
   padding: 0 30rpx calc(18rpx + env(safe-area-inset-bottom));
   border-radius: 16rpx 16rpx 0 0;
   background: #fff;

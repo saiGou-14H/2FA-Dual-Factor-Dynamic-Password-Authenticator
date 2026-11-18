@@ -28,7 +28,13 @@ Page({
     movingTokenId: '',
     showFabMenu: false,
     timeText: '',
-    hideAll: true
+    hideAll: true,
+    // 分页
+    pageSize: 20,
+    page: 1,
+    hasMore: false,
+    loadingMore: false,
+    refreshing: false
   },
 
   onLoad: function () {
@@ -53,6 +59,42 @@ Page({
 
   onHide: function () { this.stopTick(); },
   onUnload: function () { this.stopTick(); },
+
+  /* ---------------- 下拉刷新 ---------------- */
+
+  onPullDownRefresh: function () {
+    if (this.data.refreshing) return;
+    var self = this;
+    this.setData({ refreshing: true, page: 1 });
+    // 重新读本地数据（外部改动、回收站恢复等都能立刻反映）
+    this._tokens = store.list();
+    var groups = store.groups();
+    var selected = this.data.selectedGroupId;
+    if (selected !== 'all' && !groups.some(function (g) { return g.id === selected; })) {
+      selected = 'all';
+    }
+    this.setData({ groups: groups, selectedGroupId: selected, allActive: selected === 'all' });
+    this._revealed = {};
+    this.compute();
+    setTimeout(function () {
+      self.setData({ refreshing: false });
+      wx.stopPullDownRefresh();
+    }, 420);
+  },
+
+  /* ---------------- 上拉加载更多 ---------------- */
+
+  onReachBottom: function () {
+    var self = this;
+    if (!this.data.hasMore || this.data.loadingMore) return;
+    this.setData({ loadingMore: true });
+    // 稍作延迟，让「加载中」指示有可见时长，避免闪烁
+    setTimeout(function () {
+      self.setData({ page: self.data.page + 1 }, function () {
+        self.applySlice();
+      });
+    }, 280);
+  },
 
   /* ---------------- 数据 ---------------- */
 
@@ -147,12 +189,25 @@ Page({
       });
     }
 
+    this._filtered = list;
     this.setData({
-      list: list,
       total: tokens.length,
       visibleTotal: list.length,
       timeText: util.hhmmss(now),
       hideAll: hideAll
+    });
+    this.applySlice();
+  },
+
+  /** 按当前页码切片渲染（分页） */
+  applySlice: function () {
+    var all = this._filtered || [];
+    var size = this.data.pageSize;
+    var visible = all.slice(0, this.data.page * size);
+    this.setData({
+      list: visible,
+      hasMore: visible.length < all.length,
+      loadingMore: false
     });
   },
 
@@ -168,7 +223,8 @@ Page({
     var groupId = e.currentTarget.dataset.id;
     this.setData({
       selectedGroupId: groupId,
-      allActive: groupId === 'all'
+      allActive: groupId === 'all',
+      page: 1
     }, this.compute.bind(this));
   },
 
@@ -179,11 +235,11 @@ Page({
   /* ---------------- 交互 ---------------- */
 
   onSearch: function (e) {
-    this.setData({ query: e.detail.value }, this.compute.bind(this));
+    this.setData({ query: e.detail.value, page: 1 }, this.compute.bind(this));
   },
 
   clearSearch: function () {
-    this.setData({ query: '' }, this.compute.bind(this));
+    this.setData({ query: '', page: 1 }, this.compute.bind(this));
   },
 
   onToggle: function (e) {

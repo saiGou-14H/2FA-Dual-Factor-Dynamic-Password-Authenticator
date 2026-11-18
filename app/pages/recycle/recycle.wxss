@@ -121,7 +121,7 @@
   align-items: center;
   padding: 24rpx 0;
   border-bottom: 1rpx solid var(--line);
-  animation: rise 0.3s cubic-bezier(0.22, 0.8, 0.2, 1) both;
+  animation: rise var(--dur-3) var(--ease) both;
 }
 .row-main {
   flex: 1;
@@ -184,7 +184,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  animation: rise 0.35s ease both;
+  animation: float-in var(--dur-3) var(--ease) both;
 }
 .empty-icon {
   width: 108rpx;

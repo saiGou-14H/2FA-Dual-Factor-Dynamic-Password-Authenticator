@@ -16,6 +16,7 @@ server/  云同步后端（Express + MySQL，服务端仅存密文）
 | 验证码 | TOTP / HOTP（RFC 4226 / 6238），SHA1 / SHA256，6 / 8 位，周期可配 |
 | 添加账号 | 扫描 `otpauth://` 二维码、手动录入 Base32 密钥 |
 | 组织 | 分组管理（工作 / 个人 / 自定义）、搜索、藏码、复制、移动分组 |
+| 列表 | 分页加载（每页 20，触底续加）、下拉刷新、分组 tab 切换 |
 | 回收站 | 删除进回收站，**按删除时间范围**（今天 / 近 7 天 / 近 30 天 / 自定义）找回或彻底删除 |
 | 云同步 | 免口令，身份 = 微信 openid；**退出小程序自动同步** + 手动同步按钮 |
 | 换机迁移 | 迁移二维码（一次性、5 分钟有效），新微信扫码即接收全部账号 |
@@ -121,6 +122,7 @@ node tools/test_app_logic.js     # 数据层 CRUD
 node tools/test_crypto.js        # 加密往返
 node tools/test_vault_local.js   # 免口令密钥链路
 node tools/test_recycle.js       # 回收站：软删除 / 恢复 / 日期筛选 / 彻底删除
+node tools/test_pagination.js    # 分页：分页切片 / 触底边界 / 空列表
 node tools/test_e2e_sync.js      # 真实后端同步往返
 node tools/test_migrate_e2e.js   # 真实后端迁移流程
 ```

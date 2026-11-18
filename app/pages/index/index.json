@@ -3,5 +3,8 @@
     "otp-card": "/components/otp-card/otp-card"
   },
   "navigationStyle": "custom",
-  "enablePullDownRefresh": false
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "backgroundColor": "#ffffff",
+  "onReachBottomDistance": 120
 }

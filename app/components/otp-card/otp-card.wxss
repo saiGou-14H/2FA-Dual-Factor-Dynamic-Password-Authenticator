@@ -1,11 +1,17 @@
 .token {
   padding: 26rpx 0;
   border-bottom: 1rpx solid var(--line);
-  animation: rise 0.36s cubic-bezier(0.22, 0.8, 0.2, 1) both;
-  transition: opacity 0.2s ease;
+  animation: rise var(--dur-3) var(--ease) both;
+  transition: transform var(--dur-1) var(--ease), opacity var(--dur-1) var(--ease);
+  will-change: transform, opacity;
 }
 
 /* ============ 身份行 ============ */
+.token:active {
+  transform: scale(0.988);
+  opacity: 0.96;
+}
+
 .ident {
   display: flex;
   align-items: center;
@@ -99,7 +105,7 @@
   perspective: 600rpx;
 }
 .code.is-flip {
-  animation: flip 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation: flip var(--dur-3) var(--ease-out) both;
 }
 
 .digit {
@@ -111,7 +117,10 @@
   line-height: 1.05;
   letter-spacing: 2rpx;
 }
-.is-warn .digit { color: var(--danger); }
+.is-warn .digit {
+  color: var(--danger);
+  animation: warn-pulse 1.6s ease-in-out infinite;
+}
 
 .digit-gap { display: inline-block; width: 14rpx; }
 
@@ -177,11 +186,11 @@
   border-radius: 14rpx;
   color: var(--brand);
   background: var(--brand-soft);
-  transition: transform 0.14s ease, background 0.2s ease, color 0.2s ease;
+  transition: transform var(--dur-1) var(--spring), background var(--dur-2) ease, color var(--dur-2) ease;
 }
 .copy:active { transform: scale(0.92); }
 .copy.is-done {
   color: #16a34a;
   background: #f0fdf4;
-  animation: pop 0.25s ease both;
+  animation: pop var(--dur-2) var(--spring) both;
 }

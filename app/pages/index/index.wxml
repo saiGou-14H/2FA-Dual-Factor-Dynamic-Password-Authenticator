@@ -42,6 +42,18 @@
       bind:toggle="onToggle" bind:copy="onCopy" bind:more="onMore" />
   </view>
 
+  <!-- 分页状态 -->
+  <view class="loadmore" wx:if="{{visibleTotal > 0}}">
+    <view class="loadmore-dots" wx:if="{{loadingMore}}">
+      <view class="lm-dot"></view>
+      <view class="lm-dot"></view>
+      <view class="lm-dot"></view>
+    </view>
+    <text class="loadmore-txt" wx:if="{{loadingMore}}">正在加载</text>
+    <text class="loadmore-txt" wx:elif="{{hasMore}}">上滑加载更多 · 已显示 {{list.length}} / {{visibleTotal}}</text>
+    <text class="loadmore-txt" wx:else>共 {{visibleTotal}} 个账号</text>
+  </view>
+
   <view class="empty" wx:if="{{list.length === 0}}">
     <view class="empty-badge">
       <view class="ico ico-plus"></view>

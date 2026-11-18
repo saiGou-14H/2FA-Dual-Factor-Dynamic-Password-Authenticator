@@ -95,7 +95,7 @@
   padding: 44rpx 36rpx 32rpx;
   border-radius: 28rpx;
   background: var(--bg);
-  animation: pop 0.24s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: dialog-in var(--dur-2) var(--ease) both;
   display: flex;
   flex-direction: column;
   align-items: center;
