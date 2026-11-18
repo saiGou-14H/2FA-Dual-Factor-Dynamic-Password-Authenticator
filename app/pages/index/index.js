@@ -65,7 +65,6 @@ Page({
     this.reload();
     this.startTick();
     this.refreshIdentity();
-    this.maybeAskAuth();
   },
 
   onHide: function () { this.stopTick(); },
@@ -104,15 +103,6 @@ Page({
   },
 
   /* ---------------- 身份授权引导 ---------------- */
-
-  /** 未授权时，每次启动提示一次 */
-  maybeAskAuth: function () {
-    if (app.globalData.authPrompted) return;
-    var profile = store.getProfile();
-    if (profile && profile.authorized) return;
-    app.globalData.authPrompted = true;
-    this.setData({ showAuth: true });
-  },
 
   onAuthDone: function () {
     this.setData({ showAuth: false });
