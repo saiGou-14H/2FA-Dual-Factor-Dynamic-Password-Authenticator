@@ -274,11 +274,6 @@
   opacity: 0.88;
   transform: scale(0.97);
 }
-.create-button.is-idle {
-  background: var(--bg-soft);
-  color: var(--faint);
-}
-
 /* ============ 列表头 ============ */
 .list-head {
   display: flex;

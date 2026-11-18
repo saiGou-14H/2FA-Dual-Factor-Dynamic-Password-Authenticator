@@ -20,7 +20,7 @@
         confirm-type="done"
         bindconfirm="createGroup"
       />
-      <view class="create-button {{groupName ? '' : 'is-idle'}}" bindtap="createGroup">创建</view>
+      <view class="create-button" bindtap="createGroup">创建</view>
     </view>
 
     <view class="list-head">
