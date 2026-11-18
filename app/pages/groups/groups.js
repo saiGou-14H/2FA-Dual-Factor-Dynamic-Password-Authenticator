@@ -11,7 +11,13 @@ Page({
     groupName: '',
     editingId: '',
     editingName: '',
-    draggingId: '',
+    // 拖拽态
+    dragging: false,
+    dragId: '',
+    dragName: '',
+    dragCount: 0,
+    dragBuiltin: false,
+    dragTop: 0,
     showTargetSheet: false,
     pendingDeleteGroupId: '',
     targetGroups: []
@@ -195,50 +201,86 @@ Page({
     this.reload();
   },
 
-  /* ---------------- 排序：拖拽，立即生效 ---------------- */
+  /* ---------------- 排序：拖拽（悬浮跟手） ---------------- */
 
   onDragStart: function (e) {
     var index = Number(e.currentTarget.dataset.index);
     var group = this.data.groups[index];
     if (!group) return;
+
+    var y = e.touches[0].clientY;
+    var rowH = this._rowH || 128;
+    var rowTop = (this._listTop || 0) + index * rowH;
+
     this._drag = {
-      index: index,
-      startY: e.touches[0].clientY
+      startY: y,
+      grab: y - rowTop           // 手指在行内的抓取偏移，保持悬浮层不跳
     };
-    this.setData({ draggingId: group.id });
-    if (!this._rowH) this.measureRows();
+
+    this.setData({
+      dragging: true,
+      dragId: group.id,
+      dragName: group.name,
+      dragCount: group.count,
+      dragBuiltin: !!group.builtin,
+      dragTop: rowTop
+    });
+
+    if (wx.vibrateShort) wx.vibrateShort({ type: 'light' });
   },
 
   onDragMove: function (e) {
     var drag = this._drag;
-    if (!drag || !this._rowH) return;
+    if (!drag) return;
 
     var y = e.touches[0].clientY;
-    var steps = Math.round((y - drag.startY) / this._rowH);
+    var rowH = this._rowH || 128;
+
+    // 悬浮层始终跟随手指
+    this.setData({ dragTop: y - drag.grab });
+
+    // 跨过半行高即换位
+    var steps = Math.round((y - drag.startY) / rowH);
     if (!steps) return;
 
     var groups = this.data.groups;
-    var from = drag.index;
+    var from = groups.findIndex(function (g) { return g.id === this.data.dragId; }, this);
+    if (from < 0) return;
+
     var to = Math.max(0, Math.min(groups.length - 1, from + steps));
     if (to === from) return;
 
-    var ids = groups.map(function (group) { return group.id; });
+    var next = groups.slice();
     var dir = to > from ? 1 : -1;
     while (from !== to) {
-      var moved = ids[from];
-      ids[from] = ids[from + dir];
-      ids[from + dir] = moved;
+      var moved = next[from];
+      next[from] = next[from + dir];
+      next[from + dir] = moved;
       from += dir;
     }
 
-    drag.index = to;
-    drag.startY = y;          // 重置基线，避免误差累积
-    store.reorderGroups(ids);
-    this.reload(false);       // 不重测，拖拽中保持行高缓存
+    drag.startY = y;             // 重置基线，避免误差累积
+    this.setData({ groups: next });
+    if (wx.vibrateShort) wx.vibrateShort({ type: 'light' });
   },
 
   onDragEnd: function () {
+    var drag = this._drag;
     this._drag = null;
-    if (this.data.draggingId) this.setData({ draggingId: '' });
+    if (!drag) return;
+
+    // 松手才落库，避免拖动过程中频繁写存储
+    var ids = this.data.groups.map(function (group) { return group.id; });
+    store.reorderGroups(ids);
+
+    this.setData({
+      dragging: false,
+      dragId: '',
+      dragName: '',
+      dragCount: 0,
+      dragBuiltin: false,
+      dragTop: 0
+    });
+    this.reload(false);
   }
 });

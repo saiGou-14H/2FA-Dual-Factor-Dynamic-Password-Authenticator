@@ -15,7 +15,7 @@ server/  云同步后端（Express + MySQL，服务端仅存密文）
 |---|---|
 | 验证码 | TOTP / HOTP（RFC 4226 / 6238），SHA1 / SHA256，6 / 8 位，周期可配 |
 | 添加账号 | 扫描 `otpauth://` 二维码、手动录入 Base32 密钥；参数分**基础/高级**，默认只填基础 |
-| 组织 | 分组管理（工作 / 个人 / 自定义）、搜索、藏码、复制、移动分组 |
+| 组织 | 分组管理（拖拽悬浮排序 / 箭头微调、即时生效）、搜索、藏码、复制、移动分组 |
 | 列表 | 分页加载（每页 20，触底续加）、下拉刷新、分组 tab 切换 |
 | 预读 | 主码下方小字显示**下一码**，到期即刻切换，无需等待刷新 |
 | 回收站 | 删除进回收站，**按删除时间范围**（今天 / 近 7 天 / 近 30 天 / 自定义）找回或彻底删除 |
@@ -129,6 +129,7 @@ node tools/test_nextcode.js      # 下一码：算法等价性 / 隐藏态不产
 node tools/test_auth_prompt.js   # 授权引导：点击才弹 / 已授权不弹
 node tools/test_input_advanced.js # 输入页：高级折叠 / 摘要刷新 / 非默认自动展开
 node tools/test_ui_sheets.js     # 自定义浮层：日期选择 / 开关 / 操作菜单
+node tools/test_groups_drag.js   # 分组拖拽：悬浮跟手 / 换位边界 / 落库
 node tools/test_e2e_sync.js      # 真实后端同步往返
 node tools/test_migrate_e2e.js   # 真实后端迁移流程
 ```

@@ -41,26 +41,36 @@
   box-sizing: border-box;
 }
 
+/* ============ 分组卡片列表 ============ */
 .group-list {
-  border-bottom: 1rpx solid var(--line);
+  background: var(--card);
+  border-radius: 20rpx;
+  box-shadow: 0 1rpx 2rpx rgba(17, 24, 39, 0.04), 0 8rpx 24rpx -16rpx rgba(17, 24, 39, 0.16);
+  overflow: hidden;
 }
 
 .group-row {
-  min-height: 132rpx;
+  position: relative;
+  min-height: 128rpx;
   display: flex;
   align-items: center;
+  padding: 18rpx 16rpx 18rpx 2rpx;
   border-bottom: 1rpx solid var(--line);
-  gap: 18rpx;
+  box-sizing: border-box;
 }
-
 .group-row:last-child {
   border-bottom: 0;
 }
 
+/* 被拖起的源行留空，视觉上由悬浮层代替 */
+.group-row.is-source {
+  opacity: 0;
+}
+
+/* 拖拽把手：整行高度都可抓 */
 .drag-handle {
-  width: 60rpx;
-  height: 88rpx;
-  margin-left: -8rpx;
+  width: 62rpx;
+  align-self: stretch;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -71,13 +81,20 @@
   color: var(--brand);
 }
 
-/* 拖拽中的行 */
-.group-row.is-dragging {
-  background: var(--bg-soft);
-  border-radius: 12rpx;
-  transform: scale(1.015);
-  box-shadow: 0 10rpx 26rpx -12rpx rgba(17, 24, 39, 0.38);
-  transition: transform var(--dur-1) var(--ease);
+/* 首字头像 */
+.group-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 22rpx;
+  margin-right: 18rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 30rpx;
+  font-weight: 700;
 }
 
 .group-main,
@@ -89,13 +106,14 @@
 .group-title-line {
   display: flex;
   align-items: center;
-  gap: 14rpx;
+  gap: 12rpx;
 }
 
 .group-name {
   min-width: 0;
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 650;
+  color: var(--ink);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -104,53 +122,89 @@
 .group-tag {
   flex-shrink: 0;
   padding: 2rpx 10rpx;
-  border: 1rpx solid var(--brand-line);
   border-radius: 6rpx;
   color: var(--brand);
   background: var(--brand-soft);
-  font-size: 20rpx;
+  font-size: 19rpx;
+}
+
+.group-meta {
+  margin-top: 6rpx;
+  display: flex;
+  align-items: baseline;
 }
 
 .group-count {
-  display: block;
-  margin-top: 4rpx;
+  font-family: var(--font-num);
+  font-size: 26rpx;
+  font-weight: 600;
   color: var(--sub);
-  font-size: 23rpx;
 }
 
+.group-count-unit {
+  margin-left: 4rpx;
+  font-size: 21rpx;
+  color: var(--faint);
+}
+
+/* 行内操作 */
 .row-actions {
   display: flex;
   align-items: center;
-  gap: 8rpx;
+  gap: 2rpx;
   flex-shrink: 0;
 }
 
-.arrow-button,
 .icon-button {
-  width: 54rpx;
-  height: 54rpx;
+  width: 56rpx;
+  height: 56rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--brand);
-  background: var(--brand-soft);
-  border-radius: 9rpx;
-  font-size: 32rpx;
+  border-radius: 10rpx;
+  color: var(--sub);
+  transition: background var(--dur-1) var(--ease), opacity var(--dur-1) var(--ease);
 }
-
-.arrow-button.is-disabled {
-  color: var(--faint);
+.icon-button:active {
   background: var(--bg-soft);
 }
-
-.icon-button {
-  color: var(--ink);
-  background: transparent;
-  font-size: 34rpx;
+.icon-button.is-move {
+  color: var(--brand);
 }
-
+.icon-button.is-disabled {
+  color: var(--line-strong);
+}
 .icon-button.is-danger {
   color: var(--danger);
+}
+
+/* ============ 拖拽悬浮层 ============ */
+.drag-ghost {
+  position: fixed;
+  left: 30rpx;
+  right: 30rpx;
+  z-index: 320;
+  display: flex;
+  align-items: center;
+  padding: 18rpx 16rpx 18rpx 2rpx;
+  box-sizing: border-box;
+  border-radius: 20rpx;
+  background: var(--card);
+  box-shadow: 0 26rpx 60rpx -18rpx rgba(17, 24, 39, 0.42),
+              0 2rpx 8rpx rgba(17, 24, 39, 0.08);
+  transform: scale(1.025);
+  animation: ghost-lift var(--dur-1) var(--ease) both;
+}
+.drag-ghost .drag-handle {
+  color: var(--brand);
+}
+.drag-ghost .row-actions {
+  display: none;
+}
+
+@keyframes ghost-lift {
+  from { transform: scale(0.97); opacity: 0.55; }
+  to   { transform: scale(1.025); opacity: 1; }
 }
 
 .rename-field input {

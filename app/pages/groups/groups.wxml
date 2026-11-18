@@ -9,7 +9,7 @@
 
   <scroll-view class="content" scroll-y>
     <view class="group-list">
-      <view class="group-row {{draggingId === item.id ? 'is-dragging' : ''}}" wx:for="{{groups}}" wx:key="id">
+      <view class="group-row {{dragId === item.id ? 'is-source' : ''}}" wx:for="{{groups}}" wx:key="id">
         <view class="drag-handle"
               data-index="{{index}}"
               bindtouchstart="onDragStart"
@@ -19,12 +19,17 @@
           <view class="ico ico-drag"></view>
         </view>
 
+        <view class="group-avatar" wx:if="{{editingId !== item.id}}">{{item.name[0]}}</view>
+
         <view class="group-main" wx:if="{{editingId !== item.id}}">
           <view class="group-title-line">
             <text class="group-name">{{item.name}}</text>
             <text class="group-tag" wx:if="{{item.builtin}}">内置</text>
           </view>
-          <text class="group-count">{{item.count}} 个账号</text>
+          <view class="group-meta">
+            <text class="group-count">{{item.count}}</text>
+            <text class="group-count-unit">个账号</text>
+          </view>
         </view>
 
         <view class="rename-field" wx:else>
@@ -36,8 +41,8 @@
         </view>
 
         <view class="row-actions" wx:if="{{editingId !== item.id}}">
-          <view class="arrow-button {{index === 0 ? 'is-disabled' : ''}}" data-index="{{index}}" data-direction="-1" bindtap="moveGroup" aria-label="上移"><view class="ico ico-up"></view></view>
-          <view class="arrow-button {{index === groups.length - 1 ? 'is-disabled' : ''}}" data-index="{{index}}" data-direction="1" bindtap="moveGroup" aria-label="下移"><view class="ico ico-down"></view></view>
+          <view class="icon-button is-move {{index === 0 ? 'is-disabled' : ''}}" data-index="{{index}}" data-direction="-1" bindtap="moveGroup" aria-label="上移"><view class="ico ico-up"></view></view>
+          <view class="icon-button is-move {{index === groups.length - 1 ? 'is-disabled' : ''}}" data-index="{{index}}" data-direction="1" bindtap="moveGroup" aria-label="下移"><view class="ico ico-down"></view></view>
           <view class="icon-button" wx:if="{{!item.builtin}}" data-id="{{item.id}}" bindtap="startRename" aria-label="重命名"><view class="ico ico-edit"></view></view>
           <view class="icon-button is-danger" wx:if="{{!item.builtin}}" data-id="{{item.id}}" bindtap="deleteGroup" aria-label="删除"><view class="ico ico-erase"></view></view>
         </view>
@@ -77,6 +82,22 @@
           <view class="ico ico-chevron move-arrow"></view>
         </view>
       </scroll-view>
+    </view>
+  </view>
+
+  <!-- 拖拽悬浮层：跟手浮起 -->
+  <view class="drag-ghost" wx:if="{{dragging}}" style="top:{{dragTop}}px">
+    <view class="drag-handle"><view class="ico ico-drag"></view></view>
+    <view class="group-avatar">{{dragName[0]}}</view>
+    <view class="group-main">
+      <view class="group-title-line">
+        <text class="group-name">{{dragName}}</text>
+        <text class="group-tag" wx:if="{{dragBuiltin}}">内置</text>
+      </view>
+      <view class="group-meta">
+        <text class="group-count">{{dragCount}}</text>
+        <text class="group-count-unit">个账号</text>
+      </view>
     </view>
   </view>
 </view>
