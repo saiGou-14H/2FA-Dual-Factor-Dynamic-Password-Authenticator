@@ -1,5 +1,5 @@
-<view class="page">
-  <view class="nav">
+<view class="page page-enter">
+  <view class="nav nav-enter">
     <view class="nav-status" style="height:{{statusBarHeight}}px"></view>
     <view class="nav-bar" style="height:{{navBarHeight}}px; padding-right:{{menuRightSpace}}px">
       <view class="nav-back" bindtap="onBack"><view class="ico ico-back"></view></view>
@@ -9,7 +9,7 @@
   </view>
 
   <!-- 筛选 -->
-  <view class="filters">
+  <view class="filters enter-1">
     <view class="chip {{filter === 'all' ? 'is-on' : ''}}" data-filter="all" bindtap="setFilter">全部</view>
     <view class="chip {{filter === 'today' ? 'is-on' : ''}}" data-filter="today" bindtap="setFilter">今天</view>
     <view class="chip {{filter === 'd7' ? 'is-on' : ''}}" data-filter="d7" bindtap="setFilter">近 7 天</view>

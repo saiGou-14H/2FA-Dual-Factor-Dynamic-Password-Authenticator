@@ -1,13 +1,13 @@
-<view class="page">
+<view class="page page-enter">
   <!-- 自定义导航栏：让开胶囊按钮 -->
-  <view class="nav">
+  <view class="nav nav-enter">
     <view class="nav-status" style="height:{{statusBarHeight}}px"></view>
     <view class="nav-bar" style="height:{{navBarHeight}}px; padding-right:{{menuRightSpace}}px">
       <view class="nav-title">验证码</view>
     </view>
   </view>
 
-  <view class="search" wx:if="{{total > 0}}">
+  <view class="search enter-1" wx:if="{{total > 0}}">
     <view class="ico ico-search"></view>
     <input class="search-input" value="{{query}}" placeholder="搜索发行方或账号"
            placeholder-class="search-ph" confirm-type="search" bindinput="onSearch" />
@@ -21,7 +21,7 @@
     </view>
   </view>
 
-  <view class="group-bar" wx:if="{{total > 0}}">
+  <view class="group-bar enter-2" wx:if="{{total > 0}}">
     <scroll-view class="group-scroll" scroll-x="true" show-scrollbar="false">
       <view class="group-tabs">
         <view class="group-tab {{allActive ? 'is-active' : ''}}" data-id="all" bindtap="onSelectGroup">
@@ -37,7 +37,7 @@
     </view>
   </view>
 
-  <view class="list">
+  <view class="list {{listSwitch ? 'is-switch' : ''}}">
     <otp-card wx:for="{{list}}" wx:key="id" item="{{item}}"
       bind:toggle="onToggle" bind:copy="onCopy" bind:more="onMore" />
   </view>

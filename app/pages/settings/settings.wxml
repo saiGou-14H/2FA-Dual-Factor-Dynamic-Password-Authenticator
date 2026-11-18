@@ -1,5 +1,5 @@
-<view class="page">
-  <view class="nav">
+<view class="page page-enter">
+  <view class="nav nav-enter">
     <view class="nav-status" style="height:{{statusBarHeight}}px"></view>
     <view class="nav-bar" style="height:{{navBarHeight}}px; padding-right:{{menuRightSpace}}px">
       <view class="nav-back" bindtap="onBack"><view class="ico ico-back"></view></view>
@@ -7,7 +7,7 @@
     </view>
   </view>
 
-  <view class="group">
+  <view class="group enter-3">
     <view class="group-title">显示</view>
     <view class="field">
       <view class="field-body">

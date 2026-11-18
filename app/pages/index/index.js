@@ -34,7 +34,8 @@ Page({
     page: 1,
     hasMore: false,
     loadingMore: false,
-    refreshing: false
+    refreshing: false,
+    listSwitch: false
   },
 
   onLoad: function () {
@@ -205,6 +206,15 @@ Page({
     this.applySlice();
   },
 
+  /** 列表切换时播一次轻落动画 */
+  triggerListSwitch: function () {
+    var self = this;
+    if (this._switchTimer) clearTimeout(this._switchTimer);
+    this._switchTimer = setTimeout(function () {
+      self.setData({ listSwitch: false });
+    }, 280);
+  },
+
   /** 按当前页码切片渲染（分页） */
   applySlice: function () {
     var all = this._filtered || [];
@@ -230,8 +240,10 @@ Page({
     this.setData({
       selectedGroupId: groupId,
       allActive: groupId === 'all',
-      page: 1
+      page: 1,
+      listSwitch: true
     }, this.compute.bind(this));
+    this.triggerListSwitch();
   },
 
   gotoGroups: function () {

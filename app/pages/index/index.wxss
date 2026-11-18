@@ -129,6 +129,11 @@
 /* ============ 列表 ============ */
 .list { padding-top: 0; }
 
+/* 切换分组/搜索时，列表整体轻落一次 */
+.list.is-switch {
+  animation: float-in var(--dur-2) var(--ease) both;
+}
+
 /* ============ 分页状态 ============ */
 .loadmore {
   display: flex;

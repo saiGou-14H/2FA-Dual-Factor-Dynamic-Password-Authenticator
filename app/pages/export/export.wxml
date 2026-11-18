@@ -1,5 +1,5 @@
-<view class="page">
-  <view class="nav">
+<view class="page page-enter">
+  <view class="nav nav-enter">
     <view class="nav-status" style="height:{{statusBarHeight}}px"></view>
     <view class="nav-bar" style="height:{{navBarHeight}}px; padding-right:{{menuRightSpace}}px">
       <view class="nav-back" bindtap="onBack"><view class="ico ico-back"></view></view>
@@ -7,7 +7,7 @@
     </view>
   </view>
 
-  <view class="caution">
+  <view class="caution enter-3">
     <view class="caution-bar"></view>
     <view class="caution-body">
       <view class="caution-title">这是明文备份</view>

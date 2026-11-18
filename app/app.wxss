@@ -312,6 +312,38 @@ page {
   to { transform: rotate(360deg); }
 }
 
+/* 页面入场：内容轻微落定（配合系统转场，不与之抢戏） */
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(10rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 导航栏入场：从上方轻落 */
+@keyframes nav-in {
+  from { opacity: 0; transform: translateY(-8rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 页面内容分层入场 */
+.page-enter {
+  animation: page-in var(--dur-3) var(--ease-out) both;
+}
+.nav-enter {
+  animation: nav-in var(--dur-2) var(--ease-out) both;
+}
+.enter-1 {
+  animation: page-in var(--dur-3) var(--ease-out) both;
+  animation-delay: 0.05s;
+}
+.enter-2 {
+  animation: page-in var(--dur-3) var(--ease-out) both;
+  animation-delay: 0.1s;
+}
+.enter-3 {
+  animation: page-in var(--dur-3) var(--ease-out) both;
+  animation-delay: 0.15s;
+}
+
 /* 加载指示：三点呼吸 */
 @keyframes breathe {
   0%, 100% { opacity: 0.25; transform: scale(0.82); }
