@@ -37,7 +37,8 @@ Page({
     hasMore: false,
     loadingMore: false,
     refreshing: false,
-    listSwitch: false,
+    listAnim: '',
+    tabInto: '',
     showAuth: false,
     // 身份
     nickname: '',
@@ -293,13 +294,56 @@ Page({
     this.applySlice();
   },
 
-  /** 列表切换时播一次轻落动画 */
-  triggerListSwitch: function () {
+  /** 列表切换动画：dir 为 1 表示往下一个分组（内容从右滑入） */
+  playListAnim: function (dir) {
     var self = this;
     if (this._switchTimer) clearTimeout(this._switchTimer);
+    this.setData({ listAnim: dir > 0 ? 'is-slide-next' : 'is-slide-prev' });
     this._switchTimer = setTimeout(function () {
-      self.setData({ listSwitch: false });
-    }, 280);
+      self.setData({ listAnim: '' });
+    }, 320);
+  },
+
+  /** 当前分组在标签序列中的位置（0 = 全部） */
+  groupIndexById: function (groupId) {
+    if (groupId === 'all') return 0;
+    var groups = this.data.groups || [];
+    for (var i = 0; i < groups.length; i++) {
+      if (groups[i].id === groupId) return i + 1;
+    }
+    return 0;
+  },
+
+  /** 按位置取分组 id */
+  groupIdByIndex: function (index) {
+    if (index <= 0) return 'all';
+    var groups = this.data.groups || [];
+    var group = groups[index - 1];
+    return group ? group.id : 'all';
+  },
+
+  /** 切换到指定分组（带方向动画，标签自动滚到可见） */
+  switchGroup: function (groupId) {
+    if (!groupId || groupId === this.data.selectedGroupId) return;
+    var from = this.groupIndexById(this.data.selectedGroupId);
+    var to = this.groupIndexById(groupId);
+    this.setData({
+      selectedGroupId: groupId,
+      allActive: groupId === 'all',
+      page: 1,
+      tabInto: 'tab-' + groupId
+    }, this.compute.bind(this));
+    this.playListAnim(to >= from ? 1 : -1);
+  },
+
+  /** 左右滑动切换：dir=1 下一个，dir=-1 上一个 */
+  switchGroupByStep: function (dir) {
+    var total = (this.data.groups || []).length + 1;   // 含「全部」
+    var current = this.groupIndexById(this.data.selectedGroupId);
+    var next = current + dir;
+    if (next < 0 || next >= total) return false;
+    this.switchGroup(this.groupIdByIndex(next));
+    return true;
   },
 
   /** 按当前页码切片渲染（分页） */
@@ -323,14 +367,42 @@ Page({
   },
 
   onSelectGroup: function (e) {
-    var groupId = e.currentTarget.dataset.id;
-    this.setData({
-      selectedGroupId: groupId,
-      allActive: groupId === 'all',
-      page: 1,
-      listSwitch: true
-    }, this.compute.bind(this));
-    this.triggerListSwitch();
+    this.switchGroup(e.currentTarget.dataset.id);
+  },
+
+  /* ---------------- 左右滑动切换分组 ---------------- */
+
+  onSwipeStart: function (e) {
+    var t = e.touches && e.touches[0];
+    if (!t) return;
+    this._swipe = { x: t.clientX, y: t.clientY, at: Date.now(), locked: '' };
+  },
+
+  onSwipeMove: function (e) {
+    var t = e.touches && e.touches[0];
+    var swipe = this._swipe;
+    if (!t || !swipe) return;
+    var dx = t.clientX - swipe.x;
+    var dy = t.clientY - swipe.y;
+    if (!swipe.locked && (Math.abs(dx) > 12 || Math.abs(dy) > 12)) {
+      // 首次判定方向：横向明显大于纵向才算滑动切换
+      swipe.locked = Math.abs(dx) > Math.abs(dy) * 1.4 ? 'x' : 'y';
+    }
+  },
+
+  onSwipeEnd: function (e) {
+    var swipe = this._swipe;
+    this._swipe = null;
+    if (!swipe) return;
+    if (swipe.locked !== 'x') return;
+    var t = (e.changedTouches && e.changedTouches[0]) || null;
+    if (!t) return;
+    var dx = t.clientX - swipe.x;
+    var dy = t.clientY - swipe.y;
+    var dt = Date.now() - swipe.at;
+    // 位移够远且够快，才认定为切换手势
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.2 || dt > 800) return;
+    this.switchGroupByStep(dx < 0 ? 1 : -1);
   },
 
   gotoGroups: function () {

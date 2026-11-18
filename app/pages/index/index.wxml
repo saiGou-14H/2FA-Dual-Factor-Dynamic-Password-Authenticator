@@ -34,12 +34,12 @@
   </view>
 
   <view class="group-bar enter-3">
-    <scroll-view class="group-scroll" scroll-x="true" show-scrollbar="false">
+    <scroll-view class="group-scroll" scroll-x="true" show-scrollbar="false" scroll-into-view="{{tabInto}}" scroll-with-animation="true">
       <view class="group-tabs">
-        <view class="group-tab {{allActive ? 'is-active' : ''}}" data-id="all" bindtap="onSelectGroup">
+        <view class="group-tab {{allActive ? 'is-active' : ''}}" id="tab-all" data-id="all" bindtap="onSelectGroup">
           全部 <text class="tab-count">{{total}}</text>
         </view>
-        <view class="group-tab {{selectedGroupId === item.id ? 'is-active' : ''}}" wx:for="{{groups}}" wx:key="id" data-id="{{item.id}}" bindtap="onSelectGroup">
+        <view class="group-tab {{selectedGroupId === item.id ? 'is-active' : ''}}" id="tab-{{item.id}}" wx:for="{{groups}}" wx:key="id" data-id="{{item.id}}" bindtap="onSelectGroup">
           {{item.name}} <text class="tab-count">{{item.count}}</text>
         </view>
       </view>
@@ -62,6 +62,10 @@
     lower-threshold="120"
     bindrefresherrefresh="onRefresh"
     bindscrolltolower="onScrollToLower"
+    bindtouchstart="onSwipeStart"
+    bindtouchmove="onSwipeMove"
+    bindtouchend="onSwipeEnd"
+    bindtouchcancel="onSwipeEnd"
   >
     <!-- 自定义下拉指示 -->
     <view class="refresher" style="height:{{refreshing ? 56 : 0}}px">
@@ -69,7 +73,7 @@
       <text class="refresher-txt" wx:if="{{refreshing}}">正在刷新</text>
     </view>
 
-    <view class="list {{listSwitch ? 'is-switch' : ''}}">
+    <view class="list {{listAnim}}">
       <otp-card wx:for="{{list}}" wx:key="id" item="{{item}}"
         bind:toggle="onToggle" bind:copy="onCopy" bind:more="onMore" />
     </view>

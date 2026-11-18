@@ -20,7 +20,7 @@ server/  云同步后端（Express + MySQL，服务端仅存密文）
 | 验证码 | TOTP / HOTP（RFC 4226 / 6238），SHA1 / SHA256，6 / 8 位，周期可配 |
 | 添加账号 | 扫描 `otpauth://` 二维码、手动录入 Base32 密钥；参数分**基础/高级**，默认只填基础 |
 | 组织 | 分组管理（拖拽悬浮排序 / 箭头微调、即时生效）、搜索、藏码、复制、移动分组 |
-| 列表 | 分页加载（每页 20，触底续加）、下拉刷新、分组 tab 切换 |
+| 列表 | 分页加载（每页 20，触底续加）、下拉刷新、分组 tab 切换、**左右滑动切换分组** |
 | 预读 | 主码下方小字显示**下一码**，到期即刻切换，无需等待刷新 |
 | 回收站 | 删除进回收站，**按删除时间范围**（今天 / 近 7 天 / 近 30 天 / 自定义）找回或彻底删除 |
 | 云同步 | 免口令，身份 = 微信 openid；**退出小程序自动同步** + 手动同步按钮 |
@@ -135,6 +135,7 @@ node tools/test_input_advanced.js # 输入页：高级折叠 / 摘要刷新 / �
 node tools/test_ui_sheets.js     # 自定义浮层：日期选择 / 开关 / 操作菜单
 node tools/test_groups_drag.js   # 分组拖拽：悬浮跟手 / 换位边界 / 落库
 node tools/test_clear_all.js     # 清空全部：二次确认 / 取消无副作用
+node tools/test_swipe_groups.js  # 分组滑动：手势阈值 / 越界 / 动画方向
 node tools/check_ui.js           # 静态自检：JSON / 页面文件 / require / 事件绑定
 node tools/check_styles.js       # 样式自检：wxml class 是否都有定义
 node tools/check_css_traps.js    # 守卫：fixed 定位陷阱 / 花括号结构 / 弹窗居中冲突
