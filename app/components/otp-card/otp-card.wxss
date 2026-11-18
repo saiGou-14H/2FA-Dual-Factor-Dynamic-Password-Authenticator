@@ -185,3 +185,8 @@
   background: #f0fdf4;
   animation: pop 0.25s ease both;
 }
+
+/* 卡片内的眼睛图标小一号，避免在小按钮里显大 */
+.copy .ico-eye {
+  transform: rotate(45deg) scale(0.82);
+}

@@ -81,35 +81,87 @@ page {
 .ico-dots { display: flex; align-items: center; }
 .ico-dots::before { content: '···'; font-weight: 700; letter-spacing: 2rpx; line-height: 1; }
 
-/* 眼睛（显示/隐藏） */
+/* ============================================================
+   眼睛图标（显示 / 隐藏验证码）
+   A：ico-eye      杏仁眼（默认，线框 + 瞳孔，隐藏时瞳孔收成斜杠）
+   B：ico-eye-b    胶囊开关（像 iOS 开关，圆点左右滑动）
+   切换方式：把 wxml 里的 ico-eye 改成 ico-eye-b 即可
+   ============================================================ */
+
+/* ---------- A. 杏仁眼 ---------- */
 .ico-eye {
-  width: 40rpx;
-  height: 24rpx;
+  position: relative;
+  width: 30rpx;
+  height: 30rpx;
   border: 3rpx solid currentColor;
-  border-radius: 50%;
+  /* 对角圆角 + 旋转 45°，得到杏仁形（两端尖、中间鼓） */
+  border-radius: 0 50% 0 50%;
+  transform: rotate(45deg);
+  box-sizing: border-box;
+  transition: opacity 0.2s ease, transform 0.24s ease;
 }
+
+/* 瞳孔 */
 .ico-eye::after {
   content: '';
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 8rpx;
-  height: 8rpx;
-  margin: -4rpx 0 0 -4rpx;
+  width: 9rpx;
+  height: 9rpx;
+  margin: -4.5rpx 0 0 -4.5rpx;
   border-radius: 50%;
   background: currentColor;
+  transition: width 0.22s ease, height 0.22s ease,
+              margin 0.22s ease, border-radius 0.22s ease, transform 0.22s ease;
 }
-.ico-eye.off::before {
+
+/* 隐藏态：轮廓变淡，瞳孔拉成一道斜杠 */
+.ico-eye.off {
+  opacity: 0.62;
+}
+
+.ico-eye.off::after {
+  width: 40rpx;
+  height: 3rpx;
+  margin: -1.5rpx 0 0 -20rpx;
+  border-radius: 3rpx;
+  /* 父级已旋转 45°，这里再转 -90° → 屏幕上呈 -45° 斜杠 */
+  transform: rotate(-90deg);
+}
+
+/* ---------- B. 胶囊开关 ---------- */
+.ico-eye-b {
+  position: relative;
+  width: 42rpx;
+  height: 26rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 13rpx;
+  box-sizing: border-box;
+  transition: opacity 0.2s ease;
+}
+
+.ico-eye-b::after {
   content: '';
   position: absolute;
-  left: 50%;
   top: 50%;
-  width: 48rpx;
-  height: 3rpx;
-  margin: -1.5rpx 0 0 -24rpx;
-  border-radius: 3rpx;
+  left: 1rpx;
+  width: 16rpx;
+  height: 16rpx;
+  margin-top: -8rpx;
+  border-radius: 50%;
   background: currentColor;
-  transform: rotate(-38deg);
+  transition: left 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+              right 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.ico-eye-b.off {
+  opacity: 0.62;
+}
+
+.ico-eye-b.off::after {
+  left: auto;
+  right: 1rpx;
 }
 
 /* 复制（两个矩形） */
