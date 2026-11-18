@@ -10,6 +10,7 @@
 'use strict';
 
 var STORAGE_KEY = 'otp_vault_v1';
+var PROFILE_KEY = 'otp_profile_v1';
 var VERSION = 3;
 var WORK_GROUP_ID = 'builtin-work';
 var PERSONAL_GROUP_ID = 'builtin-personal';
@@ -97,6 +98,32 @@ function restoreBox() {
 
 function persist(tokens, groups) {
   persistBox({ tokens: tokens, groups: groups || restoreBox().groups });
+}
+
+/* ==================== 身份资料 ==================== */
+
+/** 读取身份资料 { nickname, updatedAt } */
+function getProfile() {
+  try {
+    var p = wx.getStorageSync(PROFILE_KEY);
+    return p && typeof p === 'object' ? p : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+/** 合并写入身份资料 */
+function setProfile(patch) {
+  var next = Object.assign({}, getProfile(), patch || {}, { updatedAt: Date.now() });
+  try { wx.setStorageSync(PROFILE_KEY, next); } catch (e) { /* ignore */ }
+  return next;
+}
+
+/** 整体替换（云同步恢复时用） */
+function replaceProfile(profile) {
+  var next = profile && typeof profile === 'object' ? profile : {};
+  try { wx.setStorageSync(PROFILE_KEY, next); } catch (e) { /* ignore */ }
+  return next;
 }
 
 /* ==================== 查询 ==================== */
@@ -359,6 +386,9 @@ module.exports = {
   deletedList: deletedList,
   count: count,
   deletedCount: deletedCount,
+  getProfile: getProfile,
+  setProfile: setProfile,
+  replaceProfile: replaceProfile,
   add: add,
   update: update,
   remove: remove,
@@ -379,5 +409,6 @@ module.exports = {
   PERSONAL_GROUP_ID: PERSONAL_GROUP_ID,
   uuid: uuid,
   setCipher: setCipher,
-  STORAGE_KEY: STORAGE_KEY
+  STORAGE_KEY: STORAGE_KEY,
+  PROFILE_KEY: PROFILE_KEY
 };

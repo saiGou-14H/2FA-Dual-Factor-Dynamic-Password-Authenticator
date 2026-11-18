@@ -26,11 +26,16 @@ Page({
     // 迁移二维码浮层
     showMigrate: false,
     qrImage: '',
-    migrateTip: ''
+    migrateTip: '',
+    // 身份昵称
+    nickname: '',
+    showIdentity: false,
+    nicknameDraft: ''
   },
 
   onShow: function () {
     var nav = util.navMetrics();
+    var profile = store.getProfile();
     this.setData({
       statusBarHeight: nav.statusBarHeight,
       navBarHeight: nav.navBarHeight,
@@ -38,6 +43,7 @@ Page({
       hideCodes: app.globalData.hideCodes,
       count: store.count(),
       deletedCount: store.deletedCount(),
+      nickname: profile.nickname || '',
       nowText: util.hhmmss(),
       dateText: util.ymd(),
       ready: crypto.available
@@ -209,6 +215,39 @@ Page({
     if (!/^[0-9a-f]{32}$/.test(out.t || '')) return null;
     if (!/^[0-9a-fA-F]{16,128}$/.test(out.k || '')) return null;
     return { token: out.t, dek: out.k };
+  },
+
+  /* ================= 身份昵称 ================= */
+
+  openIdentity: function () {
+    this.setData({ showIdentity: true, nicknameDraft: this.data.nickname || '' });
+  },
+
+  closeIdentity: function () {
+    this.setData({ showIdentity: false, nicknameDraft: '' });
+  },
+
+  onNicknameInput: function (e) {
+    // input type="nickname" 在用户选择微信昵称后会通过 input 事件回填
+    this.setData({ nicknameDraft: e.detail.value || '' });
+  },
+
+  saveNickname: function () {
+    var name = String(this.data.nicknameDraft || '').trim();
+    if (!name) {
+      util.toast('请输入或选择昵称');
+      return;
+    }
+    if (name.length > 20) {
+      name = name.slice(0, 20);
+    }
+    store.setProfile({ nickname: name });
+    this.setData({ nickname: name, showIdentity: false, nicknameDraft: '' });
+    util.toast('已保存', 'success');
+    // 顺带把新昵称同步进加密保险库（静默，失败不影响本地）
+    if (crypto.available && vault.hasDek()) {
+      sync.push().catch(function () { /* 下次自动同步会补 */ });
+    }
   },
 
   /* ================= 其他设置 ================= */

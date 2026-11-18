@@ -59,6 +59,14 @@
   flex-shrink: 0;
   font-size: 25rpx;
   color: var(--sub);
+  max-width: 300rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.field-value.is-empty {
+  color: var(--faint);
 }
 
 .field-arrow {
@@ -73,6 +81,84 @@
 }
 .field-right .field-value {
   margin-right: 10rpx;
+}
+
+/* ================= 身份昵称浮层 ================= */
+.id-overlay {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 210;
+  display: flex;
+  align-items: flex-end;
+}
+.id-mask {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: rgba(15, 21, 31, 0.44);
+  animation: fade 0.18s ease both;
+}
+.id-sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 40rpx 40rpx calc(28rpx + env(safe-area-inset-bottom));
+  border-radius: 28rpx 28rpx 0 0;
+  background: var(--bg);
+  box-sizing: border-box;
+  animation: sheet-up var(--dur-2) var(--ease) both;
+}
+.id-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.id-sub {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: var(--faint);
+}
+.id-input {
+  margin-top: 26rpx;
+  height: 92rpx;
+  padding: 0 24rpx;
+  border-radius: 16rpx;
+  background: var(--bg-soft);
+  font-size: 29rpx;
+  color: var(--ink);
+  box-sizing: border-box;
+}
+.id-placeholder {
+  color: var(--faint);
+  font-size: 27rpx;
+}
+.id-actions {
+  display: flex;
+  margin-top: 28rpx;
+}
+.id-btn {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16rpx;
+  font-size: 29rpx;
+  font-weight: 600;
+  transition: opacity var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
+}
+.id-btn:active {
+  opacity: 0.86;
+  transform: scale(0.985);
+}
+.id-btn-ghost {
+  margin-right: 20rpx;
+  background: var(--bg-soft);
+  color: var(--sub);
+}
+.id-btn-solid {
+  background: var(--brand);
+  color: #fff;
 }
 
 /* ================= 迁移二维码浮层 ================= */

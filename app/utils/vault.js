@@ -49,7 +49,8 @@ function encryptCurrent(dekHex) {
   if (!key) return Promise.reject({ errMsg: '密钥无效' });
   return crypto.encryptVault(key, {
     tokens: store.all(),
-    groups: store.groups()
+    groups: store.groups(),
+    profile: store.getProfile()
   }).then(function (body) {
     return JSON.stringify({ v: 1, body: body });
   });
@@ -68,6 +69,9 @@ function applyPacked(packedStr, dekHex) {
     throw new Error('解密失败（密钥不匹配）');
   }
   store.replaceAll(vault.tokens, vault.groups || []);
+  if (vault.profile && typeof vault.profile === 'object') {
+    store.replaceProfile(vault.profile);
+  }
   return vault.tokens.length;
 }
 
