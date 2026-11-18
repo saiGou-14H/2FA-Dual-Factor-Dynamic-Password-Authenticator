@@ -1,0 +1,38 @@
+<view class="auth-overlay" wx:if="{{show}}">
+  <view class="auth-mask"></view>
+  <view class="auth-card">
+    <view class="auth-title">完善你的身份</view>
+    <view class="auth-sub">头像与昵称用于在设置里标识当前身份，仅存本机与你的加密保险库，不会明文上传。</view>
+
+    <button
+      class="auth-avatar-btn"
+      open-type="chooseAvatar"
+      bindchooseavatar="onChooseAvatar"
+      hover-class="auth-avatar-hover"
+    >
+      <image class="auth-avatar" wx:if="{{avatar}}" src="{{avatar}}" mode="aspectFill" />
+      <view class="auth-avatar-empty" wx:else>
+        <view class="ico ico-plus"></view>
+      </view>
+      <text class="auth-avatar-tip">{{avatar ? '点击更换头像' : '使用微信头像'}}</text>
+    </button>
+
+    <input
+      class="auth-input"
+      type="nickname"
+      value="{{nickname}}"
+      placeholder="点击使用微信昵称"
+      placeholder-class="auth-placeholder"
+      maxlength="20"
+      bindinput="onNickname"
+      bindblur="onNickname"
+    />
+
+    <view class="auth-actions">
+      <view class="auth-btn auth-btn-ghost" bindtap="onSkip">以后再说</view>
+      <view class="auth-btn auth-btn-solid" bindtap="onConfirm">完成</view>
+    </view>
+
+    <view class="auth-hint">微信已不再开放自动读取昵称的接口，需要你主动选择一次。</view>
+  </view>
+</view>

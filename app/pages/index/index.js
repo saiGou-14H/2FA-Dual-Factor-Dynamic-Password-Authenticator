@@ -2,6 +2,8 @@ var totp = require('../../utils/totp.js');
 var store = require('../../utils/store.js');
 var util = require('../../utils/util.js');
 var otpauth = require('../../utils/otpauth.js');
+var vault = require('../../utils/vault.js');
+var sync = require('../../utils/sync.js');
 
 var app = getApp();
 
@@ -35,7 +37,8 @@ Page({
     hasMore: false,
     loadingMore: false,
     refreshing: false,
-    listSwitch: false
+    listSwitch: false,
+    showAuth: false
   },
 
   onLoad: function () {
@@ -56,10 +59,34 @@ Page({
   onShow: function () {
     this.reload();
     this.startTick();
+    this.maybeAskAuth();
   },
 
   onHide: function () { this.stopTick(); },
   onUnload: function () { this.stopTick(); },
+
+  /* ---------------- 身份授权引导 ---------------- */
+
+  /** 未授权时，每次启动提示一次 */
+  maybeAskAuth: function () {
+    if (app.globalData.authPrompted) return;
+    var profile = store.getProfile();
+    if (profile && profile.authorized) return;
+    app.globalData.authPrompted = true;
+    this.setData({ showAuth: true });
+  },
+
+  onAuthDone: function () {
+    this.setData({ showAuth: false });
+    util.toast('身份已保存', 'success');
+    if (vault.hasDek()) {
+      sync.push().catch(function () { /* 下次自动同步会补 */ });
+    }
+  },
+
+  onAuthSkip: function () {
+    this.setData({ showAuth: false });
+  },
 
   /* ---------------- 下拉刷新 ---------------- */
 

@@ -101,4 +101,7 @@
   <view class="fab {{showFabMenu ? 'is-open' : ''}}" bindtap="toggleFab" aria-label="添加账号">
     <view class="ico ico-plus"></view>
   </view>
+
+  <!-- 首次进入的身份授权引导 -->
+  <auth-prompt show="{{showAuth}}" bind:done="onAuthDone" bind:skip="onAuthSkip" />
 </view>

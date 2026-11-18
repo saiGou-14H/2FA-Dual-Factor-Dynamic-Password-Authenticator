@@ -27,10 +27,11 @@ Page({
     showMigrate: false,
     qrImage: '',
     migrateTip: '',
-    // 身份昵称
+    // 身份（只读，来自微信授权）
     nickname: '',
-    showIdentity: false,
-    nicknameDraft: ''
+    avatar: '',
+    authorized: false,
+    showAuth: false
   },
 
   onShow: function () {
@@ -44,6 +45,8 @@ Page({
       count: store.count(),
       deletedCount: store.deletedCount(),
       nickname: profile.nickname || '',
+      avatar: profile.avatar || '',
+      authorized: !!profile.authorized,
       nowText: util.hhmmss(),
       dateText: util.ymd(),
       ready: crypto.available
@@ -217,37 +220,30 @@ Page({
     return { token: out.t, dek: out.k };
   },
 
-  /* ================= 身份昵称 ================= */
+  /* ================= 身份授权 ================= */
 
-  openIdentity: function () {
-    this.setData({ showIdentity: true, nicknameDraft: this.data.nickname || '' });
+  /** 未授权时点身份行，重新拉起授权引导 */
+  openAuthIfNeeded: function () {
+    if (this.data.authorized) return;
+    this.setData({ showAuth: true });
   },
 
-  closeIdentity: function () {
-    this.setData({ showIdentity: false, nicknameDraft: '' });
-  },
-
-  onNicknameInput: function (e) {
-    // input type="nickname" 在用户选择微信昵称后会通过 input 事件回填
-    this.setData({ nicknameDraft: e.detail.value || '' });
-  },
-
-  saveNickname: function () {
-    var name = String(this.data.nicknameDraft || '').trim();
-    if (!name) {
-      util.toast('请输入或选择昵称');
-      return;
-    }
-    if (name.length > 20) {
-      name = name.slice(0, 20);
-    }
-    store.setProfile({ nickname: name });
-    this.setData({ nickname: name, showIdentity: false, nicknameDraft: '' });
-    util.toast('已保存', 'success');
-    // 顺带把新昵称同步进加密保险库（静默，失败不影响本地）
+  onAuthDone: function () {
+    var profile = store.getProfile();
+    this.setData({
+      showAuth: false,
+      nickname: profile.nickname || '',
+      avatar: profile.avatar || '',
+      authorized: !!profile.authorized
+    });
+    util.toast('身份已保存', 'success');
     if (crypto.available && vault.hasDek()) {
       sync.push().catch(function () { /* 下次自动同步会补 */ });
     }
+  },
+
+  onAuthSkip: function () {
+    this.setData({ showAuth: false });
   },
 
   /* ================= 其他设置 ================= */

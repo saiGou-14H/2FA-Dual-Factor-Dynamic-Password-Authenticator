@@ -34,14 +34,17 @@
       </view>
       <text class="field-value">已开启</text>
     </view>
-    <view class="field" bindtap="openIdentity">
+    <view class="field" bindtap="openAuthIfNeeded">
+      <view class="ident-avatar" wx:if="{{avatar}}">
+        <image class="ident-avatar-img" src="{{avatar}}" mode="aspectFill" />
+      </view>
       <view class="field-body">
         <view class="field-name">身份</view>
-        <view class="field-desc">{{nickname ? '已同步到加密保险库' : '点击使用微信昵称'}}</view>
+        <view class="field-desc">{{authorized ? '由微信授权提供' : '未授权，点击完善'}}</view>
       </view>
       <view class="field-right">
-        <text class="field-value {{nickname ? '' : 'is-empty'}}">{{nickname || '未设置'}}</text>
-        <view class="ico ico-chevron field-arrow"></view>
+        <text class="field-value {{authorized ? '' : 'is-empty'}}">{{authorized ? nickname : '未授权'}}</text>
+        <view class="ico ico-chevron field-arrow" wx:if="{{!authorized}}"></view>
       </view>
     </view>
     <view class="field">
@@ -136,28 +139,8 @@
     </view>
   </view>
 
-  <!-- 身份昵称浮层 -->
-  <view class="id-overlay" wx:if="{{showIdentity}}">
-    <view class="id-mask" bindtap="closeIdentity"></view>
-    <view class="id-sheet">
-      <view class="id-title">设置身份昵称</view>
-      <view class="id-sub">点输入框会弹出「使用微信昵称」，也可以手动输入。昵称只存在本机与你的加密保险库中。</view>
-      <input
-        class="id-input"
-        type="nickname"
-        value="{{nicknameDraft}}"
-        placeholder="点击使用微信昵称"
-        placeholder-class="id-placeholder"
-        maxlength="20"
-        bindinput="onNicknameInput"
-        bindblur="onNicknameInput"
-      />
-      <view class="id-actions">
-        <view class="id-btn id-btn-ghost" bindtap="closeIdentity">取消</view>
-        <view class="id-btn id-btn-solid" bindtap="saveNickname">保存</view>
-      </view>
-    </view>
-  </view>
+  <!-- 身份授权引导 -->
+  <auth-prompt show="{{showAuth}}" bind:done="onAuthDone" bind:skip="onAuthSkip" />
 
   <!-- 加载遮罩 -->
   <loading show="{{loadingShow}}" text="{{loadingText}}" />
