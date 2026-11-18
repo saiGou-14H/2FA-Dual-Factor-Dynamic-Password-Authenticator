@@ -357,3 +357,26 @@ page {
   0%, 100% { opacity: 1; }
   50%      { opacity: 0.55; }
 }
+
+/* ============================================================
+   导航标题（自定义导航栏统一居中）
+   ============================================================ */
+.nav-bar {
+  position: relative;
+}
+.nav-title-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 62%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+.nav-count-abs {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}

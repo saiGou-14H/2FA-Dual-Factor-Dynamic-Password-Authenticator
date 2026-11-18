@@ -1,8 +1,8 @@
 {
-  "name": "otp-verifier",
+  "name": "2fa-authenticator",
   "version": "1.0.0",
   "private": true,
-  "description": "TOTP/HOTP 验证器小程序",
+  "description": "2FA 二步验证器 —— 本地优先的 TOTP/HOTP 小程序",
   "dependencies": {
     "crypto-js": "^4.2.0"
   }

@@ -1,7 +1,7 @@
 {
-  "description": "本地 TOTP/HOTP 验证器 UI 原型",
+  "description": "2FA 二步验证器 —— 本地优先的 TOTP/HOTP 小程序",
   "appid": "wxe495e7131344d1f7",
-  "projectname": "otp-verifier-ui",
+  "projectname": "2FA二步验证器",
   "compileType": "miniprogram",
   "miniprogramRoot": "./",
   "setting": {

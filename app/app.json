@@ -10,7 +10,7 @@
   "window": {
     "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#ffffff",
-    "navigationBarTitleText": "验证器",
+    "navigationBarTitleText": "2FA二步验证器",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#ffffff",
     "navigationStyle": "custom"

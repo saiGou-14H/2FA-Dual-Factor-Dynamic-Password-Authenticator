@@ -3,7 +3,7 @@
     <view class="nav-status" style="height:{{statusBarHeight}}px"></view>
     <view class="nav-bar" style="height:{{navBarHeight}}px; padding-right:{{menuRightSpace}}px">
       <view class="nav-back" bindtap="onCancel"><view class="ico ico-back"></view></view>
-      <view class="nav-title">{{id ? '编辑账号' : '添加账号'}}</view>
+      <view class="nav-title nav-title-center">{{id ? '编辑账号' : '添加账号'}}</view>
     </view>
   </view>
 

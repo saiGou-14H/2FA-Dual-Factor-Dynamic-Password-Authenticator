@@ -3,11 +3,23 @@
   <view class="nav nav-enter">
     <view class="nav-status" style="height:{{statusBarHeight}}px"></view>
     <view class="nav-bar" style="height:{{navBarHeight}}px; padding-right:{{menuRightSpace}}px">
-      <view class="nav-title">验证码</view>
+      <view class="nav-title nav-title-center">2FA二步验证器</view>
     </view>
   </view>
 
-  <view class="search enter-1" wx:if="{{total > 0}}">
+  <!-- 身份行：微信头像 + 昵称 -->
+  <view class="identity enter-1" bindtap="openAuthIfNeeded">
+    <image class="identity-avatar" wx:if="{{avatar}}" src="{{avatar}}" mode="aspectFill" />
+    <view class="identity-avatar is-empty" wx:else>
+      <view class="ico ico-plus"></view>
+    </view>
+    <view class="identity-body">
+      <view class="identity-name">{{authorized ? nickname : '点击授权微信头像与昵称'}}</view>
+      <view class="identity-sub">{{authorized ? syncText : '授权后身份与密钥一起加密同步，换机不丢'}}</view>
+    </view>
+  </view>
+
+  <view class="search enter-2" wx:if="{{total > 0}}">
     <view class="ico ico-search"></view>
     <input class="search-input" value="{{query}}" placeholder="搜索发行方或账号"
            placeholder-class="search-ph" confirm-type="search" bindinput="onSearch" />
@@ -21,7 +33,7 @@
     </view>
   </view>
 
-  <view class="group-bar enter-2" wx:if="{{total > 0}}">
+  <view class="group-bar enter-3" wx:if="{{total > 0}}">
     <scroll-view class="group-scroll" scroll-x="true" show-scrollbar="false">
       <view class="group-tabs">
         <view class="group-tab {{allActive ? 'is-active' : ''}}" data-id="all" bindtap="onSelectGroup">

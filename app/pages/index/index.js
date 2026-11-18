@@ -38,7 +38,12 @@ Page({
     loadingMore: false,
     refreshing: false,
     listSwitch: false,
-    showAuth: false
+    showAuth: false,
+    // 身份
+    nickname: '',
+    avatar: '',
+    authorized: false,
+    syncText: '尚未同步'
   },
 
   onLoad: function () {
@@ -59,11 +64,44 @@ Page({
   onShow: function () {
     this.reload();
     this.startTick();
+    this.refreshIdentity();
     this.maybeAskAuth();
   },
 
   onHide: function () { this.stopTick(); },
   onUnload: function () { this.stopTick(); },
+
+  /* ---------------- 身份 ---------------- */
+
+  /** 刷新头像 / 昵称 / 同步状态 */
+  refreshIdentity: function () {
+    var profile = store.getProfile();
+    var at = sync.lastSyncAt();
+    this.setData({
+      nickname: profile.nickname || '',
+      avatar: profile.avatar || '',
+      authorized: !!profile.authorized,
+      syncText: at ? ('已同步 · ' + this.formatSync(at)) : '尚未同步，退出时自动上传'
+    });
+  },
+
+  formatSync: function (ts) {
+    var d = new Date(Number(ts));
+    if (isNaN(d.getTime())) return '';
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    var hm = pad(d.getHours()) + ':' + pad(d.getMinutes());
+    var now = new Date();
+    var sameDay = d.getFullYear() === now.getFullYear()
+      && d.getMonth() === now.getMonth()
+      && d.getDate() === now.getDate();
+    return sameDay ? hm : ((d.getMonth() + 1) + '月' + d.getDate() + '日');
+  },
+
+  /** 未授权时点身份行，拉起授权引导 */
+  openAuthIfNeeded: function () {
+    if (this.data.authorized) return;
+    this.setData({ showAuth: true });
+  },
 
   /* ---------------- 身份授权引导 ---------------- */
 
@@ -78,6 +116,7 @@ Page({
 
   onAuthDone: function () {
     this.setData({ showAuth: false });
+    this.refreshIdentity();
     util.toast('身份已保存', 'success');
     if (vault.hasDek()) {
       sync.push().catch(function () { /* 下次自动同步会补 */ });

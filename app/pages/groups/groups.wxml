@@ -3,7 +3,7 @@
     <view class="nav-status" style="height:{{statusBarHeight}}px"></view>
     <view class="nav-bar" style="height:{{navBarHeight}}px; padding-right:{{menuRightSpace}}px">
       <view class="nav-back" bindtap="onBack"><view class="ico ico-back"></view></view>
-      <view class="nav-title">分组管理</view>
+      <view class="nav-title nav-title-center">分组管理</view>
     </view>
   </view>
 
