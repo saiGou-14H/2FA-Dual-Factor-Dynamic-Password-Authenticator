@@ -15,12 +15,16 @@ const mysql = require('mysql2/promise');
 const app = express();
 app.use(express.json({ limit: '2mb' }));
 
+// 云托管内 MySQL：环境变量 MYSQL_ADDRESS（格式 host:port）+ MYSQL_USERNAME + MYSQL_PASSWORD
+const { MYSQL_USERNAME, MYSQL_PASSWORD, MYSQL_ADDRESS } = process.env;
+const [dbHost, dbPort] = (MYSQL_ADDRESS || '').split(':');
+
 const pool = mysql.createPool({
-  host: process.env.MYSQL_HOST || '127.0.0.1',
-  port: Number(process.env.MYSQL_PORT) || 3306,
-  user: process.env.MYSQL_USER || 'root',
-  password: process.env.MYSQL_PASSWORD || '',
-  database: process.env.MYSQL_DATABASE || process.env.MYSQL_DB || 'wxcloudrun',
+  host: dbHost || '127.0.0.1',
+  port: Number(dbPort) || 3306,
+  user: MYSQL_USERNAME || 'root',
+  password: MYSQL_PASSWORD || '',
+  database: process.env.MYSQL_DATABASE || 'nodejs_demo',
   waitForConnections: true,
   connectionLimit: 10,
   charset: 'utf8mb4'
