@@ -1,5 +1,5 @@
 {
-  "description": "本地 TOTP/HOTP 验证器",
+  "description": "本地 TOTP/HOTP 验证器 UI 原型",
   "appid": "wxe495e7131344d1f7",
   "projectname": "otp-verifier-ui",
   "compileType": "miniprogram",

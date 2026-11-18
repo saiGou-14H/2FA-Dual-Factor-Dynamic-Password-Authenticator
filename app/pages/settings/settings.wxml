@@ -20,35 +20,47 @@
 
   <view class="group">
     <view class="group-title">云同步</view>
-    <view class="field" wx:if="{{syncStatus === 'none'}}" bindtap="setupSync">
-      <view class="field-body">
-        <view class="field-name">开启云同步</view>
-        <view class="field-desc">设置口令，端到端加密后上传</view>
-      </view>
-      <text class="field-arrow">›</text>
-    </view>
-    <view class="field" wx:if="{{syncStatus === 'locked'}}" bindtap="restoreSync">
-      <view class="field-body">
-        <view class="field-name">输入口令解锁</view>
-        <view class="field-desc">已设置口令，解锁后可同步</view>
-      </view>
-      <text class="field-arrow">›</text>
-    </view>
-    <view class="field" wx:if="{{syncStatus === 'ready'}}" bindtap="syncNow">
+    <view class="field" bindtap="manualSync">
       <view class="field-body">
         <view class="field-name">立即同步</view>
-        <view class="field-desc">{{syncing ? '同步中…' : '加密上传本地账号'}}</view>
+        <view class="field-desc">{{syncing ? '同步中…' : lastSyncText}}</view>
       </view>
       <text class="field-arrow">›</text>
     </view>
-    <view class="field" bindtap="restoreSync">
+    <view class="field">
       <view class="field-body">
-        <view class="field-name">从云端恢复</view>
-        <view class="field-desc">换机时下载并解密</view>
+        <view class="field-name">自动同步</view>
+        <view class="field-desc">退出小程序时自动上传</view>
       </view>
-      <text class="field-arrow">›</text>
+      <text class="field-value">已开启</text>
+    </view>
+    <view class="field">
+      <view class="field-body">
+        <view class="field-name">已保存账号</view>
+        <view class="field-desc">身份：当前微信</view>
+      </view>
+      <text class="field-value num">{{count}}</text>
     </view>
     <view class="hint">内容在本机加密后才上传，服务端只见密文，无法读取你的验证码。</view>
+  </view>
+
+  <view class="group">
+    <view class="group-title">换机迁移</view>
+    <view class="field" bindtap="openMigrate">
+      <view class="field-body">
+        <view class="field-name">迁移到其他微信号</view>
+        <view class="field-desc">生成二维码，用新微信扫码接收</view>
+      </view>
+      <text class="field-arrow">›</text>
+    </view>
+    <view class="field" bindtap="scanMigrate">
+      <view class="field-body">
+        <view class="field-name">从二维码迁移</view>
+        <view class="field-desc">扫描旧微信生成的迁移码</view>
+      </view>
+      <text class="field-arrow">›</text>
+    </view>
+    <view class="hint">迁移码有效期 5 分钟、仅可使用一次，含解密密钥，请勿泄露。</view>
   </view>
 
   <view class="group">
@@ -59,13 +71,6 @@
         <view class="field-desc">JSON 与 otpauth 链接</view>
       </view>
       <text class="field-arrow">›</text>
-    </view>
-    <view class="field">
-      <view class="field-body">
-        <view class="field-name">已保存账号</view>
-        <view class="field-desc">本机存储，未上传</view>
-      </view>
-      <text class="field-value num">{{count}}</text>
     </view>
     <view class="field" bindtap="clearAll">
       <view class="field-body">
@@ -88,7 +93,7 @@
   <view class="group">
     <view class="group-title">关于</view>
     <view class="field" bindtap="onAbout">
-      <view class="field-body"><view class="field-name">这个原型</view></view>
+      <view class="field-body"><view class="field-name">关于这个应用</view></view>
       <text class="field-arrow">›</text>
     </view>
     <view class="field">
@@ -98,4 +103,17 @@
   </view>
 
   <view class="safe-bottom"></view>
+
+  <!-- 迁移二维码浮层 -->
+  <view class="qr-overlay" wx:if="{{showMigrate}}">
+    <view class="qr-mask" bindtap="closeMigrate"></view>
+    <view class="qr-sheet">
+      <view class="qr-title">迁移二维码</view>
+      <view class="qr-sub">{{migrateTip}}</view>
+      <view class="qr-box">
+        <image class="qr-img" src="{{qrImage}}" mode="aspectFit" />
+      </view>
+      <view class="qr-btn" bindtap="closeMigrate">完成</view>
+    </view>
+  </view>
 </view>

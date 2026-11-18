@@ -2,10 +2,7 @@
 /**
  * cloud-sync.js —— 云同步客户端
  * 通过 wx.cloud.callContainer 调用云托管后端，只传密文。
- *
- * 后端信息（部署时填一次）：
- *   env     云开发环境 ID
- *   service 云托管服务名
+ * 身份 = 微信 openid（网关自动注入），无需登录、无需口令。
  */
 var ENV = 'prod-d6gfcpp9vba4f1ae4';
 var SERVICE = 'express-w3rv';
@@ -18,6 +15,10 @@ function configure(opts) {
 
 function callContainer(path, method, data) {
   return new Promise(function (resolve, reject) {
+    if (!wx.cloud || !wx.cloud.callContainer) {
+      reject({ errMsg: 'callContainer 不可用：请确认已 wx.cloud.init' });
+      return;
+    }
     wx.cloud.callContainer({
       config: { env: ENV },
       path: path,
@@ -27,11 +28,21 @@ function callContainer(path, method, data) {
       },
       method: method,
       data: data || {},
+      timeout: 60000,
       success: function (res) {
-        resolve(res.data);
+        var code = res.statusCode || 0;
+        if (code >= 200 && code < 300) {
+          resolve(res.data);
+          return;
+        }
+        reject({
+          errMsg: 'HTTP ' + code + (res.data && res.data.error ? ' / ' + res.data.error : ''),
+          statusCode: code,
+          body: res.data
+        });
       },
       fail: function (err) {
-        reject(err);
+        reject(err || { errMsg: '网络错误' });
       }
     });
   });
@@ -52,11 +63,23 @@ function health() {
   return callContainer('/api/health', 'GET');
 }
 
+/** 生成迁移令牌 + 二维码（返回 { token, expiresAt, qr, payload }） */
+function issueMigrate(dekHex) {
+  return callContainer('/api/migrate/issue', 'POST', { dek: dekHex });
+}
+
+/** 新账号领取迁移数据 */
+function claimMigrate(token) {
+  return callContainer('/api/migrate/claim', 'POST', { token: token });
+}
+
 module.exports = {
   configure: configure,
   upload: upload,
   download: download,
   health: health,
+  issueMigrate: issueMigrate,
+  claimMigrate: claimMigrate,
   ENV: ENV,
   SERVICE: SERVICE
 };
