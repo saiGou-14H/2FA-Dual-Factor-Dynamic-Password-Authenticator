@@ -1,16 +1,22 @@
 'use strict';
 /**
  * 云端同步后端 —— 服务端只见密文，永不接触明文
- * API:
+ *
+ * 基础同步：
  *   POST /api/vault   上传密文  { data, rev }
  *   GET  /api/vault   下载密文  -> { data, rev, updated_at }
  *   GET  /api/health  健康检查
  *
+ * 账号迁移（二维码）：
+ *   POST /api/migrate/issue  生成一次性迁移令牌 + 二维码  { dek }
+ *   POST /api/migrate/claim  新账号凭令牌领取密文  { token }
+ *
  * 鉴权：openid 由云托管网关注入（wx.cloud.callContainer 调用时）
- * 数据库：MySQL（环境变量注入，兜底用默认值）
  */
 const express = require('express');
 const mysql = require('mysql2/promise');
+const QRCode = require('qrcode');
+const nodeCrypto = require('crypto');
 
 const app = express();
 app.use(express.json({ limit: '2mb' }));
@@ -30,6 +36,11 @@ const pool = mysql.createPool({
   charset: 'utf8mb4'
 });
 
+// 迁移令牌有效期：5 分钟
+const MIGRATE_TTL_MS = 5 * 60 * 1000;
+// 迁移 URL 前缀
+const MIGRATE_SCHEME = 'otpmig://migrate';
+
 async function ensureSchema() {
   await pool.query(
     `CREATE TABLE IF NOT EXISTS vault (
@@ -37,6 +48,15 @@ async function ensureSchema() {
       data LONGTEXT NOT NULL,
       rev INT NOT NULL DEFAULT 0,
       updated_at BIGINT NOT NULL DEFAULT 0
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
+  );
+  await pool.query(
+    `CREATE TABLE IF NOT EXISTS migrate_token (
+      token VARCHAR(64) NOT NULL PRIMARY KEY,
+      source_openid VARCHAR(64) NOT NULL,
+      expires_at BIGINT NOT NULL,
+      used TINYINT NOT NULL DEFAULT 0,
+      created_at BIGINT NOT NULL DEFAULT 0
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
   );
 }
@@ -50,6 +70,8 @@ function auth(req, res, next) {
 }
 
 app.get('/api/health', (req, res) => res.json({ code: 0, ok: true, ts: Date.now() }));
+
+/* ==================== 基础同步 ==================== */
 
 // 上传密文：只存字符串，绝不解析/解密
 app.post('/api/vault', auth, async (req, res) => {
@@ -90,6 +112,99 @@ app.get('/api/vault', auth, async (req, res) => {
     });
   } catch (e) {
     console.error('[vault get]', e);
+    res.status(500).json({ code: 500, error: 'server error' });
+  }
+});
+
+/* ==================== 账号迁移 ==================== */
+
+/**
+ * 生成一次性迁移令牌 + 二维码
+ * body: { dek } —— 设备端密钥（hex）。服务端不保存它，只编码进二维码。
+ */
+app.post('/api/migrate/issue', auth, async (req, res) => {
+  try {
+    const dek = (req.body && req.body.dek) || '';
+    if (typeof dek !== 'string' || !/^[0-9a-fA-F]{16,128}$/.test(dek)) {
+      return res.status(400).json({ code: 400, error: 'invalid dek' });
+    }
+
+    const token = nodeCrypto.randomBytes(16).toString('hex');
+    const expiresAt = Date.now() + MIGRATE_TTL_MS;
+
+    // 清理过期令牌，避免表膨胀
+    await pool.query('DELETE FROM migrate_token WHERE expires_at < ?', [Date.now()]);
+    await pool.query(
+      'INSERT INTO migrate_token (token, source_openid, expires_at, used, created_at) VALUES (?, ?, ?, 0, ?)',
+      [token, req.openid, expiresAt, Date.now()]
+    );
+
+    const payload = MIGRATE_SCHEME + '?t=' + token + '&k=' + dek;
+    const qr = await QRCode.toDataURL(payload, {
+      errorCorrectionLevel: 'M',
+      margin: 1,
+      width: 520,
+      color: { dark: '#101418ff', light: '#ffffffff' }
+    });
+
+    res.json({
+      code: 0,
+      token: token,
+      expiresAt: expiresAt,
+      payload: payload,
+      qr: qr
+    });
+  } catch (e) {
+    console.error('[migrate issue]', e);
+    res.status(500).json({ code: 500, error: 'server error' });
+  }
+});
+
+/**
+ * 新账号凭令牌领取密文：把源账号的 vault 复制到当前 openid
+ * body: { token }
+ */
+app.post('/api/migrate/claim', auth, async (req, res) => {
+  try {
+    const token = String((req.body && req.body.token) || '');
+    if (!/^[0-9a-f]{32}$/.test(token)) {
+      return res.status(400).json({ code: 400, error: 'invalid token' });
+    }
+
+    const [rows] = await pool.query(
+      'SELECT token, source_openid, expires_at, used FROM migrate_token WHERE token = ?',
+      [token]
+    );
+    if (!rows.length) return res.status(404).json({ code: 404, error: 'token not found' });
+
+    const row = rows[0];
+    if (row.used) return res.status(410).json({ code: 410, error: 'token already used' });
+    if (Number(row.expires_at) < Date.now()) {
+      return res.status(410).json({ code: 410, error: 'token expired' });
+    }
+    if (row.source_openid === req.openid) {
+      return res.status(400).json({ code: 400, error: 'same account' });
+    }
+
+    const [srcRows] = await pool.query(
+      'SELECT data, rev FROM vault WHERE openid = ?',
+      [row.source_openid]
+    );
+    if (!srcRows.length) return res.status(404).json({ code: 404, error: 'no data in source account' });
+
+    // 复制到新账号（覆盖）
+    await pool.query(
+      'INSERT INTO vault (openid, data, rev, updated_at) VALUES (?, ?, ?, ?) ' +
+      'ON DUPLICATE KEY UPDATE data = VALUES(data), rev = VALUES(rev), updated_at = VALUES(updated_at)',
+      [req.openid, srcRows[0].data, Number(srcRows[0].rev) || 0, Date.now()]
+    );
+
+    // 令牌一次性使用
+    await pool.query('UPDATE migrate_token SET used = 1 WHERE token = ?', [token]);
+
+    res.json({ code: 0, ok: true });
+  } catch (e) {
+    console.error('[migrate claim]', e);
     res.status(500).json({ code: 500, error: 'server error' });
   }
 });
