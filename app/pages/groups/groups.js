@@ -160,7 +160,8 @@ Page({
       content: group.count
         ? '将 ' + group.count + ' 个账号移入「' + target.name + '」，然后删除「' + group.name + '」。'
         : '删除空分组「' + group.name + '」？',
-      confirmText: group.count ? '删除并移动' : '删除',
+      confirmText: '删除',
+      cancelText: '取消',
       confirmColor: '#dc2626',
       success: function (res) {
         if (!res.confirm) return;
@@ -171,6 +172,10 @@ Page({
         }
         self.reload();
         util.toast('已删除分组', 'success');
+      },
+      fail: function (err) {
+        console.error('[deleteGroup] 确认框失败', err);
+        util.toast('确认框打开失败');
       }
     });
   },

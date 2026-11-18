@@ -270,26 +270,57 @@ Page({
 
   clearAll: function () {
     var self = this;
-    if (store.count() === 0) {
-      util.toast('已经是空的了');
+    var total = store.count();
+    if (total === 0) {
+      util.toast('已经没有账号了');
       return;
     }
+
+    // 第一次确认
     wx.showModal({
       title: '清空全部账号',
-      content: '全部账号将移入回收站，可在「回收站」里按时间找回或彻底删除。',
-      confirmText: '移入回收站',
+      content: total + ' 个账号将移入回收站，之后可在「回收站」按删除时间找回。',
+      confirmText: '移入',
+      cancelText: '取消',
       confirmColor: '#dc2626',
       success: function (res) {
         if (!res.confirm) return;
-        self.showLoading('正在移入回收站');
-        setTimeout(function () {
-          var n = store.removeAll();
-          self.hideLoading();
-          self.setData({ count: store.count(), deletedCount: store.deletedCount() });
-          util.toast('已移入回收站 ' + n + ' 个');
-        }, 60);
+        // 第二次确认（按钮文案上限 4 字，超过会导致弹窗静默失败）
+        wx.showModal({
+          title: '再确认一次',
+          content: '确定清空全部 ' + total + ' 个账号？它们会进入回收站，不会立刻删除。',
+          confirmText: '确认',
+          cancelText: '取消',
+          confirmColor: '#dc2626',
+          success: function (res2) {
+            if (!res2.confirm) return;
+            self.doClearAll();
+          },
+          fail: function (err) {
+            console.error('[clearAll] 第二次确认失败', err);
+            util.toast('确认框打开失败');
+          }
+        });
+      },
+      fail: function (err) {
+        console.error('[clearAll] 第一次确认失败', err);
+        util.toast('确认框打开失败');
       }
     });
+  },
+
+  /** 真正执行清空（两次确认后调用） */
+  doClearAll: function () {
+    var self = this;
+    this.showLoading('正在移入回收站');
+    setTimeout(function () {
+      var n = store.removeAll();
+      self.hideLoading();
+      self.setData({ count: store.count(), deletedCount: store.deletedCount() });
+      util.toast('已移入回收站 ' + n + ' 个');
+      // 标记数据有变动，首页返回时会重新读取
+      app.globalData.vaultDirty = true;
+    }, 60);
   },
 
   openAbout: function () {

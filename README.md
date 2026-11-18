@@ -134,6 +134,8 @@ node tools/test_auth_prompt.js   # 授权引导：点击才弹 / 已授权不弹
 node tools/test_input_advanced.js # 输入页：高级折叠 / 摘要刷新 / 非默认自动展开
 node tools/test_ui_sheets.js     # 自定义浮层：日期选择 / 开关 / 操作菜单
 node tools/test_groups_drag.js   # 分组拖拽：悬浮跟手 / 换位边界 / 落库
+node tools/test_clear_all.js     # 清空全部：二次确认 / 取消无副作用
+node tools/check_modal_text.js   # 守卫：showModal 按钮文案 ≤4 字
 node tools/test_e2e_sync.js      # 真实后端同步往返
 node tools/test_migrate_e2e.js   # 真实后端迁移流程
 ```

@@ -5,6 +5,7 @@ var sync = require('./utils/sync.js');
 
 App({
   globalData: {
+    vaultDirty: false,
     /** 全局「藏码」开关：true 时默认隐藏验证码 */
     hideCodes: true,
     /** 主题（预留） */

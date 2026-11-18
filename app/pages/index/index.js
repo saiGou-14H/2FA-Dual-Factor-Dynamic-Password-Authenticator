@@ -67,6 +67,10 @@ Page({
   },
 
   onShow: function () {
+    if (app.globalData.vaultDirty) {
+      app.globalData.vaultDirty = false;
+      this.setData({ page: 1 });
+    }
     this.reload();
     this.startTick();
     this.refreshIdentity();
