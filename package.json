@@ -1,0 +1,14 @@
+{
+  "name": "otp-sync",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TOTP 验证器云同步后端（服务端仅存密文）",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql2": "^3.6.5"
+  }
+}
