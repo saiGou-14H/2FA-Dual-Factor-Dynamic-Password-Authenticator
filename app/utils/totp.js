@@ -244,6 +244,23 @@ function generate(token, nowMs) {
   return hotp(secret, counter, token.digits, token.algorithm);
 }
 
+/**
+ * 生成「下一个」验证码：
+ * TOTP → 下一周期的码；HOTP → 计数器 +1 的码
+ */
+function generateNext(token, nowMs) {
+  var secret = base32Decode(token.secret);
+  if (!secret.length) return '';
+  var type = String(token.type || 'totp').toLowerCase();
+  var counter;
+  if (type === 'hotp') {
+    counter = (Number(token.counter) || 0) + 1;
+  } else {
+    counter = totpCounter(token.period, token.epoch, nowMs) + 1;
+  }
+  return hotp(secret, counter, token.digits, token.algorithm);
+}
+
 /** 距离下次刷新还剩多少秒 / 周期进度 0~1 */
 function remaining(token, nowMs) {
   var period = Number(token.period) > 0 ? Number(token.period) : 30;
@@ -270,6 +287,7 @@ module.exports = {
   hotp: hotp,
   totpCounter: totpCounter,
   generate: generate,
+  generateNext: generateNext,
   remaining: remaining,
   isValidSecret: isValidSecret,
   utf8Bytes: utf8Bytes

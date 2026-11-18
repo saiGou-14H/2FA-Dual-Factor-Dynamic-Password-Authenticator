@@ -163,6 +163,10 @@ Page({
       var raw = String(code || '');
       var half = Math.ceil(raw.length / 2);
 
+      // 下一码：仅在已显示时有意义（HOTP 也给出计数器 +1 的码）
+      var nextRaw = revealed ? String(totp.generateNext(t, now) || '') : '';
+      var nextHalf = Math.ceil(nextRaw.length / 2);
+
       list.push({
         id: t.id,
         issuer: t.issuer,
@@ -177,6 +181,8 @@ Page({
         code: code,
         seg1: raw.slice(0, half),
         seg2: raw.slice(half),
+        nextSeg1: nextRaw.slice(0, nextHalf),
+        nextSeg2: nextRaw.slice(nextHalf),
         cells: range(Math.ceil((t.digits || 6) / 2)),
         revealed: revealed,
         leftText: left,

@@ -99,6 +99,39 @@
   overflow: hidden;
 }
 
+/* 下一码：紧贴主码下方，小字弱化 */
+.next-code {
+  display: flex;
+  align-items: baseline;
+  margin-top: 6rpx;
+  animation: fade var(--dur-2) ease both;
+}
+
+.next-label {
+  margin-right: 10rpx;
+  font-size: 19rpx;
+  color: var(--faint);
+  letter-spacing: 0.5rpx;
+}
+
+.next-digit {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-size: 24rpx;
+  line-height: 1;
+  letter-spacing: 1rpx;
+  color: var(--faint);
+}
+
+.next-gap {
+  display: inline-block;
+  width: 8rpx;
+}
+
+.is-warn .next-digit {
+  color: #e0a0a0;
+}
+
 .code {
   display: flex;
   align-items: baseline;

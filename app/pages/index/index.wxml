@@ -55,9 +55,6 @@
   </view>
 
   <view class="empty" wx:if="{{list.length === 0}}">
-    <view class="empty-badge">
-      <view class="ico ico-plus"></view>
-    </view>
     <view class="empty-title">{{total === 0 ? '还没有账号' : '这个分组里暂无账号'}}</view>
     <view class="empty-sub">{{total === 0 ? '扫描二维码或手动输入密钥' : (query ? '换个关键词试试' : '添加账号或选择其他分组')}}</view>
     <view class="empty-action" wx:if="{{total === 0}}" bindtap="gotoAdd">添加账号</view>

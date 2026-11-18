@@ -160,23 +160,12 @@
 
 /* ============ 空态 ============ */
 .empty {
-  padding: 150rpx 32rpx 64rpx;
+  padding: 190rpx 32rpx 64rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   animation: float-in var(--dur-3) var(--ease) both;
 }
-.empty-badge {
-  width: 108rpx;
-  height: 108rpx;
-  border-radius: 30rpx;
-  background: var(--bg-soft);
-  color: var(--faint);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.empty-badge .ico-plus { color: var(--faint); }
 .empty-title { margin-top: 26rpx; color: var(--ink); font-size: 30rpx; font-weight: 600; }
 .empty-sub { margin-top: 8rpx; color: var(--faint); font-size: 22rpx; text-align: center; }
 .empty-action {

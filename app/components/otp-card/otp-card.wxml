@@ -30,6 +30,14 @@
         <view class="dot-gap"></view>
         <view class="dot" wx:for="{{item.cells}}" wx:key="index"></view>
       </view>
+
+      <!-- 下一码：小字同步显示，当前码到期后即生效 -->
+      <view class="next-code" wx:if="{{item.revealed && item.nextSeg1}}">
+        <text class="next-label">下一码</text>
+        <text class="next-digit">{{item.nextSeg1}}</text>
+        <text class="next-gap"></text>
+        <text class="next-digit">{{item.nextSeg2}}</text>
+      </view>
     </view>
 
     <view class="side">
