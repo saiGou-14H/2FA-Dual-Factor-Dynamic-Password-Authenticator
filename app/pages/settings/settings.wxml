@@ -25,7 +25,7 @@
         <view class="field-name">立即同步</view>
         <view class="field-desc">{{syncing ? '同步中…' : lastSyncText}}</view>
       </view>
-      <text class="field-arrow">›</text>
+      <view class="ico ico-chevron field-arrow"></view>
     </view>
     <view class="field">
       <view class="field-body">
@@ -51,14 +51,14 @@
         <view class="field-name">迁移到其他微信号</view>
         <view class="field-desc">生成二维码，用新微信扫码接收</view>
       </view>
-      <text class="field-arrow">›</text>
+      <view class="ico ico-chevron field-arrow"></view>
     </view>
     <view class="field" bindtap="scanMigrate">
       <view class="field-body">
         <view class="field-name">从二维码迁移</view>
         <view class="field-desc">扫描旧微信生成的迁移码</view>
       </view>
-      <text class="field-arrow">›</text>
+      <view class="ico ico-chevron field-arrow"></view>
     </view>
     <view class="hint">迁移码有效期 5 分钟、仅可使用一次，含解密密钥，请勿泄露。</view>
   </view>
@@ -72,7 +72,7 @@
       </view>
       <view class="field-right">
         <text class="field-value num" wx:if="{{deletedCount > 0}}">{{deletedCount}}</text>
-        <text class="field-arrow">›</text>
+        <view class="ico ico-chevron field-arrow"></view>
       </view>
     </view>
     <view class="field" bindtap="gotoExport">
@@ -80,14 +80,14 @@
         <view class="field-name">导出备份</view>
         <view class="field-desc">JSON 与 otpauth 链接</view>
       </view>
-      <text class="field-arrow">›</text>
+      <view class="ico ico-chevron field-arrow"></view>
     </view>
     <view class="field" bindtap="clearAll">
       <view class="field-body">
         <view class="field-name is-danger">清空全部</view>
         <view class="field-desc">移入回收站，可找回</view>
       </view>
-      <text class="field-arrow">›</text>
+      <view class="ico ico-chevron field-arrow"></view>
     </view>
   </view>
 
@@ -104,7 +104,7 @@
     <view class="group-title">关于</view>
     <view class="field" bindtap="onAbout">
       <view class="field-body"><view class="field-name">关于这个应用</view></view>
-      <text class="field-arrow">›</text>
+      <view class="ico ico-chevron field-arrow"></view>
     </view>
     <view class="field">
       <view class="field-body"><view class="field-name">版本</view></view>

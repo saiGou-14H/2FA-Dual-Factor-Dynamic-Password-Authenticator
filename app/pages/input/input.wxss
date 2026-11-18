@@ -54,9 +54,7 @@
 
 .picker-caret {
   color: var(--faint);
-  font-size: 34rpx;
-  line-height: 1;
-  margin-left: 12rpx;
+  margin-left: 10rpx;
 }
 
 .reveal {

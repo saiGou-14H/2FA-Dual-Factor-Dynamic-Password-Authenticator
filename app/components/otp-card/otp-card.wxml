@@ -42,7 +42,7 @@
 
       <view class="copy {{item.copied ? 'is-done' : ''}}" catchtap="onSideTap">
         <view class="ico ico-check" wx:if="{{item.copied}}"></view>
-        <view class="ico ico-eye-brand ico-eye-s off" wx:elif="{{!item.revealed}}"></view>
+        <view class="ico ico-eye ico-s off" wx:elif="{{!item.revealed}}"></view>
         <view class="ico ico-copy" wx:else></view>
       </view>
     </view>

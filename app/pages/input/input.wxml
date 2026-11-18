@@ -12,7 +12,7 @@
     <view class="field">
       <text class="field-label">所属分组</text>
       <picker class="field-picker" mode="selector" range="{{groupNames}}" value="{{groupIndex}}" bindchange="onGroupChange">
-        <view class="picker-value">{{groupNames[groupIndex]}}<text class="picker-caret">›</text></view>
+        <view class="picker-value">{{groupNames[groupIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
       </picker>
     </view>
     <view class="new-group-link" bindtap="onManageGroups">＋ 新建分组</view>
@@ -44,25 +44,25 @@
     <view class="field">
       <text class="field-label">类型</text>
       <picker class="field-picker" mode="selector" range="{{types}}" value="{{typeIndex}}" bindchange="onType">
-        <view class="picker-value">{{types[typeIndex]}}<text class="picker-caret">›</text></view>
+        <view class="picker-value">{{types[typeIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
       </picker>
     </view>
     <view class="field">
       <text class="field-label">算法</text>
       <picker class="field-picker" mode="selector" range="{{algorithms}}" value="{{algorithmIndex}}" bindchange="onAlgorithm">
-        <view class="picker-value">{{algorithms[algorithmIndex]}}<text class="picker-caret">›</text></view>
+        <view class="picker-value">{{algorithms[algorithmIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
       </picker>
     </view>
     <view class="field">
       <text class="field-label">位数</text>
       <picker class="field-picker" mode="selector" range="{{digitsList}}" value="{{digitsIndex}}" bindchange="onDigits">
-        <view class="picker-value">{{digitsList[digitsIndex]}}<text class="picker-caret">›</text></view>
+        <view class="picker-value">{{digitsList[digitsIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
       </picker>
     </view>
     <view class="field" wx:if="{{type === 'totp'}}">
       <text class="field-label">刷新周期</text>
       <picker class="field-picker" mode="selector" range="{{periods}}" value="{{periodIndex}}" bindchange="onPeriod">
-        <view class="picker-value">{{periods[periodIndex]}}<text class="picker-caret">›</text></view>
+        <view class="picker-value">{{periods[periodIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
       </picker>
     </view>
     <view class="field" wx:if="{{type === 'hotp'}}">

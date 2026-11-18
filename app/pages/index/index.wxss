@@ -54,7 +54,6 @@
   border-radius: 50%;
   background: #d9dde3;
   color: #fff;
-  font-size: 26rpx;
   flex-shrink: 0;
 }
 
@@ -199,7 +198,7 @@
   font-size: 27rpx;
 }
 .move-option:active { background: var(--bg-soft); }
-.move-arrow { color: var(--faint); font-size: 36rpx; }
+.move-arrow { color: var(--faint); }
 
 /* ============ 悬浮按钮（FAB） ============ */
 .fab-mask {

@@ -63,8 +63,6 @@
 
 .field-arrow {
   flex-shrink: 0;
-  font-size: 34rpx;
-  line-height: 1;
   color: var(--faint);
 }
 

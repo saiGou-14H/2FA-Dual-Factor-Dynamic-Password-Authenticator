@@ -10,7 +10,7 @@
   <scroll-view class="content" scroll-y>
     <view class="group-list">
       <view class="group-row" wx:for="{{groups}}" wx:key="id">
-        <view class="drag-mark" aria-hidden="true">⠿</view>
+        <view class="ico ico-drag drag-mark" aria-hidden="true"></view>
         <view class="group-main" wx:if="{{editingId !== item.id}}">
           <view class="group-title-line">
             <text class="group-name">{{item.name}}</text>
@@ -26,10 +26,10 @@
           </view>
         </view>
         <view class="row-actions" wx:if="{{editingId !== item.id}}">
-          <view class="arrow-button {{index === 0 ? 'is-disabled' : ''}}" data-index="{{index}}" data-direction="-1" bindtap="moveGroup" aria-label="上移">↑</view>
-          <view class="arrow-button {{index === groups.length - 1 ? 'is-disabled' : ''}}" data-index="{{index}}" data-direction="1" bindtap="moveGroup" aria-label="下移">↓</view>
-          <view class="icon-button" wx:if="{{!item.builtin}}" data-id="{{item.id}}" bindtap="startRename" aria-label="重命名">✎</view>
-          <view class="icon-button is-danger" wx:if="{{!item.builtin}}" data-id="{{item.id}}" bindtap="deleteGroup" aria-label="删除">⌫</view>
+          <view class="arrow-button {{index === 0 ? 'is-disabled' : ''}}" data-index="{{index}}" data-direction="-1" bindtap="moveGroup" aria-label="上移"><view class="ico ico-up"></view></view>
+          <view class="arrow-button {{index === groups.length - 1 ? 'is-disabled' : ''}}" data-index="{{index}}" data-direction="1" bindtap="moveGroup" aria-label="下移"><view class="ico ico-down"></view></view>
+          <view class="icon-button" wx:if="{{!item.builtin}}" data-id="{{item.id}}" bindtap="startRename" aria-label="重命名"><view class="ico ico-edit"></view></view>
+          <view class="icon-button is-danger" wx:if="{{!item.builtin}}" data-id="{{item.id}}" bindtap="deleteGroup" aria-label="删除"><view class="ico ico-erase"></view></view>
         </view>
       </view>
     </view>
@@ -64,7 +64,7 @@
       <scroll-view class="target-list" scroll-y="true">
         <view class="target-option" wx:for="{{targetGroups}}" wx:key="id" data-id="{{item.id}}" bindtap="selectDeleteTarget">
           <text>{{item.name}}</text>
-          <text class="move-arrow">›</text>
+          <view class="ico ico-chevron move-arrow"></view>
         </view>
       </scroll-view>
     </view>

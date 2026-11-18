@@ -11,7 +11,9 @@
     <view class="ico ico-search"></view>
     <input class="search-input" value="{{query}}" placeholder="搜索发行方或账号"
            placeholder-class="search-ph" confirm-type="search" bindinput="onSearch" />
-    <view class="search-clear" wx:if="{{query}}" bindtap="clearSearch">×</view>
+    <view class="search-clear" wx:if="{{query}}" bindtap="clearSearch">
+        <view class="ico ico-close"></view>
+      </view>
     <view class="search-divider"></view>
     <view class="search-toggle" bindtap="toggleAll" aria-label="显示或隐藏验证码">
       <!-- 图标风格：ico-eye（矢量睁眼/闭眼，默认）/ ico-eye-b（胶囊开关） -->
@@ -59,7 +61,7 @@
       <scroll-view class="move-list" scroll-y="true">
         <view class="move-option" wx:for="{{moveGroups}}" wx:key="id" data-id="{{item.id}}" bindtap="confirmMoveGroup">
           <text>{{item.name}}</text>
-          <text class="move-arrow">›</text>
+          <view class="ico ico-chevron move-arrow"></view>
         </view>
       </scroll-view>
     </view>

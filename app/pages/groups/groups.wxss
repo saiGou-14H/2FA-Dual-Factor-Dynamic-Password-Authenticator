@@ -59,9 +59,7 @@
 
 .drag-mark {
   width: 38rpx;
-  color: #6b7280;
-  font-size: 36rpx;
-  line-height: 1;
+  color: var(--faint);
 }
 
 .group-main,
@@ -323,5 +321,4 @@
 
 .move-arrow {
   color: var(--faint);
-  font-size: 36rpx;
 }
