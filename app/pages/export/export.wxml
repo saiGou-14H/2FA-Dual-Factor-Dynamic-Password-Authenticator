@@ -1,0 +1,45 @@
+<view class="page">
+  <view class="nav">
+    <view class="nav-status" style="height:{{statusBarHeight}}px"></view>
+    <view class="nav-bar" style="height:{{navBarHeight}}px; padding-right:{{menuRightSpace}}px">
+      <view class="nav-back" bindtap="onBack"><view class="ico ico-back"></view></view>
+      <view class="nav-title">导出备份</view>
+    </view>
+  </view>
+
+  <view class="caution">
+    <view class="caution-bar"></view>
+    <view class="caution-body">
+      <view class="caution-title">这是明文备份</view>
+      <view class="caution-text">复制到聊天、网盘或笔记，等同于把二次验证交给对方。</view>
+    </view>
+  </view>
+
+  <view class="group">
+    <view class="group-head">
+      <text class="group-title">JSON 备份 · {{count}} 个账号</text>
+      <text class="group-act" bindtap="copyJson">复制</text>
+    </view>
+    <scroll-view class="json" scroll-y="{{expanded}}">
+      <text class="json-text num">{{json}}</text>
+    </scroll-view>
+    <view class="json-more" bindtap="toggleExpand">{{expanded ? '收起' : '展开全文'}}</view>
+  </view>
+
+  <view class="group">
+    <view class="group-head">
+      <text class="group-title">otpauth 链接</text>
+    </view>
+    <view class="uri" wx:for="{{uris}}" wx:key="id" data-uri="{{item.uri}}" bindtap="copyUri">
+      <view class="uri-name">{{item.name}}</view>
+      <view class="uri-text num">{{item.uri}}</view>
+      <text class="uri-act">复制</text>
+    </view>
+  </view>
+
+  <view class="foot-note">
+    正式版本请改为「口令加密备份」：口令派生密钥，加密整份文件。即使文件外流，没有口令也解不开。
+  </view>
+
+  <view class="safe-bottom"></view>
+</view>

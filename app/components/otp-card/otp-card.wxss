@@ -1,0 +1,187 @@
+.token {
+  padding: 26rpx 0;
+  border-bottom: 1rpx solid var(--line);
+  animation: rise 0.36s cubic-bezier(0.22, 0.8, 0.2, 1) both;
+  transition: opacity 0.2s ease;
+}
+
+/* ============ 身份行 ============ */
+.ident {
+  display: flex;
+  align-items: center;
+}
+
+.badge {
+  width: 56rpx;
+  height: 56rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #fff;
+  font-size: 26rpx;
+  font-weight: 700;
+  box-shadow: 0 4rpx 10rpx -4rpx rgba(37, 99, 235, 0.55);
+}
+
+.ident-body {
+  flex: 1;
+  min-width: 0;
+  padding: 0 18rpx;
+}
+
+.service {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 28rpx;
+  font-weight: 600;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account {
+  margin-top: 2rpx;
+  overflow: hidden;
+  color: var(--faint);
+  font-size: 22rpx;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.group-tag {
+  max-width: 140rpx;
+  flex-shrink: 0;
+  overflow: hidden;
+  padding: 3rpx 12rpx;
+  border-radius: 99rpx;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 20rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.more {
+  width: 52rpx;
+  height: 52rpx;
+  margin-left: 6rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--faint);
+  font-size: 30rpx;
+}
+.more:active { color: var(--ink); }
+
+/* ============ 验证码行 ============ */
+.code-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12rpx;
+  margin-left: 74rpx;
+}
+
+.code-wrap {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.code {
+  display: flex;
+  align-items: baseline;
+  perspective: 600rpx;
+}
+.code.is-flip {
+  animation: flip 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.digit {
+  color: var(--ink);
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-size: 52rpx;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 2rpx;
+}
+.is-warn .digit { color: var(--danger); }
+
+.digit-gap { display: inline-block; width: 14rpx; }
+
+/* 隐藏态：两段圆点 */
+.veil {
+  display: flex;
+  align-items: center;
+  height: 52rpx;
+}
+.dot {
+  width: 13rpx;
+  height: 13rpx;
+  margin-right: 9rpx;
+  border-radius: 50%;
+  background: #d5d9df;
+}
+.dot-gap { width: 18rpx; }
+
+/* ============ 右侧：倒计时环 + 动作 ============ */
+.side {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  margin-left: 16rpx;
+}
+
+.ring {
+  width: 46rpx;
+  height: 46rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+}
+.ring-hole {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ring-num {
+  font-size: 18rpx;
+  color: var(--sub);
+}
+.is-warn .ring-num { color: var(--danger); }
+
+.ring-label {
+  margin-right: 16rpx;
+  font-size: 22rpx;
+  color: var(--brand);
+}
+
+.copy {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14rpx;
+  color: var(--brand);
+  background: var(--brand-soft);
+  transition: transform 0.14s ease, background 0.2s ease, color 0.2s ease;
+}
+.copy:active { transform: scale(0.92); }
+.copy.is-done {
+  color: #16a34a;
+  background: #f0fdf4;
+  animation: pop 0.25s ease both;
+}

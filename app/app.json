@@ -1,0 +1,20 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/input/input",
+    "pages/groups/groups",
+    "pages/settings/settings",
+    "pages/export/export"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#fafaf8",
+    "navigationBarTitleText": "验证器",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#fafaf8",
+    "navigationStyle": "custom"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

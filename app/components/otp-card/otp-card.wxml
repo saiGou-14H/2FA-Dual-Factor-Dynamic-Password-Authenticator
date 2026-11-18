@@ -1,0 +1,50 @@
+<view
+  class="token {{item.leftText <= 5 && item.type !== 'hotp' ? 'is-warn' : ''}}"
+  style="animation-delay:{{item.delay}}ms"
+  bindtap="onTap"
+  bindlongpress="onLongPress"
+>
+  <!-- 身份行 -->
+  <view class="ident">
+    <view class="badge">{{initial}}</view>
+    <view class="ident-body">
+      <view class="service">{{item.issuer || '未命名服务'}}</view>
+      <view class="account">{{item.label}}</view>
+    </view>
+    <view class="group-tag" wx:if="{{item.groupName}}">{{item.groupName}}</view>
+    <view class="more" catchtap="onMore">
+      <view class="ico ico-dots"></view>
+    </view>
+  </view>
+
+  <!-- 验证码行 -->
+  <view class="code-row">
+    <view class="code-wrap">
+      <view class="code {{item.pulse ? 'is-flip' : ''}}" wx:if="{{item.revealed}}">
+        <text class="digit">{{item.seg1}}</text>
+        <text class="digit-gap"></text>
+        <text class="digit">{{item.seg2}}</text>
+      </view>
+      <view class="veil" wx:else>
+        <view class="dot" wx:for="{{item.cells}}" wx:key="index"></view>
+        <view class="dot-gap"></view>
+        <view class="dot" wx:for="{{item.cells}}" wx:key="index"></view>
+      </view>
+    </view>
+
+    <view class="side">
+      <view class="ring" wx:if="{{item.type !== 'hotp'}}" style="background:conic-gradient({{item.ringColor}} {{item.progressPct}}%, var(--line) 0)">
+        <view class="ring-hole">
+          <text class="ring-num num">{{item.leftText}}</text>
+        </view>
+      </view>
+      <text class="ring-label num" wx:if="{{item.type === 'hotp'}}">{{item.revealed ? '下一码' : '生成'}}</text>
+
+      <view class="copy {{item.copied ? 'is-done' : ''}}" catchtap="onSideTap">
+        <view class="ico ico-check" wx:if="{{item.copied}}"></view>
+        <view class="ico ico-eye off" wx:elif="{{!item.revealed}}"></view>
+        <view class="ico ico-copy" wx:else></view>
+      </view>
+    </view>
+  </view>
+</view>

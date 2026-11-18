@@ -1,0 +1,95 @@
+.page {
+  min-height: 100vh;
+  background: var(--bg);
+  padding: 0 32rpx 32rpx;
+  box-sizing: border-box;
+}
+
+.nav {
+  margin: 0 -32rpx 26rpx;
+  border-bottom: 1rpx solid var(--line);
+}
+.nav-status { width: 100%; }
+.nav-bar {
+  display: flex;
+  align-items: center;
+  padding-left: 14rpx;
+  box-sizing: border-box;
+}
+.nav-back {
+  width: 64rpx;
+  height: 64rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 4rpx;
+}
+.nav-back:active { opacity: 0.5; }
+.nav-title {
+  font-size: 34rpx;
+  font-weight: 650;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.new-group-link {
+  padding: 4rpx 30rpx 24rpx;
+  color: var(--brand);
+  font-size: 24rpx;
+}
+
+/* ---------------- 表单 ---------------- */
+.field-picker {
+  flex: 1;
+}
+
+.picker-value {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 29rpx;
+  color: var(--ink);
+}
+
+.picker-caret {
+  color: var(--faint);
+  font-size: 34rpx;
+  line-height: 1;
+  margin-left: 12rpx;
+}
+
+.reveal {
+  flex-shrink: 0;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--brand);
+  padding-left: 18rpx;
+}
+
+/* ---------------- 错误 ---------------- */
+.error {
+  margin: 0 0 20rpx;
+  padding: 20rpx 24rpx;
+  border-left: 4rpx solid var(--danger);
+  background: #fef2f2;
+  color: var(--danger);
+  font-size: 23rpx;
+  line-height: 1.65;
+}
+
+/* ---------------- 动作 ---------------- */
+.actions {
+  margin-top: 8rpx;
+}
+
+.actions .btn + .btn {
+  margin-top: 16rpx;
+}
+
+.notice {
+  margin-top: 26rpx;
+  font-size: 21rpx;
+  line-height: 1.75;
+  color: var(--faint);
+}

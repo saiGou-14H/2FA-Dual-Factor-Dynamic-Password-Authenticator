@@ -1,0 +1,320 @@
+/* ============================================================
+   验证器 —— 设计系统
+   明亮、克制。单一品牌蓝，单一告警红，行式列表（iOS 风格）。
+   所有页面只引用这里的 token，禁止硬编码颜色。
+   ============================================================ */
+page {
+  /* 表面 */
+  --bg: #ffffff;
+  --bg-soft: #f4f5f7;
+  --card: #ffffff;
+
+  /* 墨色 */
+  --ink: #101418;
+  --sub: #6b7280;
+  --faint: #9ca3af;
+  --line: #eceef1;
+  --line-strong: #e2e5ea;
+
+  /* 品牌蓝（唯一） */
+  --brand: #2563eb;
+  --brand-strong: #1d4ed8;
+  --brand-soft: #eef4ff;
+  --brand-ink: #2563eb;
+
+  /* 告警红（唯一） */
+  --danger: #dc2626;
+  --danger-soft: #fef2f2;
+
+  /* 数字字体 */
+  --font-num: 'DIN Alternate', 'Bahnschrift', 'SF Mono', 'Roboto Mono', Menlo, Consolas, monospace;
+  --font-ui: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'HarmonyOS Sans SC', 'Helvetica Neue', sans-serif;
+
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 28rpx;
+  line-height: 1.5;
+  min-height: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+.safe-bottom { height: calc(28rpx + env(safe-area-inset-bottom)); }
+.top-space, .status-space { display: block; flex-shrink: 0; }
+
+/* ============================================================
+   图标（纯 CSS 绘制，跨端一致）
+   ============================================================ */
+.ico {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* 返回箭头 */
+.ico-back {
+  width: 22rpx;
+  height: 22rpx;
+  border-left: 4rpx solid var(--ink);
+  border-bottom: 4rpx solid var(--ink);
+  transform: rotate(45deg);
+}
+
+/* 加号 */
+.ico-plus {
+  width: 28rpx;
+  height: 28rpx;
+}
+.ico-plus::before,
+.ico-plus::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  background: currentColor;
+  border-radius: 3rpx;
+}
+.ico-plus::before { width: 28rpx; height: 3rpx; margin: -1.5rpx 0 0 -14rpx; }
+.ico-plus::after  { width: 3rpx; height: 28rpx; margin: -14rpx 0 0 -1.5rpx; }
+
+/* 三点菜单 */
+.ico-dots { display: flex; align-items: center; }
+.ico-dots::before { content: '···'; font-weight: 700; letter-spacing: 2rpx; line-height: 1; }
+
+/* 眼睛（显示/隐藏） */
+.ico-eye {
+  width: 40rpx;
+  height: 24rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 50%;
+}
+.ico-eye::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8rpx;
+  height: 8rpx;
+  margin: -4rpx 0 0 -4rpx;
+  border-radius: 50%;
+  background: currentColor;
+}
+.ico-eye.off::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 48rpx;
+  height: 3rpx;
+  margin: -1.5rpx 0 0 -24rpx;
+  border-radius: 3rpx;
+  background: currentColor;
+  transform: rotate(-38deg);
+}
+
+/* 复制（两个矩形） */
+.ico-copy {
+  width: 26rpx;
+  height: 26rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 5rpx;
+}
+.ico-copy::before {
+  content: '';
+  position: absolute;
+  right: -9rpx;
+  top: -9rpx;
+  width: 26rpx;
+  height: 26rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 5rpx;
+  background: var(--bg);
+}
+
+/* 对勾 */
+.ico-check {
+  width: 24rpx;
+  height: 14rpx;
+  border-left: 4rpx solid currentColor;
+  border-bottom: 4rpx solid currentColor;
+  transform: rotate(-45deg);
+  margin-top: -4rpx;
+}
+
+/* 编辑（铅笔） */
+.ico-edit {
+  width: 30rpx;
+  height: 8rpx;
+  background: currentColor;
+  border-radius: 2rpx;
+  transform: rotate(-45deg);
+}
+.ico-edit::before {
+  content: '';
+  position: absolute;
+  right: -7rpx;
+  top: 50%;
+  width: 0;
+  height: 0;
+  margin-top: -5rpx;
+  border-left: 8rpx solid currentColor;
+  border-top: 5rpx solid transparent;
+  border-bottom: 5rpx solid transparent;
+}
+
+/* 齿轮（设置） */
+.ico-gear {
+  width: 26rpx;
+  height: 26rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 50%;
+}
+.ico-gear::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 9rpx;
+  height: 9rpx;
+  margin: -4.5rpx 0 0 -4.5rpx;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow:
+    0 -15rpx 0 0 currentColor,
+    0 15rpx 0 0 currentColor,
+    -15rpx 0 0 0 currentColor,
+    15rpx 0 0 0 currentColor;
+}
+
+/* 搜索 */
+.ico-search {
+  width: 22rpx;
+  height: 22rpx;
+  border: 3rpx solid var(--faint);
+  border-radius: 50%;
+}
+.ico-search::after {
+  content: '';
+  position: absolute;
+  right: -9rpx;
+  bottom: -5rpx;
+  width: 11rpx;
+  height: 3rpx;
+  border-radius: 3rpx;
+  background: var(--faint);
+  transform: rotate(45deg);
+}
+
+/* 二维码 */
+.ico-scan {
+  width: 40rpx;
+  height: 40rpx;
+  border: 4rpx solid currentColor;
+  border-radius: 6rpx;
+}
+.ico-scan::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12rpx;
+  height: 12rpx;
+  margin: -6rpx 0 0 -6rpx;
+  background: currentColor;
+  border-radius: 2rpx;
+}
+
+/* 键盘（输入） */
+.ico-key {
+  width: 44rpx;
+  height: 34rpx;
+  border: 3rpx solid currentColor;
+  border-radius: 6rpx;
+}
+.ico-key::before {
+  content: '';
+  position: absolute;
+  left: 8rpx;
+  right: 8rpx;
+  bottom: 7rpx;
+  height: 3rpx;
+  background: currentColor;
+  border-radius: 2rpx;
+}
+.ico-key::after {
+  content: '';
+  position: absolute;
+  left: 8rpx;
+  top: 7rpx;
+  width: 14rpx;
+  height: 3rpx;
+  background: currentColor;
+  border-radius: 2rpx;
+}
+
+/* ============================================================
+   通用按钮
+   ============================================================ */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+  transition: transform 0.14s ease, opacity 0.14s ease, background 0.14s ease;
+}
+.btn:active { transform: scale(0.985); opacity: 0.9; }
+.btn-solid { background: var(--brand); color: #fff; box-shadow: 0 8rpx 20rpx -8rpx rgba(37, 99, 235, 0.5); }
+.btn-line { background: var(--card); border: 1rpx solid var(--line-strong); color: var(--sub); }
+
+/* ============================================================
+   表单
+   ============================================================ */
+.group {
+  background: var(--card);
+  border-radius: 20rpx;
+  margin-bottom: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 1rpx 2rpx rgba(17, 24, 39, 0.04), 0 8rpx 24rpx -16rpx rgba(17, 24, 39, 0.16);
+}
+.group-title { padding: 26rpx 30rpx 6rpx; font-size: 22rpx; color: var(--faint); letter-spacing: 1rpx; }
+.field {
+  display: flex; align-items: center; min-height: 106rpx; padding: 12rpx 30rpx;
+  border-top: 1rpx solid var(--line); transition: background 0.14s ease;
+}
+.group-title + .field { border-top: none; }
+.field:active { background: var(--bg-soft); }
+.field-label { width: 156rpx; flex-shrink: 0; font-size: 27rpx; color: var(--sub); }
+.field-input { flex: 1; font-size: 30rpx; color: var(--ink); }
+.field-placeholder { color: var(--faint); }
+.hint { padding: 4rpx 30rpx 26rpx; font-size: 22rpx; line-height: 1.7; color: var(--faint); }
+
+.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+
+/* ============================================================
+   动效
+   ============================================================ */
+/* 列表入场（stagger） */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 换码翻转：绕顶边落下 */
+@keyframes flip {
+  0%   { opacity: 0; transform: perspective(600rpx) rotateX(-64deg); transform-origin: 50% 0; }
+  60%  { opacity: 1; }
+  100% { opacity: 1; transform: perspective(600rpx) rotateX(0); transform-origin: 50% 0; }
+}
+
+/* 元素淡入缩放（复制反馈等） */
+@keyframes pop {
+  0%   { opacity: 0; transform: scale(0.6); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 遮罩淡入 */
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }

@@ -1,0 +1,101 @@
+<view class="page">
+  <view class="nav">
+    <view class="nav-status" style="height:{{statusBarHeight}}px"></view>
+    <view class="nav-bar" style="height:{{navBarHeight}}px; padding-right:{{menuRightSpace}}px">
+      <view class="nav-back" bindtap="onBack"><view class="ico ico-back"></view></view>
+      <view class="nav-title">设置</view>
+    </view>
+  </view>
+
+  <view class="group">
+    <view class="group-title">显示</view>
+    <view class="field">
+      <view class="field-body">
+        <view class="field-name">默认隐藏验证码</view>
+        <view class="field-desc">需要点一下才显示数字</view>
+      </view>
+      <switch checked="{{hideCodes}}" color="#2563eb" bindchange="onToggleHide" />
+    </view>
+  </view>
+
+  <view class="group">
+    <view class="group-title">云同步</view>
+    <view class="field" wx:if="{{syncStatus === 'none'}}" bindtap="setupSync">
+      <view class="field-body">
+        <view class="field-name">开启云同步</view>
+        <view class="field-desc">设置口令，端到端加密后上传</view>
+      </view>
+      <text class="field-arrow">›</text>
+    </view>
+    <view class="field" wx:if="{{syncStatus === 'locked'}}" bindtap="restoreSync">
+      <view class="field-body">
+        <view class="field-name">输入口令解锁</view>
+        <view class="field-desc">已设置口令，解锁后可同步</view>
+      </view>
+      <text class="field-arrow">›</text>
+    </view>
+    <view class="field" wx:if="{{syncStatus === 'ready'}}" bindtap="syncNow">
+      <view class="field-body">
+        <view class="field-name">立即同步</view>
+        <view class="field-desc">{{syncing ? '同步中…' : '加密上传本地账号'}}</view>
+      </view>
+      <text class="field-arrow">›</text>
+    </view>
+    <view class="field" bindtap="restoreSync">
+      <view class="field-body">
+        <view class="field-name">从云端恢复</view>
+        <view class="field-desc">换机时下载并解密</view>
+      </view>
+      <text class="field-arrow">›</text>
+    </view>
+    <view class="hint">内容在本机加密后才上传，服务端只见密文，无法读取你的验证码。</view>
+  </view>
+
+  <view class="group">
+    <view class="group-title">数据</view>
+    <view class="field" bindtap="gotoExport">
+      <view class="field-body">
+        <view class="field-name">导出备份</view>
+        <view class="field-desc">JSON 与 otpauth 链接</view>
+      </view>
+      <text class="field-arrow">›</text>
+    </view>
+    <view class="field">
+      <view class="field-body">
+        <view class="field-name">已保存账号</view>
+        <view class="field-desc">本机存储，未上传</view>
+      </view>
+      <text class="field-value num">{{count}}</text>
+    </view>
+    <view class="field" bindtap="clearAll">
+      <view class="field-body">
+        <view class="field-name is-danger">清空全部</view>
+        <view class="field-desc">不可恢复</view>
+      </view>
+      <text class="field-arrow">›</text>
+    </view>
+  </view>
+
+  <view class="group">
+    <view class="group-title">设备</view>
+    <view class="field">
+      <view class="field-body"><view class="field-name">本机时间</view></view>
+      <text class="field-value num">{{dateText}} {{nowText}}</text>
+    </view>
+    <view class="hint">验证码依赖设备时钟。时间不准，所有验证码都会错，请开启系统自动对时。</view>
+  </view>
+
+  <view class="group">
+    <view class="group-title">关于</view>
+    <view class="field" bindtap="onAbout">
+      <view class="field-body"><view class="field-name">这个原型</view></view>
+      <text class="field-arrow">›</text>
+    </view>
+    <view class="field">
+      <view class="field-body"><view class="field-name">版本</view></view>
+      <text class="field-value num">{{version}}</text>
+    </view>
+  </view>
+
+  <view class="safe-bottom"></view>
+</view>

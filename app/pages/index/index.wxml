@@ -1,0 +1,92 @@
+<view class="page">
+  <!-- 自定义导航栏：让开胶囊按钮 -->
+  <view class="nav">
+    <view class="nav-status" style="height:{{statusBarHeight}}px"></view>
+    <view class="nav-bar" style="height:{{navBarHeight}}px; padding-right:{{menuRightSpace}}px">
+      <view class="nav-title">验证码</view>
+    </view>
+  </view>
+
+  <view class="search" wx:if="{{total > 0}}">
+    <view class="ico ico-search"></view>
+    <input class="search-input" value="{{query}}" placeholder="搜索发行方或账号"
+           placeholder-class="search-ph" confirm-type="search" bindinput="onSearch" />
+    <view class="search-clear" wx:if="{{query}}" bindtap="clearSearch">×</view>
+    <view class="search-divider"></view>
+    <view class="search-toggle" bindtap="toggleAll" aria-label="显示或隐藏验证码">
+      <view class="ico ico-eye {{hideAll ? 'off' : ''}}"></view>
+    </view>
+  </view>
+
+  <view class="group-bar" wx:if="{{total > 0}}">
+    <scroll-view class="group-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="group-tabs">
+        <view class="group-tab {{allActive ? 'is-active' : ''}}" data-id="all" bindtap="onSelectGroup">
+          全部 <text class="tab-count">{{total}}</text>
+        </view>
+        <view class="group-tab {{selectedGroupId === item.id ? 'is-active' : ''}}" wx:for="{{groups}}" wx:key="id" data-id="{{item.id}}" bindtap="onSelectGroup">
+          {{item.name}} <text class="tab-count">{{item.count}}</text>
+        </view>
+      </view>
+    </scroll-view>
+    <view class="manage-groups" bindtap="gotoGroups" aria-label="管理分组">
+      <view class="ico ico-edit"></view>
+    </view>
+  </view>
+
+  <view class="list">
+    <otp-card wx:for="{{list}}" wx:key="id" item="{{item}}"
+      bind:toggle="onToggle" bind:copy="onCopy" bind:more="onMore" />
+  </view>
+
+  <view class="empty" wx:if="{{list.length === 0}}">
+    <view class="empty-badge">
+      <view class="ico ico-plus"></view>
+    </view>
+    <view class="empty-title">{{total === 0 ? '还没有账号' : '这个分组里暂无账号'}}</view>
+    <view class="empty-sub">{{total === 0 ? '扫描二维码或手动输入密钥' : (query ? '换个关键词试试' : '添加账号或选择其他分组')}}</view>
+    <view class="empty-action" wx:if="{{total === 0}}" bindtap="gotoAdd">添加账号</view>
+  </view>
+
+  <view class="move-overlay" wx:if="{{showMoveSheet}}">
+    <view class="move-mask" bindtap="closeMoveSheet"></view>
+    <view class="move-sheet">
+      <view class="move-head">
+        <text>移动到分组</text>
+        <text class="move-close" bindtap="closeMoveSheet">取消</text>
+      </view>
+      <scroll-view class="move-list" scroll-y="true">
+        <view class="move-option" wx:for="{{moveGroups}}" wx:key="id" data-id="{{item.id}}" bindtap="confirmMoveGroup">
+          <text>{{item.name}}</text>
+          <text class="move-arrow">›</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <view class="bottom-gap"></view>
+
+  <!-- FAB 遮罩 -->
+  <view class="fab-mask" wx:if="{{showFabMenu}}" bindtap="closeFab"></view>
+
+  <!-- FAB 菜单 -->
+  <view class="fab-menu" wx:if="{{showFabMenu}}">
+    <view class="fab-item" bindtap="fabScan">
+      <view class="fab-item-icon"><view class="ico ico-scan"></view></view>
+      <text class="fab-item-text">扫描二维码</text>
+    </view>
+    <view class="fab-item" bindtap="fabInput">
+      <view class="fab-item-icon"><view class="ico ico-key"></view></view>
+      <text class="fab-item-text">输入设置密钥</text>
+    </view>
+    <view class="fab-item" bindtap="fabSettings">
+      <view class="fab-item-icon"><view class="ico ico-gear"></view></view>
+      <text class="fab-item-text">设置</text>
+    </view>
+  </view>
+
+  <!-- FAB 按钮 -->
+  <view class="fab {{showFabMenu ? 'is-open' : ''}}" bindtap="toggleFab" aria-label="添加账号">
+    <view class="ico ico-plus"></view>
+  </view>
+</view>

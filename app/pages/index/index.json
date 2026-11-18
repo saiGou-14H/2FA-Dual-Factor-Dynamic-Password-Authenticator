@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "otp-card": "/components/otp-card/otp-card"
+  },
+  "navigationStyle": "custom",
+  "enablePullDownRefresh": false
+}

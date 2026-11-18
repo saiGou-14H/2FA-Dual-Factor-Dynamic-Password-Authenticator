@@ -1,0 +1,9 @@
+{
+  "name": "otp-verifier",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TOTP/HOTP 验证器小程序",
+  "dependencies": {
+    "crypto-js": "^4.2.0"
+  }
+}

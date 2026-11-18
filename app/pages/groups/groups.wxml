@@ -1,0 +1,72 @@
+<view class="page">
+  <view class="nav">
+    <view class="nav-status" style="height:{{statusBarHeight}}px"></view>
+    <view class="nav-bar" style="height:{{navBarHeight}}px; padding-right:{{menuRightSpace}}px">
+      <view class="nav-back" bindtap="onBack"><view class="ico ico-back"></view></view>
+      <view class="nav-title">分组管理</view>
+    </view>
+  </view>
+
+  <scroll-view class="content" scroll-y>
+    <view class="group-list">
+      <view class="group-row" wx:for="{{groups}}" wx:key="id">
+        <view class="drag-mark" aria-hidden="true">⠿</view>
+        <view class="group-main" wx:if="{{editingId !== item.id}}">
+          <view class="group-title-line">
+            <text class="group-name">{{item.name}}</text>
+            <text class="group-tag" wx:if="{{item.builtin}}">内置</text>
+          </view>
+          <text class="group-count">{{item.count}} 个账号</text>
+        </view>
+        <view class="rename-field" wx:else>
+          <input value="{{editingName}}" maxlength="20" focus bindinput="onRenameInput" confirm-type="done" bindconfirm="saveRename" />
+          <view class="rename-actions">
+            <text bindtap="cancelRename">取消</text>
+            <text class="rename-save" bindtap="saveRename">完成</text>
+          </view>
+        </view>
+        <view class="row-actions" wx:if="{{editingId !== item.id}}">
+          <view class="arrow-button {{index === 0 ? 'is-disabled' : ''}}" data-index="{{index}}" data-direction="-1" bindtap="moveGroup" aria-label="上移">↑</view>
+          <view class="arrow-button {{index === groups.length - 1 ? 'is-disabled' : ''}}" data-index="{{index}}" data-direction="1" bindtap="moveGroup" aria-label="下移">↓</view>
+          <view class="icon-button" wx:if="{{!item.builtin}}" data-id="{{item.id}}" bindtap="startRename" aria-label="重命名">✎</view>
+          <view class="icon-button is-danger" wx:if="{{!item.builtin}}" data-id="{{item.id}}" bindtap="deleteGroup" aria-label="删除">⌫</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="create-section">
+      <view class="section-title">新建分组</view>
+      <view class="create-row">
+        <input class="create-input" value="{{groupName}}" maxlength="20" placeholder="输入分组名称" placeholder-class="placeholder" bindinput="onGroupName" confirm-type="done" bindconfirm="createGroup" />
+        <view class="create-button" bindtap="createGroup">创建</view>
+      </view>
+    </view>
+
+    <view class="notice">
+      <text class="notice-icon">i</text>
+      <text>删除非空分组前，先选择账号迁入的分组。</text>
+    </view>
+    <view class="order-hint">显示顺序仅在本机生效</view>
+    <view class="bottom-space"></view>
+  </scroll-view>
+
+  <view class="footer" wx:if="{{orderChanged}}">
+    <view class="save-button" bindtap="saveOrder">保存顺序</view>
+  </view>
+
+  <view class="target-overlay" wx:if="{{showTargetSheet}}">
+    <view class="target-mask" bindtap="closeTargetSheet"></view>
+    <view class="target-sheet">
+      <view class="target-head">
+        <text>选择账号迁入分组</text>
+        <text class="target-close" bindtap="closeTargetSheet">取消</text>
+      </view>
+      <scroll-view class="target-list" scroll-y="true">
+        <view class="target-option" wx:for="{{targetGroups}}" wx:key="id" data-id="{{item.id}}" bindtap="selectDeleteTarget">
+          <text>{{item.name}}</text>
+          <text class="move-arrow">›</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</view>
