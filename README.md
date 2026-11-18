@@ -4,7 +4,7 @@
   <img src="docs/assets/logo-144.png" width="96" alt="双因子动态密码验证器">
 </p>
 
-本地优先的 TOTP/HOTP 二步验证小程序，支持**免口令**的端到端加密云同步与**二维码换机迁移**。
+本地优先的 TOTP/HOTP 双因子动态密码小程序，支持**免口令**的端到端加密云同步与**二维码换机迁移**。
 
 ```
 app/     微信小程序（原生，零第三方 UI 依赖）
@@ -135,6 +135,9 @@ node tools/test_input_advanced.js # 输入页：高级折叠 / 摘要刷新 / �
 node tools/test_ui_sheets.js     # 自定义浮层：日期选择 / 开关 / 操作菜单
 node tools/test_groups_drag.js   # 分组拖拽：悬浮跟手 / 换位边界 / 落库
 node tools/test_clear_all.js     # 清空全部：二次确认 / 取消无副作用
+node tools/check_ui.js           # 静态自检：JSON / 页面文件 / require / 事件绑定
+node tools/check_styles.js       # 样式自检：wxml class 是否都有定义
+node tools/check_css_traps.js    # 守卫：fixed 定位陷阱 / 花括号结构 / 弹窗居中冲突
 node tools/check_modal_text.js   # 守卫：showModal 按钮文案 ≤4 字
 node tools/test_e2e_sync.js      # 真实后端同步往返
 node tools/test_migrate_e2e.js   # 真实后端迁移流程
@@ -160,4 +163,5 @@ node tools/test_migrate_e2e.js   # 真实后端迁移流程
 
 ## 版本
 
-当前 `1.2.0`：免口令同步、二维码迁移、回收站、分页下拉刷新、自定义浮层与拖拽排序。
+当前 `1.3.0`：更名为「双因子动态密码验证器」；此前已具备免口令同步、二维码迁移、回收站、
+分页下拉刷新、自定义浮层、拖拽排序、二次确认与全套静态守卫。

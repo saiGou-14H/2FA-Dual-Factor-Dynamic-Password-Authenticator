@@ -42,14 +42,6 @@ function friendlyTime(ts) {
 }
 
 /** 验证码分组显示：123456 -> 123 456 */
-function groupCode(code, size) {
-  var s = String(code || '');
-  var step = size || 3;
-  var out = [];
-  for (var i = 0; i < s.length; i += step) out.push(s.slice(i, i + step));
-  return out.join(' ');
-}
-
 /** 轻提示 */
 function toast(title, icon) {
   wx.showToast({ title: title, icon: icon || 'none', duration: 1500 });
@@ -92,11 +84,9 @@ function navMetrics() {
 }
 
 module.exports = {
-  pad: pad,
   hhmmss: hhmmss,
   ymd: ymd,
   friendlyTime: friendlyTime,
-  groupCode: groupCode,
   toast: toast,
   navMetrics: navMetrics
 };
