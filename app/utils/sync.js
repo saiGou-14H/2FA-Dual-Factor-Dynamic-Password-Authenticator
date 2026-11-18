@@ -38,8 +38,7 @@ function push() {
     return vault.encryptCurrent(dek);
   }).then(function (packed) {
     return cloudSync.upload(packed, 0);
-  }).then(function () {
-    var at = Date.now();
+  }).then(function () {    var at = Date.now();
     markSynced(at);
     syncing = false;
     return { ok: true, at: at };

@@ -19,6 +19,28 @@ function ymd(ts) {
   return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
 }
 
+/** 相对日期显示：今天 20:33 / 昨天 18:12 / 11月15日 09:40 / 2025年11月15日 */
+function friendlyTime(ts) {
+  if (!ts) return '';
+  var d = new Date(Number(ts));
+  if (isNaN(d.getTime())) return '';
+  var now = new Date();
+  var hm = pad(d.getHours()) + ':' + pad(d.getMinutes());
+
+  var dayStart = function (x) {
+    return new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  };
+  var diffDays = Math.round((dayStart(now) - dayStart(d)) / 86400000);
+
+  if (diffDays === 0) return '今天 ' + hm;
+  if (diffDays === 1) return '昨天 ' + hm;
+  if (diffDays > 1 && diffDays < 7) return diffDays + ' 天前 ' + hm;
+  if (d.getFullYear() === now.getFullYear()) {
+    return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + hm;
+  }
+  return d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日';
+}
+
 /** 验证码分组显示：123456 -> 123 456 */
 function groupCode(code, size) {
   var s = String(code || '');
@@ -70,6 +92,11 @@ function navMetrics() {
 }
 
 module.exports = {
-  pad: pad, hhmmss: hhmmss, ymd: ymd, groupCode: groupCode, toast: toast,
+  pad: pad,
+  hhmmss: hhmmss,
+  ymd: ymd,
+  friendlyTime: friendlyTime,
+  groupCode: groupCode,
+  toast: toast,
   navMetrics: navMetrics
 };

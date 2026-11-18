@@ -1,15 +1,16 @@
 /**
  * store.js —— 本地令牌库（UI 层存储适配器）
  *
+ * 删除采用「软删除」：标记 deletedAt 时间戳，进入回收站，可按日期范围找回。
+ * 用户明确执行「彻底删除」时才真正移除。
+ *
  * ⚠️ 这是前端联调用的明文存储层。
- *    生产环境请把 persist() / restore() 换成加密实现：
- *    口令 → KDF(Argon2id 或 PBKDF2-HMAC-SHA256) → KEK → 包裹 DEK → AES 加密本体。
- *    只需替换本文件的两个函数，页面代码无需改动。
+ *    生产环境请把 persist() / restore() 换成加密实现（参考 utils/vault.js 的做法）。
  */
 'use strict';
 
 var STORAGE_KEY = 'otp_vault_v1';
-var VERSION = 2;
+var VERSION = 3;
 var WORK_GROUP_ID = 'builtin-work';
 var PERSONAL_GROUP_ID = 'builtin-personal';
 
@@ -21,8 +22,7 @@ function setCipher(impl) {
 
 /**
  * 记录标识（UUID v4 形态）。
- * 注意：这里只用于「记录主键」，不参与任何密钥派生，因此使用 Math.random 可接受；
- * 真正的安全随机（盐、IV、DEK）必须走 wx.getRandomValues 异步接口，见 README「加密层」。
+ * 只用于「记录主键」，不参与任何密钥派生。
  */
 function uuid() {
   var bytes = new Uint8Array(16);
@@ -99,11 +99,35 @@ function persist(tokens, groups) {
   persistBox({ tokens: tokens, groups: groups || restoreBox().groups });
 }
 
-/** 列表（按 sort 升序） */
+/* ==================== 查询 ==================== */
+
+/** 全部令牌（含回收站），同步用 */
+function all() {
+  return restoreBox().tokens;
+}
+
+/** 有效令牌（排除回收站），按 sort 升序 */
 function list() {
-  var tokens = restoreBox().tokens;
+  var tokens = restoreBox().tokens.filter(function (t) { return !t.deletedAt; });
   tokens.sort(function (a, b) { return (a.sort || 0) - (b.sort || 0); });
   return tokens;
+}
+
+/** 回收站：已删除令牌，按删除时间倒序 */
+function deletedList() {
+  var tokens = restoreBox().tokens.filter(function (t) { return !!t.deletedAt; });
+  tokens.sort(function (a, b) { return (b.deletedAt || 0) - (a.deletedAt || 0); });
+  return tokens;
+}
+
+/** 有效令牌数量 */
+function count() {
+  return restoreBox().tokens.filter(function (t) { return !t.deletedAt; }).length;
+}
+
+/** 回收站数量 */
+function deletedCount() {
+  return restoreBox().tokens.filter(function (t) { return !!t.deletedAt; }).length;
 }
 
 function ensureDefaults() {
@@ -119,6 +143,8 @@ function ensureDefaults() {
   return box.groups;
 }
 
+/* ==================== 写入 ==================== */
+
 function normalize(token) {
   return {
     id: token.id || uuid(),
@@ -133,7 +159,8 @@ function normalize(token) {
     counter: parseInt(token.counter, 10) > 0 ? parseInt(token.counter, 10) : 0,
     epoch: 0,
     sort: typeof token.sort === 'number' ? token.sort : Date.now(),
-    createdAt: token.createdAt || Date.now()
+    createdAt: token.createdAt || Date.now(),
+    deletedAt: Number(token.deletedAt) || 0
   };
 }
 
@@ -160,26 +187,72 @@ function update(id, patch) {
   return found;
 }
 
+/** 软删除：移入回收站 */
 function remove(id) {
   var box = restoreBox();
-  persist(box.tokens.filter(function (t) { return t.id !== id; }), box.groups);
+  var hit = false;
+  box.tokens.forEach(function (t) {
+    if (t.id === id && !t.deletedAt) {
+      t.deletedAt = Date.now();
+      hit = true;
+    }
+  });
+  if (hit) persist(box.tokens, box.groups);
+  return hit;
 }
 
+/** 批量软删除（清空全部 → 移入回收站） */
+function removeAll() {
+  var box = restoreBox();
+  var now = Date.now();
+  var n = 0;
+  box.tokens.forEach(function (t) {
+    if (!t.deletedAt) { t.deletedAt = now; n++; }
+  });
+  if (n) persist(box.tokens, box.groups);
+  return n;
+}
+
+/** 从回收站恢复 */
+function restore(id) {
+  var box = restoreBox();
+  var hit = false;
+  box.tokens.forEach(function (t) {
+    if (t.id === id && t.deletedAt) {
+      t.deletedAt = 0;
+      hit = true;
+    }
+  });
+  if (hit) persist(box.tokens, box.groups);
+  return hit;
+}
+
+/** 彻底删除单条 */
+function purge(id) {
+  var box = restoreBox();
+  var before = box.tokens.length;
+  box.tokens = box.tokens.filter(function (t) { return t.id !== id; });
+  if (box.tokens.length !== before) persist(box.tokens, box.groups);
+  return box.tokens.length !== before;
+}
+
+/** 清空回收站 */
+function purgeDeleted() {
+  var box = restoreBox();
+  var before = box.tokens.length;
+  box.tokens = box.tokens.filter(function (t) { return !t.deletedAt; });
+  var removed = before - box.tokens.length;
+  if (removed) persist(box.tokens, box.groups);
+  return removed;
+}
+
+/** 硬清空（保留分组） */
 function clear() {
   var box = restoreBox();
   persist([], box.groups);
 }
 
-function count() {
-  return restoreBox().tokens.length;
-}
-
-/** 云同步恢复：整体替换 tokens + groups（E2EE 解密后写入） */
-function replaceAll(tokens, groups) {
-  persist(Array.isArray(tokens) ? tokens : [], groups);
-}
-
-/** 按 id 顺序重排（拖拽排序落库用） */
+/** 按 id 顺序重排 */
 function reorder(orderedIds) {
   var box = restoreBox();
   var tokens = box.tokens;
@@ -197,14 +270,20 @@ function reorder(orderedIds) {
   persist(next, box.groups);
 }
 
+/** 分组列表（计数只算有效令牌） */
 function groups() {
   var box = restoreBox();
   var counts = {};
-  box.tokens.forEach(function (token) { counts[token.groupId] = (counts[token.groupId] || 0) + 1; });
+  box.tokens.forEach(function (token) {
+    if (token.deletedAt) return;
+    counts[token.groupId] = (counts[token.groupId] || 0) + 1;
+  });
   return box.groups.slice().sort(function (a, b) { return a.sort - b.sort; }).map(function (group) {
     return Object.assign({}, group, { count: counts[group.id] || 0 });
   });
 }
+
+/* ==================== 分组维护 ==================== */
 
 function addGroup(name) {
   var value = String(name || '').trim();
@@ -269,13 +348,25 @@ function reorderGroups(orderedIds) {
   persist(box.tokens, next);
 }
 
+/** 云同步恢复：整体替换 */
+function replaceAll(tokens, groups) {
+  persist(Array.isArray(tokens) ? tokens.map(normalize) : [], groups);
+}
+
 module.exports = {
+  all: all,
   list: list,
+  deletedList: deletedList,
+  count: count,
+  deletedCount: deletedCount,
   add: add,
   update: update,
   remove: remove,
+  removeAll: removeAll,
+  restore: restore,
+  purge: purge,
+  purgeDeleted: purgeDeleted,
   clear: clear,
-  count: count,
   replaceAll: replaceAll,
   reorder: reorder,
   groups: groups,

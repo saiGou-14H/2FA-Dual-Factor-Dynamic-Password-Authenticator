@@ -65,6 +65,16 @@
 
   <view class="group">
     <view class="group-title">数据</view>
+    <view class="field" bindtap="gotoRecycle">
+      <view class="field-body">
+        <view class="field-name">回收站</view>
+        <view class="field-desc">按删除时间找回账号</view>
+      </view>
+      <view class="field-right">
+        <text class="field-value num" wx:if="{{deletedCount > 0}}">{{deletedCount}}</text>
+        <text class="field-arrow">›</text>
+      </view>
+    </view>
     <view class="field" bindtap="gotoExport">
       <view class="field-body">
         <view class="field-name">导出备份</view>
@@ -75,7 +85,7 @@
     <view class="field" bindtap="clearAll">
       <view class="field-body">
         <view class="field-name is-danger">清空全部</view>
-        <view class="field-desc">不可恢复</view>
+        <view class="field-desc">移入回收站，可找回</view>
       </view>
       <text class="field-arrow">›</text>
     </view>

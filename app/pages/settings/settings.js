@@ -14,6 +14,7 @@ Page({
     menuRightSpace: 96,
     hideCodes: true,
     count: 0,
+    deletedCount: 0,
     nowText: '',
     dateText: '',
     version: '1.1.0',
@@ -34,6 +35,7 @@ Page({
       menuRightSpace: nav.menuRightSpace,
       hideCodes: app.globalData.hideCodes,
       count: store.count(),
+      deletedCount: store.deletedCount(),
       nowText: util.hhmmss(),
       dateText: util.ymd(),
       ready: crypto.available
@@ -208,6 +210,10 @@ Page({
     wx.navigateTo({ url: '/pages/export/export' });
   },
 
+  gotoRecycle: function () {
+    wx.navigateTo({ url: '/pages/recycle/recycle' });
+  },
+
   clearAll: function () {
     var self = this;
     if (store.count() === 0) {
@@ -216,16 +222,14 @@ Page({
     }
     wx.showModal({
       title: '清空全部账号',
-      content: '将删除本机保存的所有密钥，且无法恢复。确认继续？',
-      confirmText: '清空',
+      content: '全部账号将移入回收站，可在「回收站」里按时间找回或彻底删除。',
+      confirmText: '移入回收站',
       confirmColor: '#dc2626',
       success: function (res) {
         if (!res.confirm) return;
-        store.clear();
-        wx.setStorageSync('otp_seeded', 1);
-        self.setData({ count: 0 });
-        util.toast('已清空');
-        setTimeout(function () { wx.navigateBack(); }, 500);
+        var n = store.removeAll();
+        self.setData({ count: store.count(), deletedCount: store.deletedCount() });
+        util.toast('已移入回收站 ' + n + ' 个');
       }
     });
   },

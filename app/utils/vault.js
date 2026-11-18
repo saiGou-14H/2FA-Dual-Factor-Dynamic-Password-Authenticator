@@ -43,12 +43,12 @@ function ensureDek() {
   });
 }
 
-/** 当前本地数据 → 密文包字符串 */
+/** 当前本地数据 → 密文包字符串（含回收站，跨设备一致） */
 function encryptCurrent(dekHex) {
   var key = crypto.hexKey(dekHex);
   if (!key) return Promise.reject({ errMsg: '密钥无效' });
   return crypto.encryptVault(key, {
-    tokens: store.list(),
+    tokens: store.all(),
     groups: store.groups()
   }).then(function (body) {
     return JSON.stringify({ v: 1, body: body });

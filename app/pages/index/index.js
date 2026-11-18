@@ -285,14 +285,14 @@ Page({
     var self = this;
     wx.showModal({
       title: '删除账号',
-      content: '删除「' + (t.issuer ? t.issuer + ' · ' : '') + t.label + '」后需重新添加密钥。',
+      content: '「' + (t.issuer ? t.issuer + ' · ' : '') + t.label + '」将移入回收站，可在设置里找回。',
       confirmText: '删除',
       confirmColor: '#dc2626',
       success: function (res) {
         if (!res.confirm) return;
         store.remove(id);
         self.reload();
-        util.toast('已删除');
+        util.toast('已移入回收站');
       }
     });
   },

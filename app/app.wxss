@@ -186,6 +186,39 @@ page {
     15rpx 0 0 0 currentColor;
 }
 
+/* 垃圾桶（回收站） */
+.ico-trash {
+  width: 30rpx;
+  height: 34rpx;
+  margin-top: 8rpx;
+  border: 3rpx solid currentColor;
+  border-top: none;
+  border-radius: 0 0 6rpx 6rpx;
+  position: relative;
+}
+.ico-trash::before {
+  content: '';
+  position: absolute;
+  left: -7rpx;
+  top: -10rpx;
+  width: 44rpx;
+  height: 3rpx;
+  border-radius: 2rpx;
+  background: currentColor;
+}
+.ico-trash::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -18rpx;
+  width: 16rpx;
+  height: 8rpx;
+  margin-left: -8rpx;
+  border: 3rpx solid currentColor;
+  border-bottom: none;
+  border-radius: 4rpx 4rpx 0 0;
+}
+
 /* 搜索 */
 .ico-search {
   width: 22rpx;

@@ -3,15 +3,16 @@
     "pages/index/index",
     "pages/input/input",
     "pages/groups/groups",
+    "pages/recycle/recycle",
     "pages/settings/settings",
     "pages/export/export"
   ],
   "window": {
     "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#fafaf8",
+    "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTitleText": "验证器",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#fafaf8",
+    "backgroundColor": "#ffffff",
     "navigationStyle": "custom"
   },
   "style": "v2",

@@ -1,0 +1,70 @@
+<view class="page">
+  <view class="nav">
+    <view class="nav-status" style="height:{{statusBarHeight}}px"></view>
+    <view class="nav-bar" style="height:{{navBarHeight}}px; padding-right:{{menuRightSpace}}px">
+      <view class="nav-back" bindtap="onBack"><view class="ico ico-back"></view></view>
+      <view class="nav-title">回收站</view>
+      <view class="nav-count" wx:if="{{total > 0}}">{{total}}</view>
+    </view>
+  </view>
+
+  <!-- 筛选 -->
+  <view class="filters">
+    <view class="chip {{filter === 'all' ? 'is-on' : ''}}" data-filter="all" bindtap="setFilter">全部</view>
+    <view class="chip {{filter === 'today' ? 'is-on' : ''}}" data-filter="today" bindtap="setFilter">今天</view>
+    <view class="chip {{filter === 'd7' ? 'is-on' : ''}}" data-filter="d7" bindtap="setFilter">近 7 天</view>
+    <view class="chip {{filter === 'd30' ? 'is-on' : ''}}" data-filter="d30" bindtap="setFilter">近 30 天</view>
+    <view class="chip {{filter === 'custom' ? 'is-on' : ''}}" data-filter="custom" bindtap="setFilter">自定义</view>
+  </view>
+
+  <!-- 自定义日期范围 -->
+  <view class="range" wx:if="{{filter === 'custom'}}">
+    <picker mode="date" value="{{startDate}}" bindchange="onStartDate">
+      <view class="range-cell">
+        <text class="range-label">开始</text>
+        <text class="range-value {{startDate ? '' : 'is-empty'}}">{{startDate || '不限'}}</text>
+      </view>
+    </picker>
+    <text class="range-sep">至</text>
+    <picker mode="date" value="{{endDate}}" bindchange="onEndDate">
+      <view class="range-cell">
+        <text class="range-label">结束</text>
+        <text class="range-value {{endDate ? '' : 'is-empty'}}">{{endDate || '不限'}}</text>
+      </view>
+    </picker>
+  </view>
+
+  <view class="summary">{{rangeText}} · 共 {{list.length}} 个</view>
+
+  <!-- 列表 -->
+  <view class="list">
+    <view class="row" wx:for="{{list}}" wx:key="id">
+      <view class="row-main">
+        <view class="row-name">{{item.label}}</view>
+        <view class="row-meta">
+          <text wx:if="{{item.issuer}}">{{item.issuer}}</text>
+          <text class="dot" wx:if="{{item.issuer && item.groupName}}">·</text>
+          <text wx:if="{{item.groupName}}">{{item.groupName}}</text>
+        </view>
+        <view class="row-time">删除于 {{item.deletedText}}</view>
+      </view>
+      <view class="row-acts">
+        <view class="act act-primary" data-id="{{item.id}}" bindtap="onRestore">恢复</view>
+        <view class="act act-danger" data-id="{{item.id}}" data-name="{{item.label}}" bindtap="onPurge">删除</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空态 -->
+  <view class="empty" wx:if="{{list.length === 0}}">
+    <view class="empty-icon"><view class="ico ico-trash"></view></view>
+    <view class="empty-title">{{total === 0 ? '回收站是空的' : '这个时间段没有删除记录'}}</view>
+    <view class="empty-sub">{{total === 0 ? '删除的账号会先放到这里，可随时恢复' : '换个时间范围试试'}}</view>
+  </view>
+
+  <view class="bottom-gap"></view>
+
+  <view class="footer" wx:if="{{total > 0}}">
+    <view class="footer-btn" bindtap="purgeAll">清空回收站（{{total}}）</view>
+  </view>
+</view>
