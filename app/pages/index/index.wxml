@@ -114,19 +114,19 @@
   <!-- FAB 遮罩 -->
   <view class="fab-mask" wx:if="{{showFabMenu}}" bindtap="closeFab"></view>
 
-  <!-- FAB 菜单 -->
-  <view class="fab-menu" wx:if="{{showFabMenu}}">
-    <view class="fab-item" bindtap="fabScan">
-      <view class="fab-item-icon"><view class="ico ico-scan"></view></view>
-      <text class="fab-item-text">扫描二维码</text>
+  <!-- FAB 菜单：一张卡片三个选项 -->
+  <view class="fab-card" wx:if="{{showFabMenu}}">
+    <view class="fab-row" bindtap="fabScan">
+      <view class="ico ico-scan fab-row-ico"></view>
+      <text class="fab-row-text">扫描二维码</text>
     </view>
-    <view class="fab-item" bindtap="fabInput">
-      <view class="fab-item-icon"><view class="ico ico-key"></view></view>
-      <text class="fab-item-text">输入设置密钥</text>
+    <view class="fab-row" bindtap="fabInput">
+      <view class="ico ico-key fab-row-ico"></view>
+      <text class="fab-row-text">输入设置密钥</text>
     </view>
-    <view class="fab-item" bindtap="fabSettings">
-      <view class="fab-item-icon"><view class="ico ico-gear"></view></view>
-      <text class="fab-item-text">设置</text>
+    <view class="fab-row" bindtap="fabSettings">
+      <view class="ico ico-gear fab-row-ico"></view>
+      <text class="fab-row-text">设置</text>
     </view>
   </view>
 
