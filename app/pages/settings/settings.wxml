@@ -147,7 +147,7 @@
     <view class="about-card">
       <view class="about-head">
         <view class="about-head-main">
-          <view class="about-title">2FA二步验证器</view>
+          <view class="about-title">双因子动态密码验证器</view>
           <view class="about-version">版本 {{version}}</view>
         </view>
         <view class="about-close" bindtap="closeAbout">关闭</view>
@@ -155,7 +155,7 @@
 
       <scroll-view class="about-body" scroll-y="true">
         <view class="about-section">
-          <view class="about-p">本地优先的二步验证工具，兼容标准 otpauth 二维码，支持 TOTP 与 HOTP。</view>
+          <view class="about-p">本地优先的双因子动态密码工具，兼容标准 otpauth 二维码，支持 TOTP 与 HOTP。</view>
         </view>
 
         <view class="about-section">

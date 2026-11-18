@@ -3,7 +3,7 @@
   <view class="nav nav-enter">
     <view class="nav-status" style="height:{{statusBarHeight}}px"></view>
     <view class="nav-bar" style="height:{{navBarHeight}}px; padding-right:{{menuRightSpace}}px">
-      <view class="nav-title nav-title-center">2FA二步验证器</view>
+      <view class="nav-title nav-title-center">双因子动态密码验证器</view>
     </view>
   </view>
 

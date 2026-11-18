@@ -1,7 +1,7 @@
-# 2FA 二步验证器
+# 双因子动态密码验证器
 
 <p align="center">
-  <img src="docs/assets/logo-144.png" width="96" alt="2FA二步验证器">
+  <img src="docs/assets/logo-144.png" width="96" alt="双因子动态密码验证器">
 </p>
 
 本地优先的 TOTP/HOTP 二步验证小程序，支持**免口令**的端到端加密云同步与**二维码换机迁移**。
