@@ -312,10 +312,12 @@ page {
   to { transform: rotate(360deg); }
 }
 
-/* 页面入场：内容轻微落定（配合系统转场，不与之抢戏） */
-@keyframes page-in {
-  from { opacity: 0; transform: translateY(10rpx); }
-  to   { opacity: 1; transform: translateY(0); }
+/* 页面入场：只用透明度
+   ⚠️ 不能给页面根节点加 transform —— transform 会让 position: fixed 的子孙
+   改为相对该节点定位（而非视口），导致浮层/遮罩/FAB 全部错位。 */
+@keyframes page-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* 导航栏入场：从上方轻落 */
@@ -326,7 +328,7 @@ page {
 
 /* 页面内容分层入场 */
 .page-enter {
-  animation: page-in var(--dur-3) var(--ease-out) both;
+  animation: page-fade var(--dur-3) var(--ease-out) both;
 }
 .nav-enter {
   animation: nav-in var(--dur-2) var(--ease-out) both;

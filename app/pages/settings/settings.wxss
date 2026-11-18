@@ -93,8 +93,9 @@
 }
 .qr-sheet {
   position: relative;
-  width: 100%;
-  margin: 0 48rpx;
+  z-index: 1;
+  width: calc(100% - 96rpx);
+  max-width: 640rpx;
   padding: 44rpx 36rpx 32rpx;
   border-radius: 28rpx;
   background: var(--bg);
