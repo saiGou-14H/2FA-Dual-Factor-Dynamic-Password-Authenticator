@@ -17,7 +17,8 @@ Page({
     deletedCount: 0,
     nowText: '',
     dateText: '',
-    version: '1.1.0',
+    version: '1.2.0',
+    showAbout: false,
     lastSyncText: '尚未同步',
     syncing: false,
     loadingShow: false,
@@ -291,16 +292,11 @@ Page({
     });
   },
 
-  onAbout: function () {
-    wx.showModal({
-      title: '关于',
-      content: '本地优先的两步验证器。\n\n'
-        + '· 密钥在本机加密后上传，服务端只见密文\n'
-        + '· 身份用你的微信 openid，无需注册登录\n'
-        + '· 退出小程序会自动同步，也可手动同步\n'
-        + '· 换机用「迁移二维码」把密钥带到新微信',
-      showCancel: false,
-      confirmText: '知道了'
-    });
+  openAbout: function () {
+    this.setData({ showAbout: true });
+  },
+
+  closeAbout: function () {
+    this.setData({ showAbout: false });
   }
 });

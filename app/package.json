@@ -1,6 +1,6 @@
 {
   "name": "2fa-authenticator",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": true,
   "description": "2FA 二步验证器 —— 本地优先的 TOTP/HOTP 小程序",
   "dependencies": {

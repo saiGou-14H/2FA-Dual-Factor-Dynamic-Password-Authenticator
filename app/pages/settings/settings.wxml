@@ -114,7 +114,7 @@
 
   <view class="group">
     <view class="group-title">关于</view>
-    <view class="field" bindtap="onAbout">
+    <view class="field" bindtap="openAbout">
       <view class="field-body"><view class="field-name">关于这个应用</view></view>
       <view class="ico ico-chevron field-arrow"></view>
     </view>
@@ -136,6 +136,49 @@
         <image class="qr-img" src="{{qrImage}}" mode="aspectFit" />
       </view>
       <view class="qr-btn" bindtap="closeMigrate">完成</view>
+    </view>
+  </view>
+
+
+  <!-- 关于（自定义卡片：文字左对齐） -->
+  <view class="about-overlay" wx:if="{{showAbout}}">
+    <view class="about-mask" bindtap="closeAbout"></view>
+
+    <view class="about-card">
+      <view class="about-head">
+        <view class="about-head-main">
+          <view class="about-title">2FA二步验证器</view>
+          <view class="about-version">版本 {{version}}</view>
+        </view>
+        <view class="about-close" bindtap="closeAbout">关闭</view>
+      </view>
+
+      <scroll-view class="about-body" scroll-y="true">
+        <view class="about-section">
+          <view class="about-p">本地优先的二步验证工具，兼容标准 otpauth 二维码，支持 TOTP 与 HOTP。</view>
+        </view>
+
+        <view class="about-section">
+          <view class="about-h">数据安全</view>
+          <view class="about-item"><text class="about-dot"></text><text class="about-text">密钥在本机加密后才上传，服务端只见密文，无法生成你的验证码。</text></view>
+          <view class="about-item"><text class="about-dot"></text><text class="about-text">身份用你的微信 openid 区分，无需注册登录，也不收集多余信息。</text></view>
+          <view class="about-item"><text class="about-dot"></text><text class="about-text">头像与昵称只有你主动选择后才会保存，随加密保险库一起同步。</text></view>
+        </view>
+
+        <view class="about-section">
+          <view class="about-h">同步与换机</view>
+          <view class="about-item"><text class="about-dot"></text><text class="about-text">退出小程序时自动同步，也可在设置里手动同步。</text></view>
+          <view class="about-item"><text class="about-dot"></text><text class="about-text">换手机：旧机「迁移到其他微信号」生成二维码，新机扫码即可接收全部账号。</text></view>
+          <view class="about-item"><text class="about-dot"></text><text class="about-text">迁移码 5 分钟内有效、仅可使用一次，内含解密密钥，请勿外传。</text></view>
+        </view>
+
+        <view class="about-section">
+          <view class="about-h">使用提示</view>
+          <view class="about-item"><text class="about-dot"></text><text class="about-text">验证码依赖设备时钟，请开启系统自动对时，否则所有验证码都会错。</text></view>
+          <view class="about-item"><text class="about-dot"></text><text class="about-text">删除的账号先进入回收站，可按删除日期范围找回或彻底删除。</text></view>
+          <view class="about-item"><text class="about-dot"></text><text class="about-text">主码下方的「下一码」在当前码到期后自动生效，可提前准备。</text></view>
+        </view>
+      </scroll-view>
     </view>
   </view>
 
