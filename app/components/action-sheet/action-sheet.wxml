@@ -1,0 +1,25 @@
+<view class="as-overlay" wx:if="{{show}}">
+  <view class="as-mask" bindtap="onClose"></view>
+
+  <view class="as-wrap">
+    <view class="as-panel">
+      <view class="as-title" wx:if="{{title}}">{{title}}</view>
+
+      <view
+        class="as-item {{item.danger ? 'is-danger' : ''}}"
+        wx:for="{{items}}"
+        wx:key="value"
+        data-value="{{item.value}}"
+        bindtap="onSelect"
+      >
+        <text class="as-label">{{item.label}}</text>
+      </view>
+    </view>
+
+    <view class="as-panel as-cancel" bindtap="onClose">
+      <text class="as-cancel-text">{{cancelText}}</text>
+    </view>
+
+    <view class="as-safe"></view>
+  </view>
+</view>

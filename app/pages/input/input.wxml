@@ -11,9 +11,10 @@
   <view class="group">
     <view class="field">
       <text class="field-label">所属分组</text>
-      <picker class="field-picker" mode="selector" range="{{groupNames}}" value="{{groupIndex}}" bindchange="onGroupChange">
-        <view class="picker-value">{{groupNames[groupIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
-      </picker>
+      <view class="field-tap-value" data-field="group" bindtap="openSheet">
+        <text class="field-tap-text">{{groupNames[groupIndex]}}</text>
+        <view class="ico ico-chevron field-tap-caret"></view>
+      </view>
     </view>
     <view class="new-group-link" bindtap="onManageGroups">＋ 新建分组</view>
   </view>
@@ -50,27 +51,31 @@
     <view class="adv-body" wx:if="{{showAdvanced}}">
       <view class="field">
         <text class="field-label">类型</text>
-        <picker class="field-picker" mode="selector" range="{{types}}" value="{{typeIndex}}" bindchange="onType">
-          <view class="picker-value">{{types[typeIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
-        </picker>
+        <view class="field-tap-value" data-field="type" bindtap="openSheet">
+          <text class="field-tap-text">{{types[typeIndex]}}</text>
+          <view class="ico ico-chevron field-tap-caret"></view>
+        </view>
       </view>
       <view class="field">
         <text class="field-label">算法</text>
-        <picker class="field-picker" mode="selector" range="{{algorithms}}" value="{{algorithmIndex}}" bindchange="onAlgorithm">
-          <view class="picker-value">{{algorithms[algorithmIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
-        </picker>
+        <view class="field-tap-value" data-field="algorithm" bindtap="openSheet">
+          <text class="field-tap-text">{{algorithms[algorithmIndex]}}</text>
+          <view class="ico ico-chevron field-tap-caret"></view>
+        </view>
       </view>
       <view class="field">
         <text class="field-label">位数</text>
-        <picker class="field-picker" mode="selector" range="{{digitsList}}" value="{{digitsIndex}}" bindchange="onDigits">
-          <view class="picker-value">{{digitsList[digitsIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
-        </picker>
+        <view class="field-tap-value" data-field="digits" bindtap="openSheet">
+          <text class="field-tap-text">{{digitsList[digitsIndex]}}</text>
+          <view class="ico ico-chevron field-tap-caret"></view>
+        </view>
       </view>
       <view class="field" wx:if="{{type === 'totp'}}">
         <text class="field-label">刷新周期</text>
-        <picker class="field-picker" mode="selector" range="{{periods}}" value="{{periodIndex}}" bindchange="onPeriod">
-          <view class="picker-value">{{periods[periodIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
-        </picker>
+        <view class="field-tap-value" data-field="period" bindtap="openSheet">
+          <text class="field-tap-text">{{periods[periodIndex]}}</text>
+          <view class="ico ico-chevron field-tap-caret"></view>
+        </view>
       </view>
       <view class="field" wx:if="{{type === 'hotp'}}">
         <text class="field-label">计数器</text>
@@ -89,4 +94,14 @@
   <view class="notice">密钥只保存在本机。拿到密钥的人可以生成你的全部验证码，不要截图分享。</view>
 
   <view class="safe-bottom"></view>
+
+  <!-- 通用底部选择器（替代原生 picker） -->
+  <select-sheet
+    show="{{sheet.show}}"
+    title="{{sheet.title}}"
+    options="{{sheet.options}}"
+    value="{{sheet.value}}"
+    bind:select="onSheetSelect"
+    bind:close="closeSheet"
+  />
 </view>

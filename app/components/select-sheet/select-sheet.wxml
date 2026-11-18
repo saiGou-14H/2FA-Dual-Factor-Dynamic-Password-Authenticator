@@ -1,0 +1,28 @@
+<view class="sel-overlay" wx:if="{{show}}">
+  <view class="sel-mask" bindtap="onClose"></view>
+
+  <view class="sel-sheet">
+    <view class="sel-head">
+      <text class="sel-title">{{title}}</text>
+      <text class="sel-close" bindtap="onClose">取消</text>
+    </view>
+
+    <scroll-view class="sel-list" scroll-y="true">
+      <view
+        class="sel-option {{value === item.value ? 'is-on' : ''}}"
+        wx:for="{{options}}"
+        wx:key="value"
+        data-value="{{item.value}}"
+        bindtap="onSelect"
+      >
+        <view class="sel-body">
+          <text class="sel-label">{{item.label}}</text>
+          <text class="sel-meta" wx:if="{{item.meta}}">{{item.meta}}</text>
+        </view>
+        <view class="ico ico-check sel-check" wx:if="{{value === item.value}}"></view>
+      </view>
+    </scroll-view>
+
+    <view class="sel-safe"></view>
+  </view>
+</view>

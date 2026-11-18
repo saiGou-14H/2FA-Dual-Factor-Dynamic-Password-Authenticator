@@ -1,0 +1,42 @@
+<view class="dt-overlay" wx:if="{{show}}">
+  <view class="dt-mask" bindtap="onClose"></view>
+
+  <view class="dt-sheet">
+    <view class="dt-head">
+      <text class="dt-title">{{title}}</text>
+      <text class="dt-close" bindtap="onClose">取消</text>
+    </view>
+
+    <view class="dt-body">
+      <!-- 年 -->
+      <scroll-view class="dt-col" scroll-y="true" scroll-into-view="{{yearInto}}">
+        <view
+          class="dt-item {{selY === item ? 'is-on' : ''}}"
+          wx:for="{{years}}" wx:key="*this"
+          id="y-{{item}}" data-v="{{item}}" bindtap="onPickYear">{{item}}</view>
+      </scroll-view>
+
+      <!-- 月 -->
+      <scroll-view class="dt-col" scroll-y="true" scroll-into-view="{{monthInto}}">
+        <view
+          class="dt-item {{selM === item ? 'is-on' : ''}}"
+          wx:for="{{months}}" wx:key="*this"
+          id="m-{{item}}" data-v="{{item}}" bindtap="onPickMonth">{{item}} 月</view>
+      </scroll-view>
+
+      <!-- 日 -->
+      <scroll-view class="dt-col" scroll-y="true" scroll-into-view="{{dayInto}}">
+        <view
+          class="dt-item {{selD === item ? 'is-on' : ''}}"
+          wx:for="{{days}}" wx:key="*this"
+          id="d-{{item}}" data-v="{{item}}" bindtap="onPickDay">{{item}} 日</view>
+      </scroll-view>
+    </view>
+
+    <view class="dt-foot">
+      <view class="dt-confirm" bindtap="onConfirm">确定</view>
+    </view>
+
+    <view class="dt-safe"></view>
+  </view>
+</view>

@@ -32,6 +32,7 @@ Page({
     errorMsg: '',
     showAdvanced: false,
     advancedSummary: '',
+    sheet: { show: false, field: '', title: '', options: [], value: '' },
     secretVisible: false
   },
 
@@ -128,6 +129,78 @@ Page({
       || Number(d.period) !== 30;
     this.setData({ showAdvanced: !!nonDefault });
     this.updateSummary();
+  },
+
+  /* ---------------- 底部选择器（替代原生 picker） ---------------- */
+
+  openSheet: function (e) {
+    var field = e.currentTarget.dataset.field;
+    var d = this.data;
+    var cfg;
+
+    if (field === 'group') {
+      cfg = {
+        title: '选择分组',
+        options: d.groups.map(function (group) {
+          return { label: group.name, value: group.id, meta: group.count + ' 个账号' };
+        }),
+        value: d.groupId
+      };
+    } else if (field === 'type') {
+      cfg = {
+        title: '选择类型',
+        options: d.types.map(function (label, i) { return { label: label, value: String(i) }; }),
+        value: String(d.typeIndex)
+      };
+    } else if (field === 'algorithm') {
+      cfg = {
+        title: '选择算法',
+        options: d.algorithms.map(function (label, i) { return { label: label, value: String(i) }; }),
+        value: String(d.algorithmIndex)
+      };
+    } else if (field === 'digits') {
+      cfg = {
+        title: '选择位数',
+        options: d.digitsList.map(function (label, i) { return { label: label, value: String(i) }; }),
+        value: String(d.digitsIndex)
+      };
+    } else if (field === 'period') {
+      cfg = {
+        title: '选择刷新周期',
+        options: d.periods.map(function (label, i) { return { label: label, value: String(i) }; }),
+        value: String(d.periodIndex)
+      };
+    } else {
+      return;
+    }
+
+    this.setData({
+      sheet: { show: true, field: field, title: cfg.title, options: cfg.options, value: cfg.value }
+    });
+  },
+
+  closeSheet: function () {
+    this.setData({ 'sheet.show': false });
+  },
+
+  onSheetSelect: function (e) {
+    var value = e.detail.value;
+    var field = this.data.sheet.field;
+    this.setData({ 'sheet.show': false });
+
+    if (field === 'group') {
+      var groups = this.data.groups;
+      var index = groups.findIndex(function (group) { return group.id === value; });
+      if (index < 0) return;
+      this.setData({ groupId: value, groupIndex: index });
+      return;
+    }
+
+    var payload = { detail: { value: value } };
+    if (field === 'type') this.onType(payload);
+    else if (field === 'algorithm') this.onAlgorithm(payload);
+    else if (field === 'digits') this.onDigits(payload);
+    else if (field === 'period') this.onPeriod(payload);
   },
 
   /** 展开 / 收起高级设置 */

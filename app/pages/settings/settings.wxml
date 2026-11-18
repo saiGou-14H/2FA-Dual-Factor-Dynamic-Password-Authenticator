@@ -14,7 +14,7 @@
         <view class="field-name">默认隐藏验证码</view>
         <view class="field-desc">需要点一下才显示数字</view>
       </view>
-      <switch checked="{{hideCodes}}" color="#2563eb" bindchange="onToggleHide" />
+      <view class="toggle {{hideCodes ? 'is-on' : ''}}" bindtap="onToggleHide"><view class="toggle-knob"></view></view>
     </view>
   </view>
 

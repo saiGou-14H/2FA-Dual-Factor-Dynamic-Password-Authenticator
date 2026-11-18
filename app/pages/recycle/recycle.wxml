@@ -19,19 +19,15 @@
 
   <!-- 自定义日期范围 -->
   <view class="range" wx:if="{{filter === 'custom'}}">
-    <picker mode="date" value="{{startDate}}" bindchange="onStartDate">
-      <view class="range-cell">
-        <text class="range-label">开始</text>
-        <text class="range-value {{startDate ? '' : 'is-empty'}}">{{startDate || '不限'}}</text>
-      </view>
-    </picker>
+    <view class="range-cell" data-field="start" bindtap="openDateSheet">
+      <text class="range-label">开始</text>
+      <text class="range-value {{startDate ? '' : 'is-empty'}}">{{startDate || '不限'}}</text>
+    </view>
     <text class="range-sep">至</text>
-    <picker mode="date" value="{{endDate}}" bindchange="onEndDate">
-      <view class="range-cell">
-        <text class="range-label">结束</text>
-        <text class="range-value {{endDate ? '' : 'is-empty'}}">{{endDate || '不限'}}</text>
-      </view>
-    </picker>
+    <view class="range-cell" data-field="end" bindtap="openDateSheet">
+      <text class="range-label">结束</text>
+      <text class="range-value {{endDate ? '' : 'is-empty'}}">{{endDate || '不限'}}</text>
+    </view>
   </view>
 
   <view class="summary">{{rangeText}} · 共 {{list.length}} 个</view>
@@ -67,6 +63,14 @@
   <view class="footer" wx:if="{{total > 0}}">
     <view class="footer-btn" bindtap="purgeAll">清空回收站（{{total}}）</view>
   </view>
+
+  <date-sheet
+    show="{{dateSheet.show}}"
+    title="{{dateSheet.title}}"
+    value="{{dateSheet.value}}"
+    bind:select="onPickDate"
+    bind:close="closeDateSheet"
+  />
 
   <loading show="{{loadingShow}}" text="{{loadingText}}" />
 </view>

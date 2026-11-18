@@ -11,7 +11,7 @@ Page({
     groupName: '',
     editingId: '',
     editingName: '',
-    orderChanged: false,
+    draggingId: '',
     showTargetSheet: false,
     pendingDeleteGroupId: '',
     targetGroups: []
@@ -29,18 +29,45 @@ Page({
   },
 
   onShow: function () {
-    if (!this._draftIds) this.reload();
+    this.reload();
   },
 
-  reload: function () {
-    var groups = store.groups();
-    this._draftIds = groups.map(function (group) { return group.id; });
-    this.setData({ groups: groups, orderChanged: false });
+  onReady: function () {
+    this.measureRows();
+  },
+
+  /* ---------------- 数据 ---------------- */
+
+  reload: function (remeasure) {
+    this.setData({ groups: store.groups() });
+    if (remeasure !== false) {
+      var self = this;
+      // 等一帧再测量，保证拿到最新布局
+      setTimeout(function () { self.measureRows(); }, 40);
+    }
+  },
+
+  /** 缓存行高与列表顶部位置，供拖拽计算 */
+  measureRows: function () {
+    var self = this;
+    wx.createSelectorQuery()
+      .selectAll('.group-row')
+      .boundingClientRect(function (rects) {
+        if (!rects || !rects.length) {
+          self._rowH = 0;
+          return;
+        }
+        self._rowH = rects[0].height;
+        self._listTop = rects[0].top;
+      })
+      .exec();
   },
 
   onBack: function () {
     wx.navigateBack();
   },
+
+  /* ---------------- 新建 ---------------- */
 
   onGroupName: function (e) {
     this.setData({ groupName: e.detail.value });
@@ -52,20 +79,13 @@ Page({
       util.toast(result.error);
       return;
     }
-    this._draftIds.push(result.group.id);
     if (this._fromInput) app.globalData.lastCreatedGroupId = result.group.id;
-    this.setData({ groupName: '', orderChanged: true });
-    this.refreshDraftGroups();
+    this.setData({ groupName: '' });
+    this.reload();
     util.toast('已创建分组', 'success');
   },
 
-  refreshDraftGroups: function () {
-    var groups = store.groups();
-    var positions = {};
-    this._draftIds.forEach(function (id, index) { positions[id] = index; });
-    groups.sort(function (a, b) { return positions[a.id] - positions[b.id]; });
-    this.setData({ groups: groups });
-  },
+  /* ---------------- 重命名 ---------------- */
 
   startRename: function (e) {
     var group = store.groups().find(function (item) { return item.id === e.currentTarget.dataset.id; });
@@ -87,10 +107,12 @@ Page({
       util.toast(result.error);
       return;
     }
-    this.setData({ editingId: '', editingName: '', orderChanged: true });
-    this.refreshDraftGroups();
+    this.setData({ editingId: '', editingName: '' });
+    this.reload();
     util.toast('已重命名', 'success');
   },
+
+  /* ---------------- 删除 ---------------- */
 
   deleteGroup: function (e) {
     var groupId = e.currentTarget.dataset.id;
@@ -141,31 +163,82 @@ Page({
           util.toast(result.error);
           return;
         }
-        self._draftIds = self._draftIds.filter(function (id) { return id !== groupId; });
-        self.setData({ orderChanged: true });
-        self.refreshDraftGroups();
+        self.reload();
         util.toast('已删除分组', 'success');
       }
     });
   },
 
+  /* ---------------- 排序：点箭头，立即生效 ---------------- */
+
   moveGroup: function (e) {
     var index = Number(e.currentTarget.dataset.index);
     var direction = Number(e.currentTarget.dataset.direction);
     var next = index + direction;
-    if (next < 0 || next >= this._draftIds.length) return;
-    var ids = this._draftIds.slice();
-    var moved = ids[index];
-    ids[index] = ids[next];
-    ids[next] = moved;
-    this._draftIds = ids;
-    this.setData({ orderChanged: true });
-    this.refreshDraftGroups();
+    var groups = this.data.groups;
+    if (next < 0 || next >= groups.length) return;
+    this.applyOrder(this.swappedIds(groups, index, next));
   },
 
-  saveOrder: function () {
-    store.reorderGroups(this._draftIds);
-    this.setData({ orderChanged: false });
-    util.toast('显示顺序已保存', 'success');
+  /** 生成交换两位后的 id 顺序 */
+  swappedIds: function (groups, from, to) {
+    var ids = groups.map(function (group) { return group.id; });
+    var moved = ids[from];
+    ids[from] = ids[to];
+    ids[to] = moved;
+    return ids;
+  },
+
+  /** 落库 + 刷新（无保存按钮，改了就算数） */
+  applyOrder: function (ids) {
+    store.reorderGroups(ids);
+    this.reload();
+  },
+
+  /* ---------------- 排序：拖拽，立即生效 ---------------- */
+
+  onDragStart: function (e) {
+    var index = Number(e.currentTarget.dataset.index);
+    var group = this.data.groups[index];
+    if (!group) return;
+    this._drag = {
+      index: index,
+      startY: e.touches[0].clientY
+    };
+    this.setData({ draggingId: group.id });
+    if (!this._rowH) this.measureRows();
+  },
+
+  onDragMove: function (e) {
+    var drag = this._drag;
+    if (!drag || !this._rowH) return;
+
+    var y = e.touches[0].clientY;
+    var steps = Math.round((y - drag.startY) / this._rowH);
+    if (!steps) return;
+
+    var groups = this.data.groups;
+    var from = drag.index;
+    var to = Math.max(0, Math.min(groups.length - 1, from + steps));
+    if (to === from) return;
+
+    var ids = groups.map(function (group) { return group.id; });
+    var dir = to > from ? 1 : -1;
+    while (from !== to) {
+      var moved = ids[from];
+      ids[from] = ids[from + dir];
+      ids[from + dir] = moved;
+      from += dir;
+    }
+
+    drag.index = to;
+    drag.startY = y;          // 重置基线，避免误差累积
+    store.reorderGroups(ids);
+    this.reload(false);       // 不重测，拖拽中保持行高缓存
+  },
+
+  onDragEnd: function () {
+    this._drag = null;
+    if (this.data.draggingId) this.setData({ draggingId: '' });
   }
 });

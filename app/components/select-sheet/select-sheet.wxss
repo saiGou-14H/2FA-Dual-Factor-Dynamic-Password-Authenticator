@@ -1,0 +1,109 @@
+.sel-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 240;
+  display: flex;
+  align-items: flex-end;
+}
+
+.sel-mask {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(15, 21, 31, 0.42);
+  animation: fade 0.18s ease both;
+}
+
+.sel-sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-height: 76vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  border-radius: 28rpx 28rpx 0 0;
+  animation: sheet-up var(--dur-2) var(--ease) both;
+  overflow: hidden;
+}
+
+.sel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 36rpx 20rpx;
+  border-bottom: 1rpx solid var(--line);
+}
+
+.sel-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.sel-close {
+  font-size: 27rpx;
+  color: var(--sub);
+}
+
+.sel-list {
+  max-height: 56vh;
+}
+
+.sel-option {
+  display: flex;
+  align-items: center;
+  min-height: 100rpx;
+  padding: 18rpx 36rpx;
+  border-bottom: 1rpx solid var(--line);
+  transition: background var(--dur-1) var(--ease);
+}
+
+.sel-option:active {
+  background: var(--bg-soft);
+}
+
+.sel-option.is-on {
+  background: var(--brand-soft);
+}
+
+.sel-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.sel-label {
+  font-size: 29rpx;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sel-option.is-on .sel-label {
+  color: var(--brand);
+  font-weight: 600;
+}
+
+.sel-meta {
+  margin-top: 4rpx;
+  font-size: 21rpx;
+  color: var(--faint);
+}
+
+.sel-check {
+  margin-left: 16rpx;
+  color: var(--brand);
+  flex-shrink: 0;
+}
+
+.sel-safe {
+  height: calc(16rpx + env(safe-area-inset-bottom));
+}

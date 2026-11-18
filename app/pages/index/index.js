@@ -43,7 +43,12 @@ Page({
     nickname: '',
     avatar: '',
     authorized: false,
-    syncText: '尚未同步'
+    syncText: '尚未同步',
+    // 账号操作菜单
+    showTokenSheet: false,
+    tokenSheetTitle: '',
+    tokenSheetItems: [],
+    activeTokenId: ''
   },
 
   onLoad: function () {
@@ -384,28 +389,41 @@ Page({
   },
 
   onMore: function (e) {
-    var self = this;
-    var id = e.detail.id;
-    var t = null;
-    for (var i = 0; i < (this._tokens || []).length; i++) {
-      if (this._tokens[i].id === id) { t = this._tokens[i]; break; }
-    }
+    var id = e.detail ? e.detail.id : e.currentTarget.dataset.id;
+    var t = (this._tokens || []).find(function (item) { return item.id === id; });
     if (!t) return;
-
-    wx.showActionSheet({
-      itemList: ['复制 otpauth 链接', '移动到分组', '编辑', '删除'],
-      success: function (res) {
-        if (res.tapIndex === 0) {
-          wx.setClipboardData({ data: otpauth.build(t) });
-        } else if (res.tapIndex === 1) {
-          self.chooseGroup(id);
-        } else if (res.tapIndex === 2) {
-          wx.navigateTo({ url: '/pages/input/input?id=' + id });
-        } else if (res.tapIndex === 3) {
-          self.confirmDelete(id, t);
-        }
-      }
+    this.setData({
+      showTokenSheet: true,
+      activeTokenId: id,
+      tokenSheetTitle: (t.issuer ? t.issuer + ' · ' : '') + t.label,
+      tokenSheetItems: [
+        { label: '复制 otpauth 链接', value: 'copy' },
+        { label: '移动到分组', value: 'move' },
+        { label: '编辑', value: 'edit' },
+        { label: '删除', value: 'delete', danger: true }
+      ]
     });
+  },
+
+  closeTokenSheet: function () {
+    this.setData({ showTokenSheet: false, tokenSheetItems: [], tokenSheetTitle: '' });
+  },
+
+  onTokenAction: function (e) {
+    var action = e.detail.value;
+    var id = this.data.activeTokenId;
+    var t = (this._tokens || []).find(function (item) { return item.id === id; });
+    this.closeTokenSheet();
+    if (!t) return;
+    if (action === 'copy') {
+      wx.setClipboardData({ data: otpauth.build(t) });
+    } else if (action === 'move') {
+      this.chooseGroup(id);
+    } else if (action === 'edit') {
+      wx.navigateTo({ url: '/pages/input/input?id=' + id });
+    } else if (action === 'delete') {
+      this.confirmDelete(id, t);
+    }
   },
 
   chooseGroup: function (id) {

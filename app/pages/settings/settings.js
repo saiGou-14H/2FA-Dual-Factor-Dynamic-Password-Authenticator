@@ -248,8 +248,8 @@ Page({
 
   /* ================= 其他设置 ================= */
 
-  onToggleHide: function (e) {
-    var v = !!e.detail.value;
+  onToggleHide: function () {
+    var v = !this.data.hideCodes;
     app.setHideCodes(v);
     this.setData({ hideCodes: v });
     util.toast(v ? '默认隐藏验证码' : '默认显示验证码');

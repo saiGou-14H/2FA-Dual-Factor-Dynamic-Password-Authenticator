@@ -128,6 +128,7 @@ node tools/test_pagination.js    # 分页：分页切片 / 触底边界 / 空列
 node tools/test_nextcode.js      # 下一码：算法等价性 / 隐藏态不产出 / 页面落位
 node tools/test_auth_prompt.js   # 授权引导：点击才弹 / 已授权不弹
 node tools/test_input_advanced.js # 输入页：高级折叠 / 摘要刷新 / 非默认自动展开
+node tools/test_ui_sheets.js     # 自定义浮层：日期选择 / 开关 / 操作菜单
 node tools/test_e2e_sync.js      # 真实后端同步往返
 node tools/test_migrate_e2e.js   # 真实后端迁移流程
 ```

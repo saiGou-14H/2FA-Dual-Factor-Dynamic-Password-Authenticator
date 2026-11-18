@@ -9,8 +9,16 @@
 
   <scroll-view class="content" scroll-y>
     <view class="group-list">
-      <view class="group-row" wx:for="{{groups}}" wx:key="id">
-        <view class="ico ico-drag drag-mark" aria-hidden="true"></view>
+      <view class="group-row {{draggingId === item.id ? 'is-dragging' : ''}}" wx:for="{{groups}}" wx:key="id">
+        <view class="drag-handle"
+              data-index="{{index}}"
+              bindtouchstart="onDragStart"
+              catchtouchmove="onDragMove"
+              catchtouchend="onDragEnd"
+              catchtouchcancel="onDragEnd">
+          <view class="ico ico-drag"></view>
+        </view>
+
         <view class="group-main" wx:if="{{editingId !== item.id}}">
           <view class="group-title-line">
             <text class="group-name">{{item.name}}</text>
@@ -18,6 +26,7 @@
           </view>
           <text class="group-count">{{item.count}} 个账号</text>
         </view>
+
         <view class="rename-field" wx:else>
           <input value="{{editingName}}" maxlength="20" focus bindinput="onRenameInput" confirm-type="done" bindconfirm="saveRename" />
           <view class="rename-actions">
@@ -25,6 +34,7 @@
             <text class="rename-save" bindtap="saveRename">完成</text>
           </view>
         </view>
+
         <view class="row-actions" wx:if="{{editingId !== item.id}}">
           <view class="arrow-button {{index === 0 ? 'is-disabled' : ''}}" data-index="{{index}}" data-direction="-1" bindtap="moveGroup" aria-label="上移"><view class="ico ico-up"></view></view>
           <view class="arrow-button {{index === groups.length - 1 ? 'is-disabled' : ''}}" data-index="{{index}}" data-direction="1" bindtap="moveGroup" aria-label="下移"><view class="ico ico-down"></view></view>
@@ -46,13 +56,10 @@
       <text class="notice-icon">i</text>
       <text>删除非空分组前，先选择账号迁入的分组。</text>
     </view>
-    <view class="order-hint">显示顺序仅在本机生效</view>
+
+    <view class="order-hint">拖动左侧把手或点箭头调整顺序，改动即时生效</view>
     <view class="bottom-space"></view>
   </scroll-view>
-
-  <view class="footer" wx:if="{{orderChanged}}">
-    <view class="save-button" bindtap="saveOrder">保存顺序</view>
-  </view>
 
   <view class="target-overlay" wx:if="{{showTargetSheet}}">
     <view class="target-mask" bindtap="closeTargetSheet"></view>
@@ -63,7 +70,10 @@
       </view>
       <scroll-view class="target-list" scroll-y="true">
         <view class="target-option" wx:for="{{targetGroups}}" wx:key="id" data-id="{{item.id}}" bindtap="selectDeleteTarget">
-          <text>{{item.name}}</text>
+          <view class="target-body">
+            <text class="target-name">{{item.name}}</text>
+            <text class="target-count">{{item.count}} 个账号</text>
+          </view>
           <view class="ico ico-chevron move-arrow"></view>
         </view>
       </scroll-view>

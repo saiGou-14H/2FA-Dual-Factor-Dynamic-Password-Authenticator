@@ -1,0 +1,91 @@
+.as-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 245;
+  display: flex;
+  align-items: flex-end;
+}
+
+.as-mask {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(15, 21, 31, 0.42);
+  animation: fade 0.18s ease both;
+}
+
+.as-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  animation: sheet-up var(--dur-2) var(--ease) both;
+}
+
+.as-panel {
+  background: var(--bg);
+  border-radius: 20rpx;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+}
+
+.as-title {
+  padding: 28rpx 32rpx 18rpx;
+  font-size: 23rpx;
+  color: var(--faint);
+  text-align: center;
+  border-bottom: 1rpx solid var(--line);
+}
+
+.as-item {
+  min-height: 108rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1rpx solid var(--line);
+  transition: background var(--dur-1) var(--ease);
+}
+
+.as-item:first-of-type {
+  border-top: none;
+}
+
+.as-item:active {
+  background: var(--bg-soft);
+}
+
+.as-label {
+  font-size: 30rpx;
+  color: var(--ink);
+}
+
+.as-item.is-danger .as-label {
+  color: var(--danger);
+}
+
+.as-cancel {
+  min-height: 108rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.as-cancel:active {
+  background: var(--bg-soft);
+}
+
+.as-cancel-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--sub);
+}
+
+.as-safe {
+  height: calc(16rpx + env(safe-area-inset-bottom));
+}

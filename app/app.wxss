@@ -23,6 +23,10 @@ page {
   --brand-ink: #2563eb;
 
   /* 告警红（唯一） */
+  --ok: #16a34a;
+  --ok-soft: #f0fdf4;
+  --brand-light: #3b82f6;
+  --brand-line: #cfe0ff;
   --danger: #dc2626;
   --danger-soft: #fef2f2;
 

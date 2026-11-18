@@ -23,7 +23,8 @@ Page({
     total: 0,
     rangeText: '',
     loadingShow: false,
-    loadingText: '处理中'
+    loadingText: '处理中',
+    dateSheet: { show: false, field: '', title: '', value: '' }
   },
 
   onLoad: function () {
@@ -59,12 +60,32 @@ Page({
     this.setData({ filter: f }, this.reload.bind(this));
   },
 
-  onStartDate: function (e) {
-    this.setData({ startDate: e.detail.value, filter: 'custom' }, this.reload.bind(this));
+  /** 打开日期选择（替代原生 picker，避免深色系统浮层） */
+  openDateSheet: function (e) {
+    var field = e.currentTarget.dataset.field;
+    var isStart = field === 'start';
+    this.setData({
+      dateSheet: {
+        show: true,
+        field: field,
+        title: isStart ? '选择开始日期' : '选择结束日期',
+        value: (isStart ? this.data.startDate : this.data.endDate) || ''
+      }
+    });
   },
 
-  onEndDate: function (e) {
-    this.setData({ endDate: e.detail.value, filter: 'custom' }, this.reload.bind(this));
+  closeDateSheet: function () {
+    this.setData({ 'dateSheet.show': false });
+  },
+
+  onPickDate: function (e) {
+    var field = this.data.dateSheet.field;
+    var value = e.detail.value;
+    var patch = { 'dateSheet.show': false, filter: 'custom' };
+    if (field === 'start') patch.startDate = value;
+    else patch.endDate = value;
+    this.setData(patch);
+    this.reload();
   },
 
   /** 计算当前筛选的时间区间 [from, to] 与展示文案 */

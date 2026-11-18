@@ -101,6 +101,8 @@
   font-family: var(--font-num);
 }
 .range-value.is-empty { color: var(--faint); }
+.range-cell:active { opacity: 0.6; }
+
 .range-sep {
   padding: 0 12rpx;
   font-size: 22rpx;

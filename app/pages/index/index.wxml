@@ -135,6 +135,15 @@
     <view class="ico ico-plus"></view>
   </view>
 
+  <!-- 账号操作菜单 -->
+  <action-sheet
+    show="{{showTokenSheet}}"
+    title="{{tokenSheetTitle}}"
+    items="{{tokenSheetItems}}"
+    bind:select="onTokenAction"
+    bind:close="closeTokenSheet"
+  />
+
   <!-- 首次进入的身份授权引导 -->
   <auth-prompt show="{{showAuth}}" bind:done="onAuthDone" bind:skip="onAuthSkip" />
 </view>
