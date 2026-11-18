@@ -39,35 +39,43 @@
     </view>
   </view>
 
-  <!-- 参数 -->
+  <!-- 高级设置（默认折叠，点开才展开） -->
   <view class="group">
-    <view class="field">
-      <text class="field-label">类型</text>
-      <picker class="field-picker" mode="selector" range="{{types}}" value="{{typeIndex}}" bindchange="onType">
-        <view class="picker-value">{{types[typeIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
-      </picker>
+    <view class="adv-toggle" bindtap="toggleAdvanced">
+      <text class="adv-label">高级设置</text>
+      <text class="adv-summary">{{advancedSummary}}</text>
+      <view class="ico ico-chevron adv-caret {{showAdvanced ? 'is-open' : ''}}"></view>
     </view>
-    <view class="field">
-      <text class="field-label">算法</text>
-      <picker class="field-picker" mode="selector" range="{{algorithms}}" value="{{algorithmIndex}}" bindchange="onAlgorithm">
-        <view class="picker-value">{{algorithms[algorithmIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
-      </picker>
-    </view>
-    <view class="field">
-      <text class="field-label">位数</text>
-      <picker class="field-picker" mode="selector" range="{{digitsList}}" value="{{digitsIndex}}" bindchange="onDigits">
-        <view class="picker-value">{{digitsList[digitsIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
-      </picker>
-    </view>
-    <view class="field" wx:if="{{type === 'totp'}}">
-      <text class="field-label">刷新周期</text>
-      <picker class="field-picker" mode="selector" range="{{periods}}" value="{{periodIndex}}" bindchange="onPeriod">
-        <view class="picker-value">{{periods[periodIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
-      </picker>
-    </view>
-    <view class="field" wx:if="{{type === 'hotp'}}">
-      <text class="field-label">计数器</text>
-      <input class="field-input num" type="number" value="{{counter}}" bindinput="onCounter" />
+
+    <view class="adv-body" wx:if="{{showAdvanced}}">
+      <view class="field">
+        <text class="field-label">类型</text>
+        <picker class="field-picker" mode="selector" range="{{types}}" value="{{typeIndex}}" bindchange="onType">
+          <view class="picker-value">{{types[typeIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="field-label">算法</text>
+        <picker class="field-picker" mode="selector" range="{{algorithms}}" value="{{algorithmIndex}}" bindchange="onAlgorithm">
+          <view class="picker-value">{{algorithms[algorithmIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="field-label">位数</text>
+        <picker class="field-picker" mode="selector" range="{{digitsList}}" value="{{digitsIndex}}" bindchange="onDigits">
+          <view class="picker-value">{{digitsList[digitsIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
+        </picker>
+      </view>
+      <view class="field" wx:if="{{type === 'totp'}}">
+        <text class="field-label">刷新周期</text>
+        <picker class="field-picker" mode="selector" range="{{periods}}" value="{{periodIndex}}" bindchange="onPeriod">
+          <view class="picker-value">{{periods[periodIndex]}}<view class="ico ico-chevron picker-caret"></view></view>
+        </picker>
+      </view>
+      <view class="field" wx:if="{{type === 'hotp'}}">
+        <text class="field-label">计数器</text>
+        <input class="field-input num" type="number" value="{{counter}}" bindinput="onCounter" />
+      </view>
     </view>
   </view>
 

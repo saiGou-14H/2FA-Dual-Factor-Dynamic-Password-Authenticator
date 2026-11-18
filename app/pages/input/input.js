@@ -30,6 +30,8 @@ Page({
     periodIndex: 0,
     counter: 0,
     errorMsg: '',
+    showAdvanced: false,
+    advancedSummary: '',
     secretVisible: false
   },
 
@@ -41,6 +43,7 @@ Page({
       menuRightSpace: nav.menuRightSpace
     });
     this.reloadGroups(opts && opts.groupId);
+    this.updateSummary();
 
     // 扫描二维码进入：解析并预填表单
     if (opts && opts.scan) {
@@ -78,6 +81,7 @@ Page({
       periodIndex: periodIndex,
       counter: t.counter || 0
     });
+    this.afterParamsLoaded();
     this.reloadGroups(t.groupId);
   },
 
@@ -112,26 +116,62 @@ Page({
   onCounter: function (e) {
     var v = parseInt(e.detail.value, 10);
     this.setData({ counter: isFinite(v) && v >= 0 ? v : 0, errorMsg: '' });
+    this.updateSummary();
+  },
+
+  /** 参数载入后：刷新摘要；存在非默认值时自动展开高级 */
+  afterParamsLoaded: function () {
+    var d = this.data;
+    var nonDefault = d.type === 'hotp'
+      || d.algorithm !== 'SHA1'
+      || Number(d.digits) !== 6
+      || Number(d.period) !== 30;
+    this.setData({ showAdvanced: !!nonDefault });
+    this.updateSummary();
+  },
+
+  /** 展开 / 收起高级设置 */
+  toggleAdvanced: function () {
+    this.setData({ showAdvanced: !this.data.showAdvanced });
+  },
+
+  /** 生成折叠态摘要，让用户不用展开也知道当前参数 */
+  updateSummary: function () {
+    var d = this.data;
+    var parts = [];
+    parts.push(d.type === 'hotp' ? 'HOTP' : 'TOTP');
+    parts.push(d.algorithm);
+    parts.push(d.digits + ' 位');
+    if (d.type === 'hotp') {
+      parts.push('计数器 ' + (Number(d.counter) || 0));
+    } else {
+      parts.push(d.period + ' 秒');
+    }
+    this.setData({ advancedSummary: parts.join(' · ') });
   },
 
   onType: function (e) {
     var idx = Number(e.detail.value);
     this.setData({ typeIndex: idx, type: idx === 1 ? 'hotp' : 'totp', errorMsg: '' });
+    this.updateSummary();
   },
 
   onAlgorithm: function (e) {
     var idx = Number(e.detail.value);
     this.setData({ algorithmIndex: idx, algorithm: this.data.algorithms[idx], errorMsg: '' });
+    this.updateSummary();
   },
 
   onDigits: function (e) {
     var idx = Number(e.detail.value);
     this.setData({ digitsIndex: idx, digits: idx === 1 ? 8 : 6, errorMsg: '' });
+    this.updateSummary();
   },
 
   onPeriod: function (e) {
     var idx = Number(e.detail.value);
     this.setData({ periodIndex: idx, period: idx === 1 ? 60 : 30, errorMsg: '' });
+    this.updateSummary();
   },
 
   onGroupChange: function (e) {
@@ -178,6 +218,7 @@ Page({
       counter: token.counter || 0,
       errorMsg: warn
     });
+    this.afterParamsLoaded();
     if (!warn) util.toast('已识别：' + (token.issuer || token.label), 'success');
   },
 

@@ -33,6 +33,46 @@
   line-height: 1;
 }
 
+/* 高级设置折叠头 */
+.adv-toggle {
+  display: flex;
+  align-items: center;
+  min-height: 100rpx;
+  padding: 0 30rpx;
+  transition: background var(--dur-1) var(--ease);
+}
+.adv-toggle:active {
+  background: var(--bg-soft);
+}
+.adv-label {
+  font-size: 27rpx;
+  color: var(--sub);
+  flex-shrink: 0;
+}
+.adv-summary {
+  flex: 1;
+  min-width: 0;
+  margin-left: 20rpx;
+  font-size: 22rpx;
+  color: var(--faint);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.adv-caret {
+  margin-left: 12rpx;
+  color: var(--faint);
+  transition: transform var(--dur-2) var(--ease);
+}
+.adv-caret.is-open {
+  transform: rotate(90deg);
+}
+.adv-body {
+  border-top: 1rpx solid var(--line);
+  animation: float-in var(--dur-2) var(--ease) both;
+}
+
 .new-group-link {
   padding: 4rpx 30rpx 24rpx;
   color: var(--brand);
