@@ -76,10 +76,14 @@
 }
 
 /* ================= 迁移二维码浮层 ================= */
+/* 居中用 flex，不用 transform：避免与入场动画的 transform 互相覆盖 */
 .qr-overlay {
   position: fixed;
   top: 0; right: 0; bottom: 0; left: 0;
   z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .qr-mask {
   position: absolute;
@@ -88,13 +92,13 @@
   animation: fade 0.2s ease both;
 }
 .qr-sheet {
-  position: absolute;
-  left: 40rpx; right: 40rpx;
-  top: 50%;
-  transform: translateY(-50%);
+  position: relative;
+  width: 100%;
+  margin: 0 48rpx;
   padding: 44rpx 36rpx 32rpx;
   border-radius: 28rpx;
   background: var(--bg);
+  box-sizing: border-box;
   animation: dialog-in var(--dur-2) var(--ease) both;
   display: flex;
   flex-direction: column;

@@ -128,10 +128,6 @@
   width: 8rpx;
 }
 
-.is-warn .next-digit {
-  color: #e0a0a0;
-}
-
 .code {
   display: flex;
   align-items: baseline;
