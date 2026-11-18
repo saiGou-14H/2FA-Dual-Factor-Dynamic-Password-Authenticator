@@ -1,9 +1,19 @@
 .page {
-  min-height: 100vh;
+  height: 100vh;
   padding: 0 30rpx;
   box-sizing: border-box;
   position: relative;
   background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 列表滚动区：占据剩余高度，头部保持固定 */
+.list-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* ============ 自定义导航栏 ============ */
@@ -170,6 +180,33 @@
 
 /* ============ 列表 ============ */
 .list { padding-top: 0; }
+
+/* 下拉刷新指示（自定义，跟随下拉高度展开） */
+.refresher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: height var(--dur-2) var(--ease);
+}
+.refresher-ring {
+  width: 30rpx;
+  height: 30rpx;
+  margin-right: 12rpx;
+  border-radius: 50%;
+  border: 4rpx solid var(--line-strong);
+  border-top-color: var(--brand);
+  animation: spin 0.72s linear infinite;
+}
+.refresher-txt {
+  font-size: 21rpx;
+  color: var(--faint);
+}
+
+/* 滚动区底部留白 */
+.scroll-bottom-gap {
+  height: calc(180rpx + env(safe-area-inset-bottom));
+}
 
 /* 切换分组/搜索时，列表整体轻落一次 */
 .list.is-switch {

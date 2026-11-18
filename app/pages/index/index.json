@@ -4,8 +4,7 @@
     "auth-prompt": "/components/auth-prompt/auth-prompt"
   },
   "navigationStyle": "custom",
-  "enablePullDownRefresh": true,
+  "enablePullDownRefresh": false,
   "backgroundTextStyle": "dark",
-  "backgroundColor": "#ffffff",
-  "onReachBottomDistance": 120
+  "backgroundColor": "#ffffff"
 }

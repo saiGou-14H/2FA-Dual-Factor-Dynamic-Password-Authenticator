@@ -129,24 +129,46 @@ Page({
 
   /* ---------------- 下拉刷新 ---------------- */
 
-  onPullDownRefresh: function () {
-    if (this.data.refreshing) return;
-    var self = this;
-    this.setData({ refreshing: true, page: 1 });
-    // 重新读本地数据（外部改动、回收站恢复等都能立刻反映）
+  /** 重新读取本地数据（下拉刷新 / 外部改动后） */
+  doRefresh: function () {
     this._tokens = store.list();
     var groups = store.groups();
     var selected = this.data.selectedGroupId;
     if (selected !== 'all' && !groups.some(function (g) { return g.id === selected; })) {
       selected = 'all';
     }
-    this.setData({ groups: groups, selectedGroupId: selected, allActive: selected === 'all' });
+    this.setData({
+      groups: groups,
+      selectedGroupId: selected,
+      allActive: selected === 'all',
+      page: 1
+    });
     this._revealed = {};
+    this.refreshIdentity();
     this.compute();
+  },
+
+  /** scroll-view 下拉刷新 */
+  onRefresh: function () {
+    var self = this;
+    if (this.data.refreshing) return;
+    this.setData({ refreshing: true });
+    this.doRefresh();
     setTimeout(function () {
       self.setData({ refreshing: false });
-      wx.stopPullDownRefresh();
-    }, 420);
+      util.toast('已刷新');
+    }, 520);
+  },
+
+  /** 页面级下拉（保留兼容，当前未启用） */
+  onPullDownRefresh: function () {
+    this.doRefresh();
+    if (wx.stopPullDownRefresh) wx.stopPullDownRefresh();
+  },
+
+  /** scroll-view 触底 */
+  onScrollToLower: function () {
+    this.onReachBottom();
   },
 
   /* ---------------- 上拉加载更多 ---------------- */
