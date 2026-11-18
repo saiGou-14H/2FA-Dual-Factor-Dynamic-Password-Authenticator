@@ -244,7 +244,7 @@
 
 /* ============ 空态 ============ */
 .empty {
-  padding: 190rpx 32rpx 64rpx;
+  padding: 140rpx 32rpx 64rpx;
   display: flex;
   flex-direction: column;
   align-items: center;

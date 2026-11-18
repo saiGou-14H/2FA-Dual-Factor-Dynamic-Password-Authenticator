@@ -19,7 +19,7 @@
     </view>
   </view>
 
-  <view class="search enter-2" wx:if="{{total > 0}}">
+  <view class="search enter-2">
     <view class="ico ico-search"></view>
     <input class="search-input" value="{{query}}" placeholder="搜索发行方或账号"
            placeholder-class="search-ph" confirm-type="search" bindinput="onSearch" />
@@ -33,7 +33,7 @@
     </view>
   </view>
 
-  <view class="group-bar enter-3" wx:if="{{total > 0}}">
+  <view class="group-bar enter-3">
     <scroll-view class="group-scroll" scroll-x="true" show-scrollbar="false">
       <view class="group-tabs">
         <view class="group-tab {{allActive ? 'is-active' : ''}}" data-id="all" bindtap="onSelectGroup">
