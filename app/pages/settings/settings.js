@@ -20,6 +20,8 @@ Page({
     version: '1.1.0',
     lastSyncText: '尚未同步',
     syncing: false,
+    loadingShow: false,
+    loadingText: '处理中',
     ready: false,          // crypto 可用
     // 迁移二维码浮层
     showMigrate: false,
@@ -48,6 +50,15 @@ Page({
   },
 
   /* ================= 同步状态 ================= */
+
+  /** 显示加载遮罩（异步操作前调用，避免界面像卡死） */
+  showLoading: function (text) {
+    this.setData({ loadingShow: true, loadingText: text || '处理中' });
+  },
+
+  hideLoading: function () {
+    if (this.data.loadingShow) this.setData({ loadingShow: false });
+  },
 
   refreshSyncText: function () {
     var at = sync.lastSyncAt();
@@ -78,12 +89,15 @@ Page({
     }
     if (this.data.syncing) return;
     this.setData({ syncing: true });
+    this.showLoading('正在同步');
     sync.push().then(function (r) {
       self.setData({ syncing: false });
+      self.hideLoading();
       self.refreshSyncText();
       util.toast(r && r.skipped ? '没有需要同步的数据' : '已同步到云端', 'success');
     }).catch(function (err) {
       self.setData({ syncing: false });
+      self.hideLoading();
       util.toast('同步失败：' + (err && err.errMsg ? err.errMsg : '网络错误'));
     });
   },
@@ -100,13 +114,14 @@ Page({
       util.toast('还没有账号可迁移');
       return;
     }
-    util.toast('正在生成…');
+    this.showLoading('正在生成二维码');
     vault.ensureDek().then(function (dek) {
       // 迁移前先把最新数据推上云，确保新账号领到的是当前内容
       return sync.push().then(function () { return dek; });
     }).then(function (dek) {
       return cloudSync.issueMigrate(dek);
     }).then(function (r) {
+      self.hideLoading();
       if (!r || !r.qr) {
         util.toast('生成失败');
         return;
@@ -118,6 +133,7 @@ Page({
                     '有效期 5 分钟，仅可使用一次。'
       });
     }).catch(function (err) {
+      self.hideLoading();
       util.toast('生成失败：' + (err && err.errMsg ? err.errMsg : '网络错误'));
     });
   },
@@ -160,16 +176,18 @@ Page({
       confirmText: '接收',
       success: function (res) {
         if (!res.confirm) return;
-        util.toast('正在接收…');
+        self.showLoading('正在接收');
         cloudSync.claimMigrate(parsed.token).then(function () {
           // 用二维码里的 DEK 解密云端密文
           vault.setDekHex(parsed.dek);
           return sync.pull(parsed.dek);
         }).then(function (r) {
+          self.hideLoading();
           self.refreshSyncText();
           self.setData({ count: store.count() });
           util.toast('已迁移 ' + (r.count || 0) + ' 个账号', 'success');
         }).catch(function (err) {
+          self.hideLoading();
           util.toast('迁移失败：' + (err && err.errMsg ? err.errMsg : '未知错误'));
         });
       }
@@ -227,9 +245,13 @@ Page({
       confirmColor: '#dc2626',
       success: function (res) {
         if (!res.confirm) return;
-        var n = store.removeAll();
-        self.setData({ count: store.count(), deletedCount: store.deletedCount() });
-        util.toast('已移入回收站 ' + n + ' 个');
+        self.showLoading('正在移入回收站');
+        setTimeout(function () {
+          var n = store.removeAll();
+          self.hideLoading();
+          self.setData({ count: store.count(), deletedCount: store.deletedCount() });
+          util.toast('已移入回收站 ' + n + ' 个');
+        }, 60);
       }
     });
   },

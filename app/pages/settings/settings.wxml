@@ -126,4 +126,7 @@
       <view class="qr-btn" bindtap="closeMigrate">完成</view>
     </view>
   </view>
+
+  <!-- 加载遮罩 -->
+  <loading show="{{loadingShow}}" text="{{loadingText}}" />
 </view>

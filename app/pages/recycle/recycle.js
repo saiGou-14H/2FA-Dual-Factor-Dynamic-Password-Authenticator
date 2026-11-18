@@ -21,7 +21,9 @@ Page({
     endDate: '',
     list: [],
     total: 0,
-    rangeText: ''
+    rangeText: '',
+    loadingShow: false,
+    loadingText: '处理中'
   },
 
   onLoad: function () {
@@ -39,6 +41,14 @@ Page({
 
   onBack: function () {
     wx.navigateBack();
+  },
+
+  showLoading: function (text) {
+    this.setData({ loadingShow: true, loadingText: text || '处理中' });
+  },
+
+  hideLoading: function () {
+    if (this.data.loadingShow) this.setData({ loadingShow: false });
   },
 
   /* ================= 筛选 ================= */
@@ -161,9 +171,13 @@ Page({
       confirmColor: '#dc2626',
       success: function (res) {
         if (!res.confirm) return;
-        var n = store.purgeDeleted();
-        util.toast('已清空 ' + n + ' 个账号');
-        self.reload();
+        self.showLoading('正在清空');
+        setTimeout(function () {
+          var n = store.purgeDeleted();
+          self.hideLoading();
+          util.toast('已清空 ' + n + ' 个账号');
+          self.reload();
+        }, 60);
       }
     });
   }

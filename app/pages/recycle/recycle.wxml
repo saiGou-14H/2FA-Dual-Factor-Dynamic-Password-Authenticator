@@ -67,4 +67,6 @@
   <view class="footer" wx:if="{{total > 0}}">
     <view class="footer-btn" bindtap="purgeAll">清空回收站（{{total}}）</view>
   </view>
+
+  <loading show="{{loadingShow}}" text="{{loadingText}}" />
 </view>

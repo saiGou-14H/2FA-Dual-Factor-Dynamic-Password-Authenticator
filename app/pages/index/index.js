@@ -303,14 +303,14 @@ Page({
     if (!t) return;
 
     wx.showActionSheet({
-      itemList: ['复制 otpauth 链接', '编辑', '移动到分组', '删除'],
+      itemList: ['复制 otpauth 链接', '移动到分组', '编辑', '删除'],
       success: function (res) {
         if (res.tapIndex === 0) {
           wx.setClipboardData({ data: otpauth.build(t) });
         } else if (res.tapIndex === 1) {
-          wx.navigateTo({ url: '/pages/input/input?id=' + id });
-        } else if (res.tapIndex === 2) {
           self.chooseGroup(id);
+        } else if (res.tapIndex === 2) {
+          wx.navigateTo({ url: '/pages/input/input?id=' + id });
         } else if (res.tapIndex === 3) {
           self.confirmDelete(id, t);
         }
