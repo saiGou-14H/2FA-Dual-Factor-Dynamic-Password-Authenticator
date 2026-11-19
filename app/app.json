@@ -10,7 +10,7 @@
   "window": {
     "backgroundTextStyle": "dark",
     "navigationBarBackgroundColor": "#ffffff",
-    "navigationBarTitleText": "双因子动态密码验证器",
+    "navigationBarTitleText": "双因子密码验证器",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#ffffff",
     "navigationStyle": "custom"

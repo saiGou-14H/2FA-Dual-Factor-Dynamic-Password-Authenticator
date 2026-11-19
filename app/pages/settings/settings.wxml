@@ -152,7 +152,7 @@
       <view class="about-head">
         <image class="about-logo" src="/assets/logo.png" mode="aspectFit" />
         <view class="about-head-main">
-          <view class="about-title">双因子动态密码验证器</view>
+          <view class="about-title">双因子密码验证器</view>
           <view class="about-version">版本 {{version}}</view>
         </view>
         <view class="about-close" bindtap="closeAbout">关闭</view>

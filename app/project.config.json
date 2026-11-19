@@ -1,7 +1,7 @@
 {
-  "description": "双因子动态密码验证器 —— 本地优先的 TOTP/HOTP 小程序",
+  "description": "双因子密码验证器 —— 本地优先的 TOTP/HOTP 小程序",
   "appid": "wxe495e7131344d1f7",
-  "projectname": "双因子动态密码验证器",
+  "projectname": "双因子密码验证器",
   "compileType": "miniprogram",
   "miniprogramRoot": "./",
   "setting": {
