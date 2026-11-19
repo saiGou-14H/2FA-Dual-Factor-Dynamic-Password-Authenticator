@@ -7,6 +7,9 @@
     </view>
   </view>
 
+  <!-- 内容区：独立滚动，导航固定 -->
+  <scroll-view class="scroll-body" scroll-y="true">
+
   <!-- 所属分组（置顶：扫描进入后第一眼可选分组） -->
   <view class="group">
     <view class="field">
@@ -94,6 +97,7 @@
   <view class="notice">密钥只保存在本机。拿到密钥的人可以生成你的全部验证码，不要截图分享。</view>
 
   <view class="safe-bottom"></view>
+  </scroll-view>
 
   <!-- 通用底部选择器（替代原生 picker） -->
   <select-sheet

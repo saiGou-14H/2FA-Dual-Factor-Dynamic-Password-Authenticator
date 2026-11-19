@@ -7,6 +7,9 @@
     </view>
   </view>
 
+  <!-- 内容区：独立滚动，导航固定 -->
+  <scroll-view class="scroll-body" scroll-y="true">
+
   <view class="group enter-3">
     <view class="group-title">显示</view>
     <view class="field">
@@ -125,6 +128,7 @@
   </view>
 
   <view class="safe-bottom"></view>
+  </scroll-view>
 
   <!-- 迁移二维码浮层 -->
   <view class="qr-overlay" wx:if="{{showMigrate}}">

@@ -1,9 +1,19 @@
 .page {
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--bg);
-  padding: 0 30rpx 32rpx;
+  padding: 0 30rpx;
   box-sizing: border-box;
 }
+
+/* 固定导航下的内容滚动区 */
+.scroll-body {
+  flex: 1;
+  min-height: 0;
+}
+
 
 .nav {
   margin: 0 -30rpx 26rpx;

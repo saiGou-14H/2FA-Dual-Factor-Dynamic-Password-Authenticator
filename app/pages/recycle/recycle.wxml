@@ -8,6 +8,9 @@
     </view>
   </view>
 
+  <!-- 内容区：独立滚动，导航固定 -->
+  <scroll-view class="scroll-body" scroll-y="true">
+
   <!-- 筛选 -->
   <view class="filters enter-1">
     <view class="chip {{filter === 'all' ? 'is-on' : ''}}" data-filter="all" bindtap="setFilter">全部</view>
@@ -59,6 +62,7 @@
   </view>
 
   <view class="bottom-gap"></view>
+  </scroll-view>
 
   <view class="footer" wx:if="{{total > 0}}">
     <view class="footer-btn" bindtap="purgeAll">清空回收站（{{total}}）</view>

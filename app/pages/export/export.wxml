@@ -7,6 +7,9 @@
     </view>
   </view>
 
+  <!-- 内容区：独立滚动，导航固定 -->
+  <scroll-view class="scroll-body" scroll-y="true">
+
   <view class="caution enter-3">
     <view class="caution-bar"></view>
     <view class="caution-body">
@@ -42,4 +45,6 @@
   </view>
 
   <view class="safe-bottom"></view>
+  </scroll-view>
+
 </view>

@@ -140,6 +140,7 @@ node tools/check_ui.js           # 静态自检：JSON / 页面文件 / require 
 node tools/check_styles.js       # 样式自检：wxml class 是否都有定义
 node tools/check_css_traps.js    # 守卫：fixed 定位陷阱 / 花括号结构 / 弹窗居中冲突
 node tools/check_modal_text.js   # 守卫：showModal 按钮文案 ≤4 字
+node tools/check_fixed_nav.js    # 守卫：所有页面导航固定 + 滚动容器约束
 node tools/test_e2e_sync.js      # 真实后端同步往返
 node tools/test_migrate_e2e.js   # 真实后端迁移流程
 ```
