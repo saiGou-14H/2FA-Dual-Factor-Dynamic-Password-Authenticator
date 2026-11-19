@@ -66,3 +66,7 @@ node tools/test_migrate_e2e.js   # 免口令同步 + 迁移
 
 - MySQL 开了「自动暂停 10 分钟」，闲置后首次请求需 10–20 秒唤醒。
 - 迁移令牌表会在每次 issue 时清理过期行，不会无限增长。
+
+## 许可证
+
+[MIT](../LICENSE) · Copyright (c) 2026 saiGou-14H
