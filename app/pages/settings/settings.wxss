@@ -241,11 +241,20 @@
 
 .about-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   padding: 40rpx 36rpx 24rpx;
   border-bottom: 1rpx solid var(--line);
   text-align: left;
+}
+
+.about-logo {
+  width: 88rpx;
+  height: 88rpx;
+  margin-right: 20rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+  background: var(--bg-soft);
 }
 
 .about-head-main {
