@@ -241,6 +241,16 @@ node tools/test_migrate_e2e.js      # 迁移令牌：一次性 / 过期 / 同账
 ### 1.0.0
 - TOTP / HOTP 引擎、分组、扫码导入、导出备份
 
+## 小程序码
+
+<div align="center">
+
+<img src="docs/assets/mini-program-code.png" width="200" alt="双因子密码验证器 · 微信小程序码">
+
+用微信「扫一扫」打开
+
+</div>
+
 ## 许可证
 
 本项目采用 [MIT License](LICENSE) 发布。
