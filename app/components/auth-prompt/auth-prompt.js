@@ -39,6 +39,7 @@ Component({
       try {
         canNickname = wx.canIUse('input.type.nickname');
       } catch (e) { canNickname = true; }
+      console.log('[auth] 组件挂载 canAvatar=', canAvatar, 'canNickname=', canNickname);
       this.setData({ canUseAvatar: canAvatar, canUseNickname: canNickname });
     }
   },
@@ -58,17 +59,68 @@ Component({
   methods: {
     /** 用户选择微信头像 */
     onChooseAvatar: function (e) {
-      var self = this;
       var tmp = e.detail && e.detail.avatarUrl;
       if (!tmp) return;
-      this.compress(tmp).then(function (small) {
+      this._avatarGot = true;
+      if (this._avatarTimer) clearTimeout(this._avatarTimer);
+      this.applyAvatar(tmp);
+    },
+
+    /** 点「使用微信头像」后若迟迟没有回调，说明环境不支持，提示改用相册 */
+    onAvatarBtnTap: function () {
+      var self = this;
+      if (this._avatarTimer) clearTimeout(this._avatarTimer);
+      this._avatarTimer = setTimeout(function () {
+        if (!self._avatarGot) {
+          wx.showToast({
+            title: '当前环境不支持微信头像，请用相册选择',
+            icon: 'none',
+            duration: 2500
+          });
+        }
+      }, 1500);
+    },
+
+    /** 从相册选择图片（任何环境都可用，作为 chooseAvatar 的兜底） */
+    pickFromAlbum: function () {
+      var self = this;
+      var pick = wx.chooseMedia || wx.chooseImage;
+      if (!pick) {
+        wx.showToast({ title: '当前环境无法选择图片', icon: 'none' });
+        return;
+      }
+      if (wx.chooseMedia) {
+        wx.chooseMedia({
+          count: 1,
+          mediaType: ['image'],
+          sizeType: ['compressed'],
+          success: function (res) {
+            var f = res.tempFiles && res.tempFiles[0];
+            if (f) self.applyAvatar(f.tempFilePath);
+          }
+        });
+      } else {
+        wx.chooseImage({
+          count: 1,
+          sizeType: ['compressed'],
+          success: function (res) {
+            if (res.tempFilePaths && res.tempFilePaths[0]) {
+              self.applyAvatar(res.tempFilePaths[0]);
+            }
+          }
+        });
+      }
+    },
+
+    /** 统一的头像落地：压缩 → 上云 → 失败转 base64 */
+    applyAvatar: function (src) {
+      var self = this;
+      this.compress(src).then(function (small) {
         return self.uploadToCloud(small).then(function (fileID) {
           if (fileID) {
-            // 优先用云存储 fileID：数据库只存几十字节，图片走 CDN
             self.setData({ avatar: fileID });
             return;
           }
-          // 云存储不可用 → 退回 base64
           return self.toBase64(small).then(function (b64) {
             self.setData({ avatar: b64 });
           }).catch(function () {
@@ -76,8 +128,7 @@ Component({
           });
         });
       }).catch(function () {
-        // 压缩失败就用原图，尽量不让授权中断
-        self.setData({ avatar: tmp });
+        self.setData({ avatar: src });
       });
     },
 

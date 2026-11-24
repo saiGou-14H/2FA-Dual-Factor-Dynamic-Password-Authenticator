@@ -110,7 +110,9 @@ Page({
 
   /** 点身份行拉起授权引导（已授权时可重新选择） */
   openAuthIfNeeded: function () {
+    console.log('[auth] 点击身份行，准备打开授权弹层，当前 authorized =', this.data.authorized);
     this.setData({ showAuth: true });
+    console.log('[auth] showAuth 已置为', this.data.showAuth);
   },
 
   /** 本机没有身份时，从云端拉回头像昵称（重装/删小程序后） */
