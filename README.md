@@ -115,7 +115,6 @@ app/                        微信小程序（原生）
 ├── assets/logo.png                 关于页图标（96px）
 ├── components/
 │   ├── otp-card/                   验证码卡片（环形倒计时、翻牌、下一码）
-│   ├── auth-prompt/                微信身份授权引导
 │   ├── action-sheet/               账号操作菜单（替代 showActionSheet）
 │   ├── select-sheet/               通用选择器（替代 picker）
 │   ├── date-sheet/                 日期选择（替代 picker mode="date"）
