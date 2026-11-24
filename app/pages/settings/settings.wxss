@@ -121,21 +121,6 @@
   transform: translateX(36rpx);
 }
 
-/* ================= 身份头像 ================= */
-.ident-avatar {
-  width: 64rpx;
-  height: 64rpx;
-  margin-right: 20rpx;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
-  background: var(--bg-soft);
-}
-.ident-avatar-img {
-  width: 100%;
-  height: 100%;
-}
-
 /* ================= 迁移二维码浮层 ================= */
 /* 居中用 flex，不用 transform：避免与入场动画的 transform 互相覆盖 */
 .qr-overlay {

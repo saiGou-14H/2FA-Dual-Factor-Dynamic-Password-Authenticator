@@ -7,18 +7,6 @@
     </view>
   </view>
 
-  <!-- 身份行：微信头像 + 昵称 -->
-  <view class="identity enter-1" bindtap="openAuthIfNeeded">
-    <image class="identity-avatar" wx:if="{{avatar}}" src="{{avatar}}" mode="aspectFill" />
-    <view class="identity-avatar is-empty" wx:else>
-      <view class="ico ico-plus"></view>
-    </view>
-    <view class="identity-body">
-      <view class="identity-name">{{authorized ? nickname : '点击授权微信头像与昵称'}}</view>
-      <view class="identity-sub">{{authorized ? syncText : '授权后身份与密钥一起加密同步，换机不丢'}}</view>
-    </view>
-  </view>
-
   <view class="search enter-2">
     <view class="ico ico-search"></view>
     <input class="search-input" value="{{query}}" placeholder="搜索发行方或账号"
@@ -147,7 +135,4 @@
     bind:select="onTokenAction"
     bind:close="closeTokenSheet"
   />
-
-  <!-- 首次进入的身份授权引导 -->
-  <auth-prompt wx:if="{{showAuth}}" show="{{showAuth}}" bind:done="onAuthDone" bind:skip="onAuthSkip" />
 </view>

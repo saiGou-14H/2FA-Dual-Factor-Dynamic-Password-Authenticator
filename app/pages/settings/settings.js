@@ -35,11 +35,6 @@ Page({
     showPwSheet: false,
     pwInput: '',
     hasCloudKey: false,
-    // 身份（只读，来自微信授权）
-    nickname: '',
-    avatar: '',
-    authorized: false,
-    showAuth: false
   },
 
   onShow: function () {
@@ -52,33 +47,11 @@ Page({
       hideCodes: app.globalData.hideCodes,
       count: store.count(),
       deletedCount: store.deletedCount(),
-      nickname: profile.nickname || '',
-      avatar: profile.avatar || '',
-      authorized: !!profile.authorized,
       nowText: util.hhmmss(),
       dateText: util.ymd(),
       ready: crypto.available
     });
     this.refreshSyncText();
-    this.syncProfileFromCloud();
-  },
-
-  /** 本机身份缺失时从云端补回 */
-  syncProfileFromCloud: function () {
-    var self = this;
-    var p = store.getProfile();
-    if (p && p.authorized && p.nickname) return;
-    if (!wx.cloud || !crypto.available) return;
-    cloudSync.loadProfile().then(function (r) {
-      if (r && r.nickname) {
-        store.setProfile({ nickname: r.nickname, avatar: r.avatar || '', authorized: true });
-        self.setData({
-          nickname: r.nickname,
-          avatar: r.avatar || '',
-          authorized: true
-        });
-      }
-    }).catch(function () { /* ignore */ });
   },
 
   onBack: function () {
@@ -374,32 +347,6 @@ Page({
       self.hideLoading();
       util.toast('恢复失败：' + (err && err.errMsg ? err.errMsg : '云端无数据'));
     });
-  },
-
-  /* ================= 身份授权 ================= */
-
-  /** 未授权时点身份行，重新拉起授权引导 */
-  openAuthIfNeeded: function () {
-    if (this.data.authorized) return;
-    this.setData({ showAuth: true });
-  },
-
-  onAuthDone: function () {
-    var profile = store.getProfile();
-    this.setData({
-      showAuth: false,
-      nickname: profile.nickname || '',
-      avatar: profile.avatar || '',
-      authorized: !!profile.authorized
-    });
-    util.toast('身份已保存', 'success');
-    if (crypto.available && vault.hasDek()) {
-      sync.push().catch(function () { /* 下次自动同步会补 */ });
-    }
-  },
-
-  onAuthSkip: function () {
-    this.setData({ showAuth: false });
   },
 
   /* ================= 其他设置 ================= */

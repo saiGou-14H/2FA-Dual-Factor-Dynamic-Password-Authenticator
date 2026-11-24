@@ -63,19 +63,6 @@ function health() {
   return callContainer('/api/health', 'GET');
 }
 
-/** 上传头像昵称（明文，便于重装后恢复身份） */
-function saveProfile(profile) {
-  return callContainer('/api/profile', 'POST', {
-    nickname: (profile && profile.nickname) || '',
-    avatar: (profile && profile.avatar) || ''
-  });
-}
-
-/** 拉取云端头像昵称 */
-function loadProfile() {
-  return callContainer('/api/profile', 'GET');
-}
-
 /** 生成迁移令牌 + 二维码（返回 { token, expiresAt, qr, payload }） */
 function issueMigrate(dekHex) {
   return callContainer('/api/migrate/issue', 'POST', { dek: dekHex });
@@ -91,8 +78,6 @@ module.exports = {
   upload: upload,
   download: download,
   health: health,
-  saveProfile: saveProfile,
-  loadProfile: loadProfile,
   issueMigrate: issueMigrate,
   claimMigrate: claimMigrate,
   ENV: ENV,

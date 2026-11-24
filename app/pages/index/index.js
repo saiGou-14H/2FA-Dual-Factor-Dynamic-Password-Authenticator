@@ -40,12 +40,6 @@ Page({
     refreshing: false,
     listAnim: '',
     tabInto: '',
-    showAuth: false,
-    // 身份
-    nickname: '',
-    avatar: '',
-    authorized: false,
-    syncText: '尚未同步',
     // 账号操作菜单
     showTokenSheet: false,
     tokenSheetTitle: '',
@@ -75,78 +69,10 @@ Page({
     }
     this.reload();
     this.startTick();
-    this.refreshIdentity();
-    this.syncProfileFromCloud();
   },
 
   onHide: function () { this.stopTick(); },
   onUnload: function () { this.stopTick(); },
-
-  /* ---------------- 身份 ---------------- */
-
-  /** 刷新头像 / 昵称 / 同步状态 */
-  refreshIdentity: function () {
-    var profile = store.getProfile();
-    var at = sync.lastSyncAt();
-    this.setData({
-      nickname: profile.nickname || '',
-      avatar: profile.avatar || '',
-      authorized: !!profile.authorized,
-      syncText: at ? ('已同步 · ' + this.formatSync(at)) : '尚未同步，退出时自动上传'
-    });
-  },
-
-  formatSync: function (ts) {
-    var d = new Date(Number(ts));
-    if (isNaN(d.getTime())) return '';
-    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
-    var hm = pad(d.getHours()) + ':' + pad(d.getMinutes());
-    var now = new Date();
-    var sameDay = d.getFullYear() === now.getFullYear()
-      && d.getMonth() === now.getMonth()
-      && d.getDate() === now.getDate();
-    return sameDay ? hm : ((d.getMonth() + 1) + '月' + d.getDate() + '日');
-  },
-
-  /** 点身份行拉起授权引导（已授权时可重新选择） */
-  openAuthIfNeeded: function () {
-    console.log('[auth] 点击身份行，准备打开授权弹层，当前 authorized =', this.data.authorized);
-    this.setData({ showAuth: true });
-    console.log('[auth] showAuth 已置为', this.data.showAuth);
-  },
-
-  /** 本机没有身份时，从云端拉回头像昵称（重装/删小程序后） */
-  syncProfileFromCloud: function () {
-    var self = this;
-    var p = store.getProfile();
-    if (p && p.authorized && p.nickname) return;   // 本机已有，不覆盖
-    if (!wx.cloud) return;
-    cloudSync.loadProfile().then(function (r) {
-      if (r && r.nickname) {
-        store.setProfile({
-          nickname: r.nickname,
-          avatar: r.avatar || '',
-          authorized: true
-        });
-        self.refreshIdentity();
-      }
-    }).catch(function () { /* 离线或后端未部署，忽略 */ });
-  },
-
-  /* ---------------- 身份授权引导 ---------------- */
-
-  onAuthDone: function () {
-    this.setData({ showAuth: false });
-    this.refreshIdentity();
-    util.toast('身份已保存', 'success');
-    if (vault.hasDek()) {
-      sync.push().catch(function () { /* 下次自动同步会补 */ });
-    }
-  },
-
-  onAuthSkip: function () {
-    this.setData({ showAuth: false });
-  },
 
   /* ---------------- 下拉刷新 ---------------- */
 
@@ -165,7 +91,6 @@ Page({
       page: 1
     });
     this._revealed = {};
-    this.refreshIdentity();
     this.compute();
   },
 

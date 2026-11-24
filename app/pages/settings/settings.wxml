@@ -37,19 +37,6 @@
       </view>
       <text class="field-value">已开启</text>
     </view>
-    <view class="field" bindtap="openAuthIfNeeded">
-      <view class="ident-avatar" wx:if="{{avatar}}">
-        <image class="ident-avatar-img" src="{{avatar}}" mode="aspectFill" />
-      </view>
-      <view class="field-body">
-        <view class="field-name">身份</view>
-        <view class="field-desc">{{authorized ? '由微信授权提供' : '未授权，点击完善'}}</view>
-      </view>
-      <view class="field-right">
-        <text class="field-value {{authorized ? '' : 'is-empty'}}">{{authorized ? nickname : '未授权'}}</text>
-        <view class="ico ico-chevron field-arrow" wx:if="{{!authorized}}"></view>
-      </view>
-    </view>
     <view class="field">
       <view class="field-body">
         <view class="field-name">已保存账号</view>
@@ -200,12 +187,6 @@
       </scroll-view>
     </view>
   </view>
-
-  <!-- 身份授权引导 -->
-  <auth-prompt show="{{showAuth}}" bind:done="onAuthDone" bind:skip="onAuthSkip" />
-
-
-
   <!-- 云端密钥备份浮层 -->
   <view class="pw-overlay" wx:if="{{showPwSheet}}">
     <view class="pw-mask" bindtap="closePwSheet"></view>

@@ -1,7 +1,6 @@
 {
   "usingComponents": {
     "otp-card": "/components/otp-card/otp-card",
-    "auth-prompt": "/components/auth-prompt/auth-prompt",
     "action-sheet": "/components/action-sheet/action-sheet"
   },
   "navigationStyle": "custom",
