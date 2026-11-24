@@ -17,7 +17,7 @@ Page({
     deletedCount: 0,
     nowText: '',
     dateText: '',
-    version: '1.3.0',
+    version: '1.3.1',
     showAbout: false,
     lastSyncText: '尚未同步',
     syncing: false,

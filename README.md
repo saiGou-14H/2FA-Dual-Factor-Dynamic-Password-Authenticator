@@ -7,7 +7,7 @@
 **本地优先的 TOTP / HOTP 多因素认证小程序 · 端到端加密云同步 · 二维码换机迁移**
 
 <img alt="license" src="https://img.shields.io/badge/license-MIT-2563eb">
-<img alt="version" src="https://img.shields.io/badge/version-1.3.0-2563eb">
+<img alt="version" src="https://img.shields.io/badge/version-1.3.1-2563eb">
 <img alt="platform" src="https://img.shields.io/badge/platform-%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F-07c160">
 <img alt="tests" src="https://img.shields.io/badge/tests-13%20suites%20%7C%20266%20asserts-brightgreen">
 
@@ -220,6 +220,17 @@ node tools/test_migrate_e2e.js      # 迁移令牌：一次性 / 过期 / 同账
 | 无暗色模式 | 仅提供亮色主题 |
 
 ## 更新日志
+
+### 1.3.1
+- **身份资料云端备份**：新增 `profile` 表与 `/api/profile` 接口，昵称头像明文存云端，
+  删除小程序/重装后自动拉回
+- **密钥可恢复**：新增「恢复码」（DEK 的 Base32 备份）与「云端密钥备份」
+  （口令包裹 DEK 后上传，服务端无口令解不开）
+- **覆盖保护**：本机重新生成密钥且云端已有密文时拒绝上传，避免永久覆盖旧数据
+- **头像改用对象存储**：优先 `wx.cloud.uploadFile` 存 `cloud://` fileID，
+  失败退回 base64
+- **授权弹层修复**：`wx:if` 挂载避免状态残留；已授权也能重新选择；
+  `canIUse` 检测不支持时退化为普通输入
 
 ### 1.3.0
 - 更名「双因子密码验证器」，导航与关于页同步
