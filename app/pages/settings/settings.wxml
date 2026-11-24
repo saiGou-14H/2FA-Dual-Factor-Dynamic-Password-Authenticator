@@ -61,6 +61,20 @@
 
   <view class="group">
     <view class="group-title">换机迁移</view>
+    <view class="field" bindtap="openPwSheet">
+      <view class="field-body">
+        <view class="field-name">云端密钥备份</view>
+        <view class="field-desc">{{hasCloudKey ? '已开启（口令加密）' : '设置口令，重装后可找回'}}</view>
+      </view>
+      <view class="ico ico-chevron field-arrow"></view>
+    </view>
+    <view class="field" bindtap="openRecovery">
+      <view class="field-body">
+        <view class="field-name">恢复码</view>
+        <view class="field-desc">备份密钥，重装后用它找回</view>
+      </view>
+      <view class="ico ico-chevron field-arrow"></view>
+    </view>
     <view class="field" bindtap="openMigrate">
       <view class="field-body">
         <view class="field-name">迁移到其他微信号</view>
@@ -189,6 +203,53 @@
 
   <!-- 身份授权引导 -->
   <auth-prompt show="{{showAuth}}" bind:done="onAuthDone" bind:skip="onAuthSkip" />
+
+
+
+  <!-- 云端密钥备份浮层 -->
+  <view class="pw-overlay" wx:if="{{showPwSheet}}">
+    <view class="pw-mask" bindtap="closePwSheet"></view>
+    <view class="pw-sheet">
+      <view class="pw-title">云端密钥备份</view>
+      <view class="pw-sub">设置一个恢复口令，用它把本机密钥加密后上传。重装小程序后输入同一口令即可找回全部账号。服务端只存加密结果，没有口令解不开。</view>
+
+      <input class="pw-input" type="text" password="{{true}}" value="{{pwInput}}"
+             placeholder="设置 / 输入恢复口令（≥8 位）" placeholder-class="pw-placeholder"
+             bindinput="onPwInput" maxlength="64" />
+
+      <view class="pw-actions">
+        <view class="pw-btn pw-btn-ghost" bindtap="closePwSheet">取消</view>
+        <view class="pw-btn pw-btn-line" bindtap="restoreByPassword">用口令恢复</view>
+        <view class="pw-btn pw-btn-solid" bindtap="uploadKeyBackup">上传备份</view>
+      </view>
+
+      <view class="pw-tip">换机/重装：先输口令点「用口令恢复」；本机已有密钥时点「上传备份」。</view>
+    </view>
+  </view>
+
+  <!-- 恢复码浮层 -->
+  <view class="rc-overlay" wx:if="{{showRecovery}}">
+    <view class="rc-mask" bindtap="closeRecovery"></view>
+    <view class="rc-sheet">
+      <view class="rc-title">恢复码</view>
+      <view class="rc-sub">这是你的密钥备份。重装小程序或换机后，输入它就能解开云端数据。请抄写或截图保存到安全处。</view>
+
+      <view class="rc-code" wx:if="{{recoveryCode}}" bindtap="copyRecovery">{{recoveryCode}}</view>
+      <view class="rc-code is-empty" wx:else>本机还没有密钥（先同步一次即可生成）</view>
+
+      <view class="rc-tip">点上方恢复码可复制</view>
+
+      <view class="rc-divider"></view>
+
+      <view class="rc-label">已有恢复码？粘贴到这里恢复</view>
+      <input class="rc-input" value="{{recoveryInput}}" placeholder="XXXX-XXXX-XXXX-…"
+             placeholder-class="rc-placeholder" bindinput="onRecoveryInput" />
+      <view class="rc-actions">
+        <view class="rc-btn rc-btn-ghost" bindtap="closeRecovery">关闭</view>
+        <view class="rc-btn rc-btn-solid" bindtap="applyRecovery">恢复</view>
+      </view>
+    </view>
+  </view>
 
   <!-- 加载遮罩 -->
   <loading show="{{loadingShow}}" text="{{loadingText}}" />

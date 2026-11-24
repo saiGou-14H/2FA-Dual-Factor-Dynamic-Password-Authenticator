@@ -8,6 +8,7 @@
  * 结果写入 store.getProfile()，随加密保险库同步。
  */
 var store = require('../../utils/store.js');
+var cloudSync = require('../../utils/cloud-sync.js');
 
 // 头像压缩参数：够小，避免撑大密文
 var AVATAR_WIDTH = 96;
@@ -21,7 +22,23 @@ Component({
   data: {
     nickname: '',
     avatar: '',
-    saving: false
+    saving: false,
+    canUseAvatar: true,
+    canUseNickname: true
+  },
+
+  lifetimes: {
+    attached: function () {
+      var canAvatar = true;
+      var canNickname = true;
+      try {
+        canAvatar = wx.canIUse('button.open-type.chooseAvatar');
+      } catch (e) { canAvatar = true; }
+      try {
+        canNickname = wx.canIUse('input.type.nickname');
+      } catch (e) { canNickname = true; }
+      this.setData({ canUseAvatar: canAvatar, canUseNickname: canNickname });
+    }
   },
 
   observers: {
@@ -100,6 +117,8 @@ Component({
         authorized: true
       });
       this.setData({ saving: false });
+      // 同步到云端（明文，重装小程序后可自动恢复）
+      cloudSync.saveProfile(profile).catch(function () { /* 离线忽略，下次授权会补 */ });
       this.triggerEvent('done', profile);
     },
 

@@ -149,5 +149,5 @@
   />
 
   <!-- 首次进入的身份授权引导 -->
-  <auth-prompt show="{{showAuth}}" bind:done="onAuthDone" bind:skip="onAuthSkip" />
+  <auth-prompt wx:if="{{showAuth}}" show="{{showAuth}}" bind:done="onAuthDone" bind:skip="onAuthSkip" />
 </view>

@@ -6,7 +6,7 @@
 
     <button
       class="auth-avatar-btn"
-      open-type="chooseAvatar"
+      open-type="{{canUseAvatar ? 'chooseAvatar' : ''}}"
       bindchooseavatar="onChooseAvatar"
       hover-class="auth-avatar-hover"
     >
@@ -19,7 +19,7 @@
 
     <input
       class="auth-input"
-      type="nickname"
+      type="{{canUseNickname ? 'nickname' : 'text'}}"
       value="{{nickname}}"
       placeholder="点击使用微信昵称"
       placeholder-class="auth-placeholder"

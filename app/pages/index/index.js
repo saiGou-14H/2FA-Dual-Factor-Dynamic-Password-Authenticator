@@ -4,6 +4,7 @@ var util = require('../../utils/util.js');
 var otpauth = require('../../utils/otpauth.js');
 var vault = require('../../utils/vault.js');
 var sync = require('../../utils/sync.js');
+var cloudSync = require('../../utils/cloud-sync.js');
 
 var app = getApp();
 
@@ -75,6 +76,7 @@ Page({
     this.reload();
     this.startTick();
     this.refreshIdentity();
+    this.syncProfileFromCloud();
   },
 
   onHide: function () { this.stopTick(); },
@@ -106,10 +108,27 @@ Page({
     return sameDay ? hm : ((d.getMonth() + 1) + '月' + d.getDate() + '日');
   },
 
-  /** 未授权时点身份行，拉起授权引导 */
+  /** 点身份行拉起授权引导（已授权时可重新选择） */
   openAuthIfNeeded: function () {
-    if (this.data.authorized) return;
     this.setData({ showAuth: true });
+  },
+
+  /** 本机没有身份时，从云端拉回头像昵称（重装/删小程序后） */
+  syncProfileFromCloud: function () {
+    var self = this;
+    var p = store.getProfile();
+    if (p && p.authorized && p.nickname) return;   // 本机已有，不覆盖
+    if (!wx.cloud) return;
+    cloudSync.loadProfile().then(function (r) {
+      if (r && r.nickname) {
+        store.setProfile({
+          nickname: r.nickname,
+          avatar: r.avatar || '',
+          authorized: true
+        });
+        self.refreshIdentity();
+      }
+    }).catch(function () { /* 离线或后端未部署，忽略 */ });
   },
 
   /* ---------------- 身份授权引导 ---------------- */
