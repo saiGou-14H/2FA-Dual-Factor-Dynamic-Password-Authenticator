@@ -2,7 +2,9 @@
  * auth-prompt —— 微信身份授权引导
  *
  * 微信自 2022-10 起不再开放读取昵称的接口，唯一合规路径是：
- *   头像：<button open-type="chooseAvatar"> → 临时路径 → 压缩 → base64
+ *   头像：<button open-type="chooseAvatar"> → 临时路径 → 压缩
+ *         → 优先上传云存储（得到 cloud:// fileID）
+ *         → 上传失败则退回 base64 存本机+云端
  *   昵称：<input type="nickname"> → 键盘上方选「微信昵称」
  *
  * 结果写入 store.getProfile()，随加密保险库同步。
@@ -60,17 +62,28 @@ Component({
       var tmp = e.detail && e.detail.avatarUrl;
       if (!tmp) return;
       this.compress(tmp).then(function (small) {
-        self.setData({ avatar: small });
+        return self.uploadToCloud(small).then(function (fileID) {
+          if (fileID) {
+            // 优先用云存储 fileID：数据库只存几十字节，图片走 CDN
+            self.setData({ avatar: fileID });
+            return;
+          }
+          // 云存储不可用 → 退回 base64
+          return self.toBase64(small).then(function (b64) {
+            self.setData({ avatar: b64 });
+          }).catch(function () {
+            self.setData({ avatar: small });
+          });
+        });
       }).catch(function () {
         // 压缩失败就用原图，尽量不让授权中断
         self.setData({ avatar: tmp });
       });
     },
 
-    /** 压缩并转 base64（压缩失败返回原路径） */
+    /** 压缩到 96px，返回临时文件路径 */
     compress: function (src) {
-      var self = this;
-      return new Promise(function (resolve, reject) {
+      return new Promise(function (resolve) {
         if (!wx.compressImage) return resolve(src);
         wx.compressImage({
           src: src,
@@ -79,8 +92,24 @@ Component({
           success: function (res) { resolve(res.tempFilePath || src); },
           fail: function () { resolve(src); }
         });
-      }).then(function (path) {
-        return self.toBase64(path).catch(function () { return path; });
+      });
+    },
+
+    /**
+     * 上传到云存储，返回 fileID（cloud://...）。
+     * 失败返回空串，由调用方退回 base64。
+     */
+    uploadToCloud: function (filePath) {
+      return new Promise(function (resolve) {
+        if (!wx.cloud || !wx.cloud.uploadFile) return resolve('');
+        var rand = Math.random().toString(36).slice(2, 8);
+        var cloudPath = 'avatars/' + Date.now() + '-' + rand + '.png';
+        wx.cloud.uploadFile({
+          cloudPath: cloudPath,
+          filePath: filePath,
+          success: function (res) { resolve(res.fileID || ''); },
+          fail: function () { resolve(''); }
+        });
       });
     },
 
