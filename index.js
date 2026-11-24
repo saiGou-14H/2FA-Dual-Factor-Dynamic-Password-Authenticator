@@ -51,6 +51,14 @@ async function ensureSchema() {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
   );
   await pool.query(
+    `CREATE TABLE IF NOT EXISTS profile (
+      openid VARCHAR(64) NOT NULL PRIMARY KEY,
+      nickname VARCHAR(64) NOT NULL DEFAULT '',
+      avatar LONGTEXT,
+      updated_at BIGINT NOT NULL DEFAULT 0
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
+  );
+  await pool.query(
     `CREATE TABLE IF NOT EXISTS migrate_token (
       token VARCHAR(64) NOT NULL PRIMARY KEY,
       source_openid VARCHAR(64) NOT NULL,
@@ -112,6 +120,48 @@ app.get('/api/vault', auth, async (req, res) => {
     });
   } catch (e) {
     console.error('[vault get]', e);
+    res.status(500).json({ code: 500, error: 'server error' });
+  }
+});
+
+/* ==================== 身份资料（明文，便于重装后恢复） ==================== */
+
+// 上传头像昵称（明文存储：属于微信公开资料，非密钥）
+app.post('/api/profile', auth, async (req, res) => {
+  try {
+    const nickname = String((req.body && req.body.nickname) || '').slice(0, 64);
+    const avatar = String((req.body && req.body.avatar) || '');
+    if (avatar.length > 200000) {
+      return res.status(413).json({ code: 413, error: 'avatar too large' });
+    }
+    await pool.query(
+      'INSERT INTO profile (openid, nickname, avatar, updated_at) VALUES (?, ?, ?, ?) ' +
+      'ON DUPLICATE KEY UPDATE nickname = VALUES(nickname), avatar = VALUES(avatar), updated_at = VALUES(updated_at)',
+      [req.openid, nickname, avatar, Date.now()]
+    );
+    res.json({ code: 0, ok: true });
+  } catch (e) {
+    console.error('[profile put]', e);
+    res.status(500).json({ code: 500, error: 'server error' });
+  }
+});
+
+// 拉取头像昵称（重装小程序后自动恢复身份）
+app.get('/api/profile', auth, async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT nickname, avatar, updated_at FROM profile WHERE openid = ?',
+      [req.openid]
+    );
+    if (!rows.length) return res.json({ code: 0, nickname: '', avatar: '' });
+    res.json({
+      code: 0,
+      nickname: rows[0].nickname || '',
+      avatar: rows[0].avatar || '',
+      updated_at: rows[0].updated_at
+    });
+  } catch (e) {
+    console.error('[profile get]', e);
     res.status(500).json({ code: 500, error: 'server error' });
   }
 });
