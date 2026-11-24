@@ -25,20 +25,25 @@ Component({
     nickname: '',
     avatar: '',
     saving: false,
-    canUseAvatar: true,
-    canUseNickname: true
+    // 默认保守：检测通过才开启微信通道，否则走相册/手输，保证任何环境都能完成授权
+    canUseAvatar: false,
+    canUseNickname: false
   },
 
   lifetimes: {
     attached: function () {
-      var canAvatar = true;
-      var canNickname = true;
+      var canAvatar = false;
+      var canNickname = false;
       try {
-        canAvatar = wx.canIUse('button.open-type.chooseAvatar');
-      } catch (e) { canAvatar = true; }
-      try {
-        canNickname = wx.canIUse('input.type.nickname');
-      } catch (e) { canNickname = true; }
+        // 需要基础库 2.21.2+，且必须是真机环境
+        if (typeof wx.canIUse === 'function') {
+          canAvatar = !!wx.canIUse('button.open-type.chooseAvatar');
+          canNickname = !!wx.canIUse('input.type.nickname');
+        }
+      } catch (e) {
+        canAvatar = false;
+        canNickname = false;
+      }
       console.log('[auth] 组件挂载 canAvatar=', canAvatar, 'canNickname=', canNickname);
       // 这两个 only 用于文案提示：属性本身必须静态写死，动态绑定会让按钮失效
       this.setData({
@@ -86,25 +91,18 @@ Component({
       }, 1500);
     },
 
-    /** 从相册选择图片（任何环境都可用，作为 chooseAvatar 的兜底） */
+    /**
+     * 从相册选择图片 —— 不依赖 chooseAvatar，任何基础库版本都能用。
+     * 优先 chooseMedia（2.10.0+），失败退回 chooseImage（1.0.0+）。
+     */
     pickFromAlbum: function () {
       var self = this;
-      var pick = wx.chooseMedia || wx.chooseImage;
-      if (!pick) {
-        wx.showToast({ title: '当前环境无法选择图片', icon: 'none' });
-        return;
-      }
-      if (wx.chooseMedia) {
-        wx.chooseMedia({
-          count: 1,
-          mediaType: ['image'],
-          sizeType: ['compressed'],
-          success: function (res) {
-            var f = res.tempFiles && res.tempFiles[0];
-            if (f) self.applyAvatar(f.tempFilePath);
-          }
-        });
-      } else {
+
+      function withChooseImage() {
+        if (typeof wx.chooseImage !== 'function') {
+          wx.showToast({ title: '当前环境无法选择图片', icon: 'none' });
+          return;
+        }
         wx.chooseImage({
           count: 1,
           sizeType: ['compressed'],
@@ -112,9 +110,33 @@ Component({
             if (res.tempFilePaths && res.tempFilePaths[0]) {
               self.applyAvatar(res.tempFilePaths[0]);
             }
+          },
+          fail: function (err) {
+            if (String((err && err.errMsg) || '').indexOf('cancel') >= 0) return;
+            wx.showToast({ title: '选择图片失败', icon: 'none' });
           }
         });
       }
+
+      if (typeof wx.chooseMedia !== 'function') {
+        withChooseImage();
+        return;
+      }
+      wx.chooseMedia({
+        count: 1,
+        mediaType: ['image'],
+        sizeType: ['compressed'],
+        success: function (res) {
+          var f = res.tempFiles && res.tempFiles[0];
+          if (f) self.applyAvatar(f.tempFilePath);
+        },
+        fail: function (err) {
+          var msg = String((err && err.errMsg) || '');
+          if (msg.indexOf('cancel') >= 0) return;
+          // chooseMedia 不可用 → 退回旧接口
+          withChooseImage();
+        }
+      });
     },
 
     /** 统一的头像落地：压缩 → 上云 → 失败转 base64 */
