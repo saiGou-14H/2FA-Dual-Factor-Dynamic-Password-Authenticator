@@ -40,7 +40,12 @@ Component({
         canNickname = wx.canIUse('input.type.nickname');
       } catch (e) { canNickname = true; }
       console.log('[auth] 组件挂载 canAvatar=', canAvatar, 'canNickname=', canNickname);
-      this.setData({ canUseAvatar: canAvatar, canUseNickname: canNickname });
+      // 这两个 only 用于文案提示：属性本身必须静态写死，动态绑定会让按钮失效
+      this.setData({
+        canUseAvatar: canAvatar,
+        canUseNickname: canNickname,
+        avatarTip: canAvatar ? '使用微信头像' : '从相册选择头像'
+      });
     }
   },
 

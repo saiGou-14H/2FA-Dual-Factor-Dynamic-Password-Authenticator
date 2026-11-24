@@ -6,7 +6,7 @@
 
     <button
       class="auth-avatar-btn"
-      open-type="{{canUseAvatar ? 'chooseAvatar' : ''}}"
+      open-type="chooseAvatar"
       bindchooseavatar="onChooseAvatar"
       bindtap="onAvatarBtnTap"
       hover-class="auth-avatar-hover"
@@ -15,14 +15,14 @@
       <view class="auth-avatar-empty" wx:else>
         <view class="ico ico-plus"></view>
       </view>
-      <text class="auth-avatar-tip">{{avatar ? '点击更换头像' : '使用微信头像'}}</text>
+      <text class="auth-avatar-tip">{{avatar ? '点击更换头像' : (avatarTip || '使用微信头像')}}</text>
     </button>
 
     <view class="auth-album" bindtap="pickFromAlbum">从相册选择图片</view>
 
     <input
       class="auth-input"
-      type="{{canUseNickname ? 'nickname' : 'text'}}"
+      type="nickname"
       value="{{nickname}}"
       placeholder="点击使用微信昵称"
       placeholder-class="auth-placeholder"
