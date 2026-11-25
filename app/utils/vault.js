@@ -58,6 +58,24 @@ function encryptCurrent(dekHex) {
   });
 }
 
+/**
+ * 仅校验：密文包能否用该 DEK 解开。不写本地，无副作用。
+ * @returns 解密后的 payload，失败返回 null
+ */
+function canDecrypt(packedStr, dekHex) {
+  try {
+    var key = crypto.hexKey(dekHex);
+    if (!key) return null;
+    var packed = JSON.parse(packedStr);
+    if (!packed || !packed.body) return null;
+    var v = crypto.decryptVault(key, packed.body);
+    if (!v || !Array.isArray(v.tokens)) return null;
+    return v;
+  } catch (e) {
+    return null;
+  }
+}
+
 /** 密文包字符串 + DEK → 写回本地，返回 token 数量 */
 function applyPacked(packedStr, dekHex) {
   var key = crypto.hexKey(dekHex);
@@ -165,6 +183,7 @@ module.exports = {
   ensureDek: ensureDek,
   encryptCurrent: encryptCurrent,
   applyPacked: applyPacked,
+  canDecrypt: canDecrypt,
   getHeader: getHeader,
   setHeader: setHeader,
   wrapDekWithPassword: wrapDekWithPassword,

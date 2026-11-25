@@ -69,10 +69,43 @@ Page({
     }
     this.reload();
     this.startTick();
+    this.handleRestoreFeedback();
   },
 
   onHide: function () { this.stopTick(); },
   onUnload: function () { this.stopTick(); },
+
+  /** 启动自动恢复的结果反馈（在 app.onLaunch 异步完成） */
+  handleRestoreFeedback: function () {
+    var self = this;
+    var app = getApp();
+    var g = app && app.globalData;
+    if (!g) return;
+    if (g.restoredCount) {
+      var n = g.restoredCount;
+      g.restoredCount = 0;
+      g.vaultDirty = false;
+      this.reload();
+      util.toast('已从云端恢复 ' + n + ' 个账号', 'success');
+      return;
+    }
+    if (g.restoreBlocked) {
+      var why = g.restoreBlocked;
+      g.restoreBlocked = null;
+      var msg = why === 'needKey'
+        ? '云端有加密数据，需要恢复密钥才能打开。'
+        : '云端数据与本机密钥不匹配。';
+      wx.showModal({
+        title: '发现云端数据',
+        content: msg + '请到「设置 → 云端密钥备份 / 恢复码」找回。',
+        confirmText: '去设置',
+        cancelText: '稍后',
+        success: function (res) {
+          if (res.confirm) wx.navigateTo({ url: '/pages/settings/settings' });
+        }
+      });
+    }
+  },
 
   /* ---------------- 下拉刷新 ---------------- */
 

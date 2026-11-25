@@ -39,25 +39,20 @@ App({
     this.globalData.hideCodes = hide === '' || hide === undefined ? true : !!hide;
     store.ensureDefaults();
 
-    // 首次启动植入示例账号，方便预览 UI；删除后不再植入
-    var seeded = wx.getStorageSync('otp_seeded');
-    if (!seeded && store.count() === 0) {
-      store.add({
-        issuer: 'GitHub', label: 'alice@example.com',
-        secret: 'JBSWY3DPEHPK3PXP', algorithm: 'SHA1', digits: 6, period: 30, type: 'totp',
-        groupId: store.WORK_GROUP_ID
-      });
-      store.add({
-        issuer: 'Google', label: 'bob@gmail.com',
-        secret: 'KRSXG5CTMVRXEZLU', algorithm: 'SHA1', digits: 6, period: 30, type: 'totp',
-        groupId: store.PERSONAL_GROUP_ID
-      });
-      store.add({
-        issuer: 'AWS', label: 'ops@corp.com',
-        secret: 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ', algorithm: 'SHA256', digits: 8, period: 30, type: 'totp',
-        groupId: store.WORK_GROUP_ID
-      });
-      wx.setStorageSync('otp_seeded', 1);
+    // 启动时尝试从云端恢复（本机为空但云端有数据时）
+    var self = this;
+    if (wx.cloud) {
+      sync.autoRestore().then(function (r) {
+        if (!r) return;
+        if (r.restored) {
+          self.globalData.vaultDirty = true;
+          self.globalData.restoredCount = r.restored;
+        } else if (r.needKey) {
+          self.globalData.restoreBlocked = 'needKey';
+        } else if (r.mismatch) {
+          self.globalData.restoreBlocked = 'mismatch';
+        }
+      }).catch(function () { /* 离线忽略 */ });
     }
   },
 

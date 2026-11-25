@@ -32,6 +32,7 @@ function probe() {
       try { packed = JSON.parse(r.data); } catch (e) { packed = null; }
     }
     return {
+      raw: (r && r.data) || '',
       hasData: !!(r && r.data),
       hasHeader: !!(packed && packed.header && packed.header.wrappedDek),
       header: (packed && packed.header) || null,
@@ -50,21 +51,40 @@ function push() {
   if (!vault.hasDek() && store.count() === 0) {
     return Promise.resolve({ ok: true, skipped: true, at: lastSyncAt() });
   }
-  // 关键保护：本机原本没有密钥（说明是重装/删除小程序后重建），
-  // 若云端已有密文，直接上传会把别人的旧数据永久覆盖掉 —— 必须先拒绝。
-  var isNewDek = !vault.hasDek();
+
   syncing = true;
-  return vault.ensureDek().then(function (dek) {
-    if (!isNewDek) return dek;
-    return probe().then(function (info) {
-      if (info.hasData) {
-        throw {
-          errMsg: '云端已有加密数据，但本机没有对应密钥。请先用「恢复码」或「迁移二维码」找回，避免覆盖。',
-          code: 'DEK_MISMATCH'
-        };
-      }
-      return dek;
-    });
+
+  /**
+   * 覆盖保护（无条件，且在生成新密钥之前）：
+   * 1) 云端有数据 + 本机 0 个账号 → 拒绝，避免清空云端
+   * 2) 云端有数据 + 本机无密钥 → 拒绝，提示用恢复码/口令
+   * 3) 云端有数据 + 密钥解不开 → 拒绝，说明不是同一份数据
+   * 只有云端为空，或云端数据能用本机密钥解开，才允许上传。
+   */
+  return probe().then(function (info) {
+    if (!info.hasData) return null;
+    if (store.count() === 0) {
+      throw {
+        errMsg: '本机没有账号，上传会清空云端数据，已阻止。请先恢复数据。',
+        code: 'EMPTY_LOCAL'
+      };
+    }
+    var dek = vault.getDekHex();
+    if (!dek) {
+      throw {
+        errMsg: '云端已有数据，但本机没有密钥。请用「恢复码」或「云端密钥备份」找回后再同步。',
+        code: 'NO_DEK'
+      };
+    }
+    if (!vault.canDecrypt(info.raw, dek)) {
+      throw {
+        errMsg: '云端数据与本机密钥不匹配，已阻止覆盖。请用恢复码或口令恢复。',
+        code: 'DEK_MISMATCH'
+      };
+    }
+    return null;
+  }).then(function () {
+    return vault.ensureDek();
   }).then(function (dek) {
     return vault.encryptCurrent(dek);
   }).then(function (packed) {
@@ -85,6 +105,25 @@ function push() {
   }).catch(function (err) {
     syncing = false;
     throw err;
+  });
+}
+
+/**
+ * 启动时自动恢复：本机没有账号但云端有数据 → 尝试用本机密钥解密并写回。
+ * 返回 { restored:n } / { needKey:true } / { mismatch:true } / { empty:true } / { skipped:true }
+ */
+function autoRestore() {
+  if (store.count() > 0) return Promise.resolve({ skipped: true });
+  return probe().then(function (info) {
+    if (!info.hasData) return { empty: true };
+    var dek = vault.getDekHex();
+    if (!dek) return { needKey: true };
+    if (!vault.canDecrypt(info.raw, dek)) return { mismatch: true };
+    var n = vault.applyPacked(info.raw, dek);
+    markSynced(Date.now());
+    return { restored: n };
+  }).catch(function (e) {
+    return { error: e };
   });
 }
 
@@ -124,5 +163,6 @@ module.exports = {
   isSyncing: isSyncing,
   push: push,
   pull: pull,
+  autoRestore: autoRestore,
   probe: probe
 };
