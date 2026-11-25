@@ -11,6 +11,7 @@
  * 这是免口令方案的固有代价，已在项目文档中说明。
  */
 var crypto = require('./crypto.js');
+var totp = require('./totp.js');
 var store = require('./store.js');
 
 var DEK_KEY = 'otp_dek_hex';
@@ -94,9 +95,9 @@ function applyPacked(packedStr, dekHex) {
   return vault.tokens.length;
 }
 
-/* ---------------- header（云端密钥包裹信息） ---------------- */
+/* ---------------- 口令包裹的 DEK（云端备份） ---------------- */
 
-/** 读取本机保存的 header（kdf:'server' 时含 wrappedDek） */
+/** 读取本机保存的 header（salt + wrappedDek） */
 function getHeader() {
   try { return wx.getStorageSync(HEADER_KEY) || null; } catch (e) { return null; }
 }
@@ -106,11 +107,38 @@ function setHeader(header) {
   else wx.removeStorageSync(HEADER_KEY);
 }
 
-/* ---------------- 服务端 KEK 包裹（A' 零配置恢复） ---------------- */
+/**
+ * 用口令包裹当前 DEK，返回 header 并落本机。
+ * header = { salt, iter, wrappedDek } —— 可安全放云端，没有口令解不开。
+ */
+function wrapDekWithPassword(password) {
+  if (!hasDek()) return Promise.reject({ errMsg: '本机还没有密钥' });
+  if (String(password || '').length < 8) {
+    return Promise.reject({ errMsg: '口令至少 8 位' });
+  }
+  return crypto.createVault(password).then(function (header) {
+    setHeader(header);
+    return header;
+  });
+}
+
+/**
+ * 用口令解开云端 header，成功后写入本机 DEK。
+ * @returns DEK hex，口令错误返回 null
+ */
+function unwrapDekWithPassword(password, header) {
+  if (!header || !header.salt || !header.wrappedDek) return null;
+  var dek = crypto.unlock(password, header);
+  if (!dek) return null;
+  var hex = dek.toString();
+  setDekHex(hex);
+  setHeader(header);
+  return hex;
+}
 
 /**
  * 用服务端派生 KEK 包裹当前 DEK，写入本机 header（kdf:'server'）。
- * 换设备/重装后，只要拿到同一 openid 的 KEK 就能解回来。
+ * 之后换设备/重装，只要拿到同一 openid 的 KEK 就能解回来。
  */
 function wrapDekWithServerKek(kekHex) {
   var dekHex = getDekHex();
@@ -136,6 +164,45 @@ function unwrapDekWithServerKek(header, kekHex) {
   return dekHex;
 }
 
+/* ---------------- 恢复码（DEK 的可读备份） ---------------- */
+
+/** DEK → 恢复码（Base32，32 字节 → 52 字符） */
+function getRecoveryCode() {
+  var hex = getDekHex();
+  if (!hex || hex.length !== 64) return '';
+  var bytes = [];
+  for (var i = 0; i < hex.length; i += 2) bytes.push(parseInt(hex.substr(i, 2), 16));
+  return totp.base32Encode(bytes);
+}
+
+/** 恢复码 → 写入本机 DEK */
+function importRecoveryCode(code) {
+  var clean = String(code || '').replace(/[\s\-_]/g, '').toUpperCase();
+  if (!clean) return { error: '请输入恢复码' };
+  if (!/^[A-Z2-7]+$/.test(clean)) return { error: '恢复码只能包含 A-Z 与 2-7' };
+  var bytes;
+  try {
+    bytes = totp.base32Decode(clean);
+  } catch (e) {
+    return { error: '恢复码无法解析' };
+  }
+  if (!bytes || bytes.length !== 32) {
+    return { error: '恢复码长度不对（应为 52 位）' };
+  }
+  var hex = '';
+  for (var i = 0; i < bytes.length; i++) hex += ('0' + bytes[i].toString(16)).slice(-2);
+  setDekHex(hex);
+  return { ok: true };
+}
+
+/** 恢复码分组显示：每 4 位加连字符 */
+function formatRecoveryCode(code) {
+  var c = String(code || '');
+  var out = [];
+  for (var i = 0; i < c.length; i += 4) out.push(c.slice(i, i + 4));
+  return out.join('-');
+}
+
 module.exports = {
   DEK_KEY: DEK_KEY,
   getDekHex: getDekHex,
@@ -149,5 +216,10 @@ module.exports = {
   wrapDekWithServerKek: wrapDekWithServerKek,
   unwrapDekWithServerKek: unwrapDekWithServerKek,
   setHeader: setHeader,
+  wrapDekWithPassword: wrapDekWithPassword,
+  unwrapDekWithPassword: unwrapDekWithPassword,
   HEADER_KEY: HEADER_KEY,
+  getRecoveryCode: getRecoveryCode,
+  importRecoveryCode: importRecoveryCode,
+  formatRecoveryCode: formatRecoveryCode
 };
