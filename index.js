@@ -51,6 +51,16 @@ async function ensureSchema() {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
   );
   await pool.query(
+    `CREATE TABLE IF NOT EXISTS vault_history (
+      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+      openid VARCHAR(64) NOT NULL,
+      data LONGTEXT NOT NULL,
+      rev INT NOT NULL DEFAULT 0,
+      created_at BIGINT NOT NULL,
+      INDEX idx_openid_time (openid, created_at)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
+  );
+  await pool.query(
     `CREATE TABLE IF NOT EXISTS profile (
       openid VARCHAR(64) NOT NULL PRIMARY KEY,
       nickname VARCHAR(64) NOT NULL DEFAULT '',
@@ -92,12 +102,31 @@ app.post('/api/vault', auth, async (req, res) => {
     if (data.length > 500000) {
       return res.status(413).json({ code: 413, error: 'payload too large' });
     }
+    // 版本管理：内容有变化才记一版历史，避免自动同步刷屏
+    const [last] = await pool.query(
+      'SELECT data FROM vault_history WHERE openid = ? ORDER BY id DESC LIMIT 1',
+      [req.openid]
+    );
+    const changed = !last.length || last[0].data !== data;
+    if (changed) {
+      await pool.query(
+        'INSERT INTO vault_history (openid, data, rev, created_at) VALUES (?, ?, ?, ?)',
+        [req.openid, data, rev, Date.now()]
+      );
+      // 只保留最近 20 个版本
+      await pool.query(
+        'DELETE FROM vault_history WHERE openid = ? AND id NOT IN (' +
+        'SELECT id FROM (SELECT id FROM vault_history WHERE openid = ? ORDER BY id DESC LIMIT 20) t)',
+        [req.openid, req.openid]
+      );
+    }
+
     await pool.query(
       'INSERT INTO vault (openid, data, rev, updated_at) VALUES (?, ?, ?, ?) ' +
       'ON DUPLICATE KEY UPDATE data = VALUES(data), rev = VALUES(rev), updated_at = VALUES(updated_at)',
       [req.openid, data, rev, Date.now()]
     );
-    res.json({ code: 0, ok: true });
+    res.json({ code: 0, ok: true, versioned: changed });
   } catch (e) {
     console.error('[vault put]', e);
     res.status(500).json({ code: 500, error: 'server error' });
@@ -105,6 +134,66 @@ app.post('/api/vault', auth, async (req, res) => {
 });
 
 // 下载密文
+// 版本列表（不含正文，只给元信息）
+app.get('/api/vault/history', auth, async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      'SELECT id, rev, created_at, CHAR_LENGTH(data) AS size FROM vault_history ' +
+      'WHERE openid = ? ORDER BY id DESC LIMIT 20',
+      [req.openid]
+    );
+    res.json({ code: 0, versions: rows });
+  } catch (e) {
+    console.error('[history list]', e);
+    res.status(500).json({ code: 500, error: 'server error' });
+  }
+});
+
+// 取指定版本的密文
+app.get('/api/vault/history/:id', auth, async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!id) return res.status(400).json({ code: 400, error: 'bad id' });
+    const [rows] = await pool.query(
+      'SELECT id, data, rev, created_at FROM vault_history WHERE id = ? AND openid = ?',
+      [id, req.openid]
+    );
+    if (!rows.length) return res.status(404).json({ code: 404, error: 'not found' });
+    res.json({ code: 0, version: rows[0] });
+  } catch (e) {
+    console.error('[history get]', e);
+    res.status(500).json({ code: 500, error: 'server error' });
+  }
+});
+
+// 把指定版本设为当前（同时追加为最新历史）
+app.post('/api/vault/restore', auth, async (req, res) => {
+  try {
+    const id = Number(req.body && req.body.id);
+    if (!id) return res.status(400).json({ code: 400, error: 'id required' });
+    const [rows] = await pool.query(
+      'SELECT data, rev FROM vault_history WHERE id = ? AND openid = ?',
+      [id, req.openid]
+    );
+    if (!rows.length) return res.status(404).json({ code: 404, error: 'not found' });
+    const { data, rev } = rows[0];
+    const now = Date.now();
+    await pool.query(
+      'INSERT INTO vault (openid, data, rev, updated_at) VALUES (?, ?, ?, ?) ' +
+      'ON DUPLICATE KEY UPDATE data = VALUES(data), rev = VALUES(rev), updated_at = VALUES(updated_at)',
+      [req.openid, data, rev, now]
+    );
+    await pool.query(
+      'INSERT INTO vault_history (openid, data, rev, created_at) VALUES (?, ?, ?, ?)',
+      [req.openid, data, rev, now]
+    );
+    res.json({ code: 0, ok: true });
+  } catch (e) {
+    console.error('[history restore]', e);
+    res.status(500).json({ code: 500, error: 'server error' });
+  }
+});
+
 app.get('/api/vault', auth, async (req, res) => {
   try {
     const [rows] = await pool.query(
