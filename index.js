@@ -124,6 +124,22 @@ app.get('/api/vault', auth, async (req, res) => {
   }
 });
 
+/* ==================== 零配置密钥找回（openid + 服务端密钥派生） ==================== */
+
+// VAULT_SECRET 只存在于环境变量，绝不入库。
+// KEK = HMAC-SHA256(VAULT_SECRET, openid)，同一账号恒定，换设备/重装都能重新取回。
+// 安全边界：数据库单独泄露时攻击者没有 VAULT_SECRET，解不开；
+// 但本服务与云平台可推导 KEK，因此这是「服务端可解密」模型，不是端到端加密。
+const VAULT_SECRET = process.env.VAULT_SECRET || '';
+
+app.get('/api/wrap-key', auth, (req, res) => {
+  if (!VAULT_SECRET) {
+    return res.status(503).json({ code: 503, error: 'VAULT_SECRET not configured' });
+  }
+  const kek = nodeCrypto.createHmac('sha256', VAULT_SECRET).update(req.openid).digest('hex');
+  res.json({ code: 0, kek: kek });
+});
+
 /* ==================== 身份资料（明文，便于重装后恢复） ==================== */
 
 // 上传头像昵称（明文存储：属于微信公开资料，非密钥）
