@@ -132,6 +132,20 @@ app.get('/api/vault', auth, async (req, res) => {
 // 但本服务与云平台可推导 KEK，因此这是「服务端可解密」模型，不是端到端加密。
 const VAULT_SECRET = process.env.VAULT_SECRET || '';
 
+// 弱密钥告警：KEK 全靠它，短口令/字典词等于没有保护
+(function warnWeakSecret() {
+  if (!VAULT_SECRET) {
+    console.warn('[wrap-key] VAULT_SECRET 未配置，零配置密钥找回不可用');
+    return;
+  }
+  if (VAULT_SECRET.length < 16) {
+    console.warn(
+      '[wrap-key] VAULT_SECRET 过短（' + VAULT_SECRET.length + ' 位）。' +
+      '数据库泄露时可被字典攻击还原，建议 32 位以上随机串。'
+    );
+  }
+})();
+
 app.get('/api/wrap-key', auth, (req, res) => {
   if (!VAULT_SECRET) {
     return res.status(503).json({ code: 503, error: 'VAULT_SECRET not configured' });
