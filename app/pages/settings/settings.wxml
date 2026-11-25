@@ -211,6 +211,8 @@
         <view class="pw-btn pw-btn-solid" bindtap="uploadKeyBackup">启用口令</view>
       </view>
 
+      <view class="pw-tip">当前模式：{{keyMode === 'password' ? '口令模式（服务端无法解密）' : '零配置模式（自动恢复）'}}</view>
+      <view class="pw-switch" wx:if="{{keyMode === 'password'}}" bindtap="switchToZeroConfig">切回零配置恢复</view>
       <view class="pw-tip">开启后：换机需输口令点「用口令解锁」。忘记口令时可用「应急恢复码」兜底。</view>
     </view>
   </view>

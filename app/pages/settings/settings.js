@@ -17,7 +17,7 @@ Page({
     deletedCount: 0,
     nowText: '',
     dateText: '',
-    version: '1.3.4',
+    version: '1.3.5',
     showAbout: false,
     lastSyncText: '尚未同步',
     syncing: false,
@@ -342,6 +342,39 @@ Page({
     }).catch(function (err) {
       self.hideLoading();
       util.toast('上传失败：' + (err && err.errMsg ? err.errMsg : '网络错误'));
+    });
+  },
+
+  /**
+   * 从口令模式切回零配置：
+   * 清掉口令 header → 重新 push，push 内会检测到 header 为空，
+   * 自动用服务端 KEK 包一份新 header。失败则还原原 header。
+   */
+  switchToZeroConfig: function () {
+    var self = this;
+    var oldHeader = vault.getHeader();
+    if (!oldHeader) {
+      util.toast('当前已是零配置模式');
+      return;
+    }
+    this.showLoading('正在切回零配置');
+    vault.setHeader(null);
+    sync.push().then(function () {
+      self.hideLoading();
+      var hd = vault.getHeader();
+      var ok = hd && hd.kdf === 'server';
+      self.setData({
+        showPwSheet: false,
+        pwInput: '',
+        keyMode: ok ? 'server' : ''
+      });
+      if (ok) util.toast('已切回零配置恢复', 'success');
+      else util.toast('切换未完成：服务器密钥不可用', 'none');
+    }).catch(function (err) {
+      // 失败还原，避免 header 丢失后无法用口令解锁
+      vault.setHeader(oldHeader);
+      self.hideLoading();
+      util.toast('切换失败：' + (err && err.errMsg ? err.errMsg : '网络错误'));
     });
   },
 

@@ -7,7 +7,7 @@
 **本地优先的 TOTP / HOTP 多因素认证小程序 · 加密云同步（可选端到端） · 二维码换机迁移**
 
 <img alt="license" src="https://img.shields.io/badge/license-MIT-2563eb">
-<img alt="version" src="https://img.shields.io/badge/version-1.3.4-2563eb">
+<img alt="version" src="https://img.shields.io/badge/version-1.3.5-2563eb">
 <img alt="platform" src="https://img.shields.io/badge/platform-%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F-07c160">
 <img alt="tests" src="https://img.shields.io/badge/tests-13%20suites%20%7C%20266%20asserts-brightgreen">
 
@@ -246,6 +246,11 @@ node tools/test_migrate_e2e.js      # 迁移令牌：一次性 / 过期 / 同账
 | 无暗色模式 | 仅提供亮色主题 |
 
 ## 更新日志
+
+### 1.3.5
+- **密钥模式可互相切换**：口令模式下方新增「切回零配置恢复」，
+  清了 header 重新 push 即自动用服务端 KEK 重包；切换失败会还原，不会卡在中间态
+- 口令浮层显示当前模式（口令模式 / 零配置模式）
 
 ### 1.3.4
 - **云端版本历史**：每次同步内容有变化就存档一版，保留最近 20 版；
