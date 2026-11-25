@@ -95,9 +95,9 @@ function applyPacked(packedStr, dekHex) {
   return vault.tokens.length;
 }
 
-/* ---------------- 口令包裹的 DEK（云端备份） ---------------- */
+/* ---------------- header（云端密钥包裹信息） ---------------- */
 
-/** 读取本机保存的 header（salt + wrappedDek） */
+/** 读取本机保存的 header（kdf:'server' 时含 wrappedDek） */
 function getHeader() {
   try { return wx.getStorageSync(HEADER_KEY) || null; } catch (e) { return null; }
 }
@@ -107,38 +107,11 @@ function setHeader(header) {
   else wx.removeStorageSync(HEADER_KEY);
 }
 
-/**
- * 用口令包裹当前 DEK，返回 header 并落本机。
- * header = { salt, iter, wrappedDek } —— 可安全放云端，没有口令解不开。
- */
-function wrapDekWithPassword(password) {
-  if (!hasDek()) return Promise.reject({ errMsg: '本机还没有密钥' });
-  if (String(password || '').length < 8) {
-    return Promise.reject({ errMsg: '口令至少 8 位' });
-  }
-  return crypto.createVault(password).then(function (header) {
-    setHeader(header);
-    return header;
-  });
-}
-
-/**
- * 用口令解开云端 header，成功后写入本机 DEK。
- * @returns DEK hex，口令错误返回 null
- */
-function unwrapDekWithPassword(password, header) {
-  if (!header || !header.salt || !header.wrappedDek) return null;
-  var dek = crypto.unlock(password, header);
-  if (!dek) return null;
-  var hex = dek.toString();
-  setDekHex(hex);
-  setHeader(header);
-  return hex;
-}
+/* ---------------- 服务端 KEK 包裹（A' 零配置恢复） ---------------- */
 
 /**
  * 用服务端派生 KEK 包裹当前 DEK，写入本机 header（kdf:'server'）。
- * 之后换设备/重装，只要拿到同一 openid 的 KEK 就能解回来。
+ * 换设备/重装后，只要拿到同一 openid 的 KEK 就能解回来。
  */
 function wrapDekWithServerKek(kekHex) {
   var dekHex = getDekHex();
@@ -216,8 +189,6 @@ module.exports = {
   wrapDekWithServerKek: wrapDekWithServerKek,
   unwrapDekWithServerKek: unwrapDekWithServerKek,
   setHeader: setHeader,
-  wrapDekWithPassword: wrapDekWithPassword,
-  unwrapDekWithPassword: unwrapDekWithPassword,
   HEADER_KEY: HEADER_KEY,
   getRecoveryCode: getRecoveryCode,
   importRecoveryCode: importRecoveryCode,

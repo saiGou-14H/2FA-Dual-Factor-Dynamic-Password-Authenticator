@@ -48,13 +48,6 @@
 
   <view class="group">
     <view class="group-title">换机迁移</view>
-    <view class="field" bindtap="openPwSheet">
-      <view class="field-body">
-        <view class="field-name">端到端加密（进阶）</view>
-        <view class="field-desc">{{keyMode === 'password' ? '已开启：需口令才能解密' : '未开启：当前由服务器密钥托管，可零配置恢复'}}</view>
-      </view>
-      <view class="ico ico-chevron field-arrow"></view>
-    </view>
     <view class="field" bindtap="openRecovery">
       <view class="field-body">
         <view class="field-name">应急恢复码</view>
@@ -187,27 +180,6 @@
       </scroll-view>
     </view>
   </view>
-  <!-- 云端密钥备份浮层 -->
-  <view class="pw-overlay" wx:if="{{showPwSheet}}">
-    <view class="pw-mask" bindtap="closePwSheet"></view>
-    <view class="pw-sheet">
-      <view class="pw-title">改用口令保护</view>
-      <view class="pw-sub">设置口令后，密钥改由口令加密，服务器再也无法解开你的数据（真正的端到端）。代价是每次换机都要输入这个口令。不设置则保持零配置自动恢复。</view>
-
-      <input class="pw-input" type="text" password="{{true}}" value="{{pwInput}}"
-             placeholder="设置 / 输入恢复口令（≥8 位）" placeholder-class="pw-placeholder"
-             bindinput="onPwInput" maxlength="64" />
-
-      <view class="pw-actions">
-        <view class="pw-btn pw-btn-ghost" bindtap="closePwSheet">取消</view>
-        <view class="pw-btn pw-btn-line" bindtap="restoreByPassword">用口令解锁</view>
-        <view class="pw-btn pw-btn-solid" bindtap="uploadKeyBackup">启用口令</view>
-      </view>
-
-      <view class="pw-tip">开启后：换机需输口令点「用口令解锁」。忘记口令时可用「应急恢复码」兜底。</view>
-    </view>
-  </view>
-
   <!-- 恢复码浮层 -->
   <view class="rc-overlay" wx:if="{{showRecovery}}">
     <view class="rc-mask" bindtap="closeRecovery"></view>

@@ -32,10 +32,6 @@ Page({
     showRecovery: false,
     recoveryCode: '',
     recoveryInput: '',
-    showPwSheet: false,
-    pwInput: '',
-    hasCloudKey: false,
-    keyMode: '',   // 'server' 零配置 | 'password' 口令 | ''
   },
 
   onShow: function () {
@@ -231,85 +227,7 @@ Page({
       recoveryCode: code ? vault.formatRecoveryCode(code) : '',
       recoveryInput: ''
     });
-    var hd = vault.getHeader();
-    this.setData({ keyMode: hd ? (hd.kdf === 'server' ? 'server' : 'password') : '' });
     if (!crypto.available) return;
-    sync.probe().then(function (info) {
-      self.setData({ hasCloudKey: !!info.hasHeader });
-    }).catch(function () { /* 网络问题忽略 */ });
-  },
-
-  /* ================= 云端密钥备份（口令包裹） ================= */
-
-  openPwSheet: function () {
-    this.setData({ showPwSheet: true, pwInput: '' });
-  },
-
-  closePwSheet: function () {
-    this.setData({ showPwSheet: false, pwInput: '' });
-  },
-
-  onPwInput: function (e) {
-    this.setData({ pwInput: e.detail.value });
-  },
-
-  /** 用当前口令包裹 DEK 并上传 */
-  uploadKeyBackup: function () {
-    var self = this;
-    var pw = String(this.data.pwInput || '');
-    if (pw.length < 8) {
-      util.toast('口令至少 8 位');
-      return;
-    }
-    if (!vault.hasDek()) {
-      util.toast('请先同步一次，生成本机密钥');
-      return;
-    }
-    this.showLoading('正在加密密钥并上传');
-    vault.wrapDekWithPassword(pw).then(function () {
-      return sync.push();
-    }).then(function () {
-      self.hideLoading();
-      self.setData({ showPwSheet: false, pwInput: '', hasCloudKey: true });
-      util.toast('密钥已加密上传', 'success');
-    }).catch(function (err) {
-      self.hideLoading();
-      util.toast('上传失败：' + (err && err.errMsg ? err.errMsg : '网络错误'));
-    });
-  },
-
-  /** 用口令从云端解开并恢复 */
-  restoreByPassword: function () {
-    var self = this;
-    var pw = String(this.data.pwInput || '');
-    if (!pw) {
-      util.toast('请输入恢复口令');
-      return;
-    }
-    this.showLoading('正在校验口令');
-    sync.probe().then(function (info) {
-      if (!info.hasHeader) {
-        throw { errMsg: '云端没有密钥备份，请先在本机设置恢复口令' };
-      }
-      var dekHex = vault.unwrapDekWithPassword(pw, info.header);
-      if (!dekHex) {
-        throw { errMsg: '口令不对' };
-      }
-      return sync.pull(dekHex);
-    }).then(function (res) {
-      self.hideLoading();
-      self.setData({
-        showPwSheet: false,
-        pwInput: '',
-        count: store.count(),
-        deletedCount: store.deletedCount()
-      });
-      self.refreshSyncText();
-      util.toast('已恢复 ' + (res.count || 0) + ' 个账号', 'success');
-    }).catch(function (err) {
-      self.hideLoading();
-      util.toast(err && err.errMsg ? err.errMsg : '恢复失败');
-    });
   },
 
   closeRecovery: function () {
