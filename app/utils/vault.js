@@ -112,11 +112,20 @@ function setHeader(header) {
  * header = { salt, iter, wrappedDek } —— 可安全放云端，没有口令解不开。
  */
 function wrapDekWithPassword(password) {
-  if (!hasDek()) return Promise.reject({ errMsg: '本机还没有密钥' });
+  var dekHex = getDekHex();
+  if (!dekHex) return Promise.reject({ errMsg: '本机还没有密钥' });
   if (String(password || '').length < 8) {
     return Promise.reject({ errMsg: '口令至少 8 位' });
   }
-  return crypto.createVault(password).then(function (header) {
+  // 必须包裹「当前本机 DEK」，不能新建一把——
+  // 否则口令解锁得到的是另一把钥匙，原有密文解不开，数据看起来就丢了。
+  var salt;
+  return crypto.randomHex(16).then(function (s) {
+    salt = s;
+    var kek = crypto.deriveKey(password, salt, crypto.ITERATIONS);
+    return crypto.encrypt(dekHex, kek);
+  }).then(function (wrappedDek) {
+    var header = { salt: salt, iter: crypto.ITERATIONS, wrappedDek: wrappedDek };
     setHeader(header);
     return header;
   });

@@ -7,7 +7,7 @@
 **本地优先的 TOTP / HOTP 多因素认证小程序 · 加密云同步（可选端到端） · 二维码换机迁移**
 
 <img alt="license" src="https://img.shields.io/badge/license-MIT-2563eb">
-<img alt="version" src="https://img.shields.io/badge/version-1.3.5-2563eb">
+<img alt="version" src="https://img.shields.io/badge/version-1.3.6-2563eb">
 <img alt="platform" src="https://img.shields.io/badge/platform-%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F-07c160">
 <img alt="tests" src="https://img.shields.io/badge/tests-13%20suites%20%7C%20266%20asserts-brightgreen">
 
@@ -246,6 +246,15 @@ node tools/test_migrate_e2e.js      # 迁移令牌：一次性 / 过期 / 同账
 | 无暗色模式 | 仅提供亮色主题 |
 
 ## 更新日志
+
+### 1.3.6
+- **修复严重缺陷**：启用口令时 `wrapDekWithPassword` 误用了 `crypto.createVault()`，
+  它会**新生成一个随机 DEK** 去包裹，而不是包裹当前 DEK。结果口令解锁得到的是另一把钥匙，
+  原有密文解不开（表现为「换机后数据为空」）。已改为包裹当前 DEK。
+- **影响范围**：仅影响曾在 1.3.5 及更早版本启用过口令的账号。本机数据未损坏
+  （body 一直由原 DEK 加密），但云端 header 里存的是错误密钥。
+  升级后重新执行一次「启用口令」即可修复，或用本机 DEK / 恢复码先解锁。
+- 新增断言：口令解锁必须返回与原 DEK 完全相同的密钥，并能解开原有密文（test_sync_guard 43 条）
 
 ### 1.3.5
 - **密钥模式可互相切换**：口令模式下方新增「切回零配置恢复」，

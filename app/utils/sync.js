@@ -168,7 +168,21 @@ function restoreSnapshot(id) {
       throw { errMsg: '该版本不存在' };
     }
     var count = vault.applyPacked(r.version.data, dek);
-    return cloudSync.restoreVersion(id).then(function () {
+
+    // 关键：只换回 body，header 必须保持「当前模式」。
+    // 否则恢复一个口令模式的旧版会把零配置模式改回去，新设备又要输口令。
+    // body 不重新加密（DEK 未变），只替换 header 字段。
+    var obj;
+    try {
+      obj = JSON.parse(r.version.data);
+    } catch (e) {
+      throw { errMsg: '该版本数据损坏' };
+    }
+    var hd = vault.getHeader();
+    if (hd) obj.header = hd;
+    else delete obj.header;
+
+    return cloudSync.upload(JSON.stringify(obj), r.version.rev || 0).then(function () {
       markSynced(Date.now());
       return { ok: true, count: count };
     });
