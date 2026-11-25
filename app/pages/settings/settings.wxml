@@ -48,13 +48,6 @@
 
   <view class="group">
     <view class="group-title">换机迁移</view>
-    <view class="field" bindtap="openRecovery">
-      <view class="field-body">
-        <view class="field-name">应急恢复码</view>
-        <view class="field-desc">不依赖服务器的最后兜底，建议保存</view>
-      </view>
-      <view class="ico ico-chevron field-arrow"></view>
-    </view>
     <view class="field" bindtap="openMigrate">
       <view class="field-body">
         <view class="field-name">迁移到其他微信号</view>
@@ -180,30 +173,6 @@
       </scroll-view>
     </view>
   </view>
-  <!-- 恢复码浮层 -->
-  <view class="rc-overlay" wx:if="{{showRecovery}}">
-    <view class="rc-mask" bindtap="closeRecovery"></view>
-    <view class="rc-sheet">
-      <view class="rc-title">恢复码</view>
-      <view class="rc-sub">这是你的密钥备份。重装小程序或换机后，输入它就能解开云端数据。请抄写或截图保存到安全处。</view>
-
-      <view class="rc-code" wx:if="{{recoveryCode}}" bindtap="copyRecovery">{{recoveryCode}}</view>
-      <view class="rc-code is-empty" wx:else>本机还没有密钥（先同步一次即可生成）</view>
-
-      <view class="rc-tip">点上方恢复码可复制</view>
-
-      <view class="rc-divider"></view>
-
-      <view class="rc-label">已有恢复码？粘贴到这里恢复</view>
-      <input class="rc-input" value="{{recoveryInput}}" placeholder="XXXX-XXXX-XXXX-…"
-             placeholder-class="rc-placeholder" bindinput="onRecoveryInput" />
-      <view class="rc-actions">
-        <view class="rc-btn rc-btn-ghost" bindtap="closeRecovery">关闭</view>
-        <view class="rc-btn rc-btn-solid" bindtap="applyRecovery">恢复</view>
-      </view>
-    </view>
-  </view>
-
   <!-- 加载遮罩 -->
   <loading show="{{loadingShow}}" text="{{loadingText}}" />
 </view>

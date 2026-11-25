@@ -11,7 +11,6 @@
  * 这是免口令方案的固有代价，已在项目文档中说明。
  */
 var crypto = require('./crypto.js');
-var totp = require('./totp.js');
 var store = require('./store.js');
 
 var DEK_KEY = 'otp_dek_hex';
@@ -137,45 +136,6 @@ function unwrapDekWithServerKek(header, kekHex) {
   return dekHex;
 }
 
-/* ---------------- 恢复码（DEK 的可读备份） ---------------- */
-
-/** DEK → 恢复码（Base32，32 字节 → 52 字符） */
-function getRecoveryCode() {
-  var hex = getDekHex();
-  if (!hex || hex.length !== 64) return '';
-  var bytes = [];
-  for (var i = 0; i < hex.length; i += 2) bytes.push(parseInt(hex.substr(i, 2), 16));
-  return totp.base32Encode(bytes);
-}
-
-/** 恢复码 → 写入本机 DEK */
-function importRecoveryCode(code) {
-  var clean = String(code || '').replace(/[\s\-_]/g, '').toUpperCase();
-  if (!clean) return { error: '请输入恢复码' };
-  if (!/^[A-Z2-7]+$/.test(clean)) return { error: '恢复码只能包含 A-Z 与 2-7' };
-  var bytes;
-  try {
-    bytes = totp.base32Decode(clean);
-  } catch (e) {
-    return { error: '恢复码无法解析' };
-  }
-  if (!bytes || bytes.length !== 32) {
-    return { error: '恢复码长度不对（应为 52 位）' };
-  }
-  var hex = '';
-  for (var i = 0; i < bytes.length; i++) hex += ('0' + bytes[i].toString(16)).slice(-2);
-  setDekHex(hex);
-  return { ok: true };
-}
-
-/** 恢复码分组显示：每 4 位加连字符 */
-function formatRecoveryCode(code) {
-  var c = String(code || '');
-  var out = [];
-  for (var i = 0; i < c.length; i += 4) out.push(c.slice(i, i + 4));
-  return out.join('-');
-}
-
 module.exports = {
   DEK_KEY: DEK_KEY,
   getDekHex: getDekHex,
@@ -190,7 +150,4 @@ module.exports = {
   unwrapDekWithServerKek: unwrapDekWithServerKek,
   setHeader: setHeader,
   HEADER_KEY: HEADER_KEY,
-  getRecoveryCode: getRecoveryCode,
-  importRecoveryCode: importRecoveryCode,
-  formatRecoveryCode: formatRecoveryCode
 };

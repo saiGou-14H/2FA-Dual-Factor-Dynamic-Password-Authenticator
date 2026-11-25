@@ -28,10 +28,6 @@ Page({
     showMigrate: false,
     qrImage: '',
     migrateTip: '',
-    // 恢复码
-    showRecovery: false,
-    recoveryCode: '',
-    recoveryInput: '',
   },
 
   onShow: function () {
@@ -215,59 +211,6 @@ Page({
     if (!/^[0-9a-f]{32}$/.test(out.t || '')) return null;
     if (!/^[0-9a-fA-F]{16,128}$/.test(out.k || '')) return null;
     return { token: out.t, dek: out.k };
-  },
-
-  /* ================= 恢复码 ================= */
-
-  openRecovery: function () {
-    var self = this;
-    var code = vault.getRecoveryCode();
-    this.setData({
-      showRecovery: true,
-      recoveryCode: code ? vault.formatRecoveryCode(code) : '',
-      recoveryInput: ''
-    });
-    if (!crypto.available) return;
-  },
-
-  closeRecovery: function () {
-    this.setData({ showRecovery: false, recoveryInput: '' });
-  },
-
-  copyRecovery: function () {
-    if (!this.data.recoveryCode) {
-      util.toast('本机还没有密钥');
-      return;
-    }
-    wx.setClipboardData({ data: this.data.recoveryCode });
-  },
-
-  onRecoveryInput: function (e) {
-    this.setData({ recoveryInput: e.detail.value });
-  },
-
-  applyRecovery: function () {
-    var self = this;
-    var r = vault.importRecoveryCode(this.data.recoveryInput);
-    if (r.error) {
-      util.toast(r.error);
-      return;
-    }
-    this.showLoading('正在用恢复码解锁');
-    sync.pull().then(function (res) {
-      self.hideLoading();
-      self.setData({
-        showRecovery: false,
-        recoveryInput: '',
-        count: store.count(),
-        deletedCount: store.deletedCount()
-      });
-      self.refreshSyncText();
-      util.toast('已恢复 ' + (res.count || 0) + ' 个账号', 'success');
-    }).catch(function (err) {
-      self.hideLoading();
-      util.toast('恢复失败：' + (err && err.errMsg ? err.errMsg : '云端无数据'));
-    });
   },
 
   /* ================= 其他设置 ================= */
