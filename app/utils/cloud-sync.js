@@ -63,6 +63,21 @@ function health() {
   return callContainer('/api/health', 'GET');
 }
 
+/** 云端版本列表（不含正文） */
+function listVersions() {
+  return callContainer('/api/vault/history', 'GET');
+}
+
+/** 取指定版本的密文 */
+function getVersion(id) {
+  return callContainer('/api/vault/history/' + id, 'GET');
+}
+
+/** 把指定版本设为当前 */
+function restoreVersion(id) {
+  return callContainer('/api/vault/restore', 'POST', { id: id });
+}
+
 /** 取服务端派生的 KEK（HKDF(openid + VAULT_SECRET)），用于零配置找回密钥 */
 function getWrapKey() {
   return callContainer('/api/wrap-key', 'GET');
@@ -84,6 +99,9 @@ module.exports = {
   download: download,
   health: health,
   getWrapKey: getWrapKey,
+  listVersions: listVersions,
+  getVersion: getVersion,
+  restoreVersion: restoreVersion,
   issueMigrate: issueMigrate,
   claimMigrate: claimMigrate,
   ENV: ENV,

@@ -28,6 +28,9 @@ Page({
     showMigrate: false,
     qrImage: '',
     migrateTip: '',
+    // 云端版本历史
+    showVersions: false,
+    versions: [],
     // 恢复码
     showRecovery: false,
     recoveryCode: '',
@@ -219,6 +222,70 @@ Page({
     if (!/^[0-9a-f]{32}$/.test(out.t || '')) return null;
     if (!/^[0-9a-fA-F]{16,128}$/.test(out.k || '')) return null;
     return { token: out.t, dek: out.k };
+  },
+
+  /* ================= 云端版本历史 ================= */
+
+  openVersions: function () {
+    var self = this;
+    this.setData({ showVersions: true, versions: [] });
+    this.showLoading('读取版本列表');
+    cloudSync.listVersions().then(function (r) {
+      self.hideLoading();
+      var list = (r && r.versions) || [];
+      self.setData({
+        versions: list.map(function (v) {
+          return {
+            id: v.id,
+            time: self.fmtTime(v.created_at),
+            size: Math.round((v.size || 0) / 1024 * 10) / 10 + ' KB'
+          };
+        })
+      });
+      if (!list.length) util.toast('还没有历史版本');
+    }).catch(function (err) {
+      self.hideLoading();
+      util.toast('读取失败：' + (err && err.errMsg ? err.errMsg : '网络错误'));
+    });
+  },
+
+  closeVersions: function () {
+    this.setData({ showVersions: false });
+  },
+
+  fmtTime: function (ts) {
+    var d = new Date(Number(ts) || 0);
+    function p2(n) { return n < 10 ? '0' + n : '' + n; }
+    return (d.getMonth() + 1) + '-' + p2(d.getDate()) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
+  },
+
+  restoreVersion: function (e) {
+    var self = this;
+    var id = e.currentTarget.dataset.id;
+    var label = e.currentTarget.dataset.time || '';
+    wx.showModal({
+      title: '恢复到这个版本？',
+      content: '将把 ' + label + ' 的数据写回本机并设为当前版本。当前数据会保留在版本历史里，不会丢。',
+      confirmText: '恢复',
+      cancelText: '取消',
+      success: function (res) {
+        if (!res.confirm) return;
+        self.showLoading('正在恢复');
+        sync.restoreSnapshot(id).then(function (r) {
+          self.hideLoading();
+          self.setData({
+            showVersions: false,
+            count: store.count(),
+            deletedCount: store.deletedCount()
+          });
+          self.refreshSyncText();
+          util.toast('已恢复到该版本（' + (r.count || 0) + ' 个账号）', 'success');
+        }).catch(function (err) {
+          self.hideLoading();
+          util.toast('恢复失败：' + (err && err.errMsg ? err.errMsg : '未知错误'));
+        });
+      }
+    });
   },
 
   /* ================= 恢复码 ================= */

@@ -528,3 +528,102 @@
   color: var(--faint);
   text-align: left;
 }
+
+/* ================= 云端版本历史 ================= */
+.ver-overlay {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 234;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ver-mask {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: rgba(15, 21, 31, 0.46);
+  animation: fade 0.18s ease both;
+}
+.ver-sheet {
+  position: relative;
+  z-index: 1;
+  width: calc(100% - 80rpx);
+  max-width: 660rpx;
+  max-height: 76vh;
+  display: flex;
+  flex-direction: column;
+  padding: 40rpx 36rpx 28rpx;
+  border-radius: 28rpx;
+  background: var(--bg);
+  box-sizing: border-box;
+  animation: dialog-in var(--dur-2) var(--ease) both;
+}
+.ver-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: left;
+}
+.ver-sub {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: var(--faint);
+  text-align: left;
+}
+.ver-list {
+  margin-top: 22rpx;
+  max-height: 52vh;
+}
+.ver-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22rpx 20rpx;
+  border-radius: 14rpx;
+  background: var(--bg-soft);
+  margin-bottom: 12rpx;
+}
+.ver-item:active { opacity: 0.8; }
+.ver-left { display: flex; flex-direction: column; }
+.ver-time {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--ink);
+  font-family: var(--font-num);
+}
+.ver-meta {
+  margin-top: 4rpx;
+  font-size: 21rpx;
+  color: var(--faint);
+}
+.ver-btn {
+  padding: 10rpx 24rpx;
+  border-radius: 12rpx;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-size: 24rpx;
+  font-weight: 600;
+}
+.ver-empty {
+  padding: 48rpx 0;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--faint);
+}
+.ver-actions {
+  margin-top: 8rpx;
+  display: flex;
+}
+.ver-close {
+  flex: 1;
+  height: 84rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16rpx;
+  background: var(--bg-soft);
+  color: var(--sub);
+  font-size: 28rpx;
+  font-weight: 600;
+}

@@ -232,6 +232,13 @@ node tools/test_migrate_e2e.js      # 迁移令牌：一次性 / 过期 / 同账
 > `KEK = HMAC-SHA256(VAULT_SECRET, openid)` 包裹。设定后**不可更改**（一改历史密文永久
 > 无法解开），并**必须异地备份**（密码管理器）。服务端对短于 16 位的值会打印告警。
 
+### 1.3.4
+- **云端版本历史**：每次同步内容有变化就存档一版，保留最近 20 版；
+  设置页可查看时间/大小并恢复到指定版本
+- 恢复是**可逆的**：恢复旧版本不会销毁当前数据，它会作为新的一版继续留存在历史里
+- 新增接口：`GET /api/vault/history`、`GET /api/vault/history/:id`、`POST /api/vault/restore`
+- 新表 `vault_history`（openid + created_at 索引，自动裁剪至 20 条）
+
 ### 1.3.3
 - **零配置密钥找回**：新增 `GET /api/wrap-key`，`KEK = HMAC-SHA256(VAULT_SECRET, openid)`；
   首次同步会用 KEK 包裹 DEK 一并上传，换设备/重装无需任何输入即可自动恢复

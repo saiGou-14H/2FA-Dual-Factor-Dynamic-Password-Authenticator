@@ -43,6 +43,13 @@
       </view>
       <text class="field-value num">{{count}}</text>
     </view>
+    <view class="field" bindtap="openVersions">
+      <view class="field-body">
+        <view class="field-name">云端版本历史</view>
+        <view class="field-desc">每次同步自动存档，可恢复到指定版本</view>
+      </view>
+      <view class="ico ico-chevron field-arrow"></view>
+    </view>
     <view class="hint">内容在本机加密后才上传，服务端只见密文，无法读取你的验证码。</view>
   </view>
 
@@ -205,6 +212,32 @@
       </view>
 
       <view class="pw-tip">开启后：换机需输口令点「用口令解锁」。忘记口令时可用「应急恢复码」兜底。</view>
+    </view>
+  </view>
+
+
+  <!-- 云端版本历史浮层 -->
+  <view class="ver-overlay" wx:if="{{showVersions}}">
+    <view class="ver-mask" bindtap="closeVersions"></view>
+    <view class="ver-sheet">
+      <view class="ver-title">云端版本历史</view>
+      <view class="ver-sub">每次同步内容有变化就会存一版，最多保留 20 版。恢复某一版不会再丢当前数据——它会成为新的一版。</view>
+
+      <scroll-view class="ver-list" scroll-y>
+        <view class="ver-item" wx:for="{{versions}}" wx:key="id"
+              data-id="{{item.id}}" data-time="{{item.time}}" bindtap="restoreVersion">
+          <view class="ver-left">
+            <view class="ver-time">{{item.time}}</view>
+            <view class="ver-meta">{{item.size}}</view>
+          </view>
+          <view class="ver-btn">恢复</view>
+        </view>
+        <view class="ver-empty" wx:if="{{!versions.length}}">还没有历史版本</view>
+      </scroll-view>
+
+      <view class="ver-actions">
+        <view class="ver-close" bindtap="closeVersions">关闭</view>
+      </view>
     </view>
   </view>
 

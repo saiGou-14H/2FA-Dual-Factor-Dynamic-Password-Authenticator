@@ -157,6 +157,25 @@ function autoRestore() {
 }
 
 /**
+ * 恢复到指定云端版本：拉该版本密文 → 用本机密钥解密写回本地 → 设为当前版本
+ * @returns Promise<{ok:true, count:number}>
+ */
+function restoreSnapshot(id) {
+  var dek = vault.getDekHex();
+  if (!dek) return Promise.reject({ errMsg: '本机没有密钥，无法解密该版本' });
+  return cloudSync.getVersion(id).then(function (r) {
+    if (!r || !r.version || !r.version.data) {
+      throw { errMsg: '该版本不存在' };
+    }
+    var count = vault.applyPacked(r.version.data, dek);
+    return cloudSync.restoreVersion(id).then(function () {
+      markSynced(Date.now());
+      return { ok: true, count: count };
+    });
+  });
+}
+
+/**
  * 从云端拉取并覆盖本地（用于迁移后 / 重新安装）
  * @returns Promise<{ok:true, count:number}>
  */
@@ -193,5 +212,6 @@ module.exports = {
   push: push,
   pull: pull,
   autoRestore: autoRestore,
+  restoreSnapshot: restoreSnapshot,
   probe: probe
 };
