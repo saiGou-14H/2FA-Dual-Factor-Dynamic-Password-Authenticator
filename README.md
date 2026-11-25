@@ -207,6 +207,7 @@ node tools/test_migrate_e2e.js      # 迁移令牌：一次性 / 过期 / 同账
 > **`VAULT_SECRET` 必须异地备份且设定后不可更改**。它是零配置恢复的唯一凭据：
 > `KEK = HMAC-SHA256(VAULT_SECRET, openid)`，改了 KEK 就变了，历史密文永久解不开。
 > 生成方式：`"saigou-" + (($b | ForEach-Object { $_.ToString('x2') }) -join '')`（详见配置文档）。
+> **不要用公开信息**（GitHub ID、昵称、手机号）——它们是公开的，等于没有密钥。
 
 接口：
 
