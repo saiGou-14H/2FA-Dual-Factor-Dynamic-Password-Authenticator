@@ -227,10 +227,16 @@ const VAULT_SECRET = process.env.VAULT_SECRET || '';
     console.warn('[wrap-key] VAULT_SECRET 未配置，零配置密钥找回不可用');
     return;
   }
-  if (VAULT_SECRET.length < 16) {
+  if (VAULT_SECRET.length < 32) {
     console.warn(
-      '[wrap-key] VAULT_SECRET 过短（' + VAULT_SECRET.length + ' 位）。' +
-      '数据库泄露时可被字典攻击还原，建议 32 位以上随机串。'
+      '[wrap-key] VAULT_SECRET 过短（' + VAULT_SECRET.length + ' 位，建议 32 位以上随机串）。'
+    );
+  }
+  // 公开信息不算密钥：用户名 / 昵称 / GitHub ID 一旦公开，等于没有加密
+  if (/^(saigou|saiGou|saiGou_14H|github|admin|password)[-_]?\d*$/i.test(VAULT_SECRET)) {
+    console.warn(
+      '[wrap-key] 严重风险：VAULT_SECRET 看起来是公开的用户名/昵称。' +
+      '这类值是公开信息，拖库者第 1 次尝试即可命中，请改用随机串。'
     );
   }
 })();
