@@ -56,6 +56,7 @@ Page({
       ready: crypto.available
     });
     this.refreshSyncText();
+    this.refreshKeyMode();
   },
 
   onBack: function () {
@@ -298,17 +299,23 @@ Page({
       recoveryCode: code ? vault.formatRecoveryCode(code) : '',
       recoveryInput: ''
     });
-    var hd = vault.getHeader();
-    this.setData({ keyMode: hd ? (hd.kdf === 'server' ? 'server' : 'password') : '' });
+    this.refreshKeyMode();
     if (!crypto.available) return;
     sync.probe().then(function (info) {
       self.setData({ hasCloudKey: !!info.hasHeader });
     }).catch(function () { /* 网络问题忽略 */ });
   },
 
+  /** 刷新当前密钥模式（server / password / ''） */
+  refreshKeyMode: function () {
+    var hd = vault.getHeader();
+    this.setData({ keyMode: hd ? (hd.kdf === 'server' ? 'server' : 'password') : '' });
+  },
+
   /* ================= 云端密钥备份（口令包裹） ================= */
 
   openPwSheet: function () {
+    this.refreshKeyMode();
     this.setData({ showPwSheet: true, pwInput: '' });
   },
 
@@ -337,7 +344,7 @@ Page({
       return sync.push();
     }).then(function () {
       self.hideLoading();
-      self.setData({ showPwSheet: false, pwInput: '', hasCloudKey: true });
+      self.setData({ showPwSheet: false, pwInput: '', hasCloudKey: true, keyMode: 'password' });
       util.toast('密钥已加密上传', 'success');
     }).catch(function (err) {
       self.hideLoading();
