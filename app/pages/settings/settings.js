@@ -194,7 +194,12 @@ Page({
         cloudSync.claimMigrate(parsed.token).then(function () {
           // 用二维码里的 DEK 解密云端密文
           vault.setDekHex(parsed.dek);
-          return sync.pull(parsed.dek);
+          return sync.pull(parsed.dek).then(function (r) {
+            // 本机 DEK 已换成源设备的 DEK，旧 header 对应的是另一把钥匙 —— 必须作废，
+            // 否则下次同步会把「旧 DEK 的包裹」和「新 DEK 的密文」一起传上去，换第三台设备就解不开。
+            vault.setHeader(null);
+            return sync.push().then(function () { return r; }).catch(function () { return r; });
+          });
         }).then(function (r) {
           self.hideLoading();
           self.refreshSyncText();
