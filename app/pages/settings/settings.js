@@ -35,6 +35,7 @@ Page({
     showPwSheet: false,
     pwInput: '',
     hasCloudKey: false,
+    keyMode: '',   // 'server' 零配置 | 'password' 口令 | ''
   },
 
   onShow: function () {
@@ -230,6 +231,8 @@ Page({
       recoveryCode: code ? vault.formatRecoveryCode(code) : '',
       recoveryInput: ''
     });
+    var hd = vault.getHeader();
+    this.setData({ keyMode: hd ? (hd.kdf === 'server' ? 'server' : 'password') : '' });
     if (!crypto.available) return;
     sync.probe().then(function (info) {
       self.setData({ hasCloudKey: !!info.hasHeader });

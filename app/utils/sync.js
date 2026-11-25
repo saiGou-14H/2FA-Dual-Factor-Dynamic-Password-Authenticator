@@ -43,6 +43,19 @@ function probe() {
 }
 
 /**
+ * 确保 header 存在：没有就用服务端派生 KEK 包裹 DEK。
+ * 任何失败都静默忽略（不影响本次上传，下次再试）。
+ */
+function ensureServerWrapped() {
+  if (vault.getHeader()) return Promise.resolve();
+  if (!cloudSync.getWrapKey) return Promise.resolve();
+  return cloudSync.getWrapKey().then(function (r) {
+    if (!r || !r.kek) return null;
+    return vault.wrapDekWithServerKek(r.kek);
+  }).catch(function () { return null; });
+}
+
+/**
  * 上传本地数据到云端（自动生成密钥，无需口令）
  * @returns Promise<{ok:true, at:number}>
  */
@@ -88,6 +101,9 @@ function push() {
   }).then(function (dek) {
     return vault.encryptCurrent(dek);
   }).then(function (packed) {
+    // 零配置：首次同步时顺手把 DEK 用服务端 KEK 包一份，换机可自动找回
+    return ensureServerWrapped().then(function () { return packed; });
+  }).then(function (packed) {
     // 若有口令包裹的 header，一并上传（header 本身是加密结果，可公开）
     var header = vault.getHeader();
     if (header) {
@@ -117,6 +133,19 @@ function autoRestore() {
   return probe().then(function (info) {
     if (!info.hasData) return { empty: true };
     var dek = vault.getDekHex();
+
+    // 零配置通道：云端存了服务端 KEK 包裹的 DEK → 直接解包
+    if (!dek && info.hasHeader && info.header.kdf === 'server' && cloudSync.getWrapKey) {
+      return cloudSync.getWrapKey().then(function (r) {
+        if (!r || !r.kek) return { needKey: true };
+        var got = vault.unwrapDekWithServerKek(info.header, r.kek);
+        if (!got) return { mismatch: true };
+        var n = vault.applyPacked(info.raw, got);
+        markSynced(Date.now());
+        return { restored: n };
+      }).catch(function () { return { needKey: true }; });
+    }
+
     if (!dek) return { needKey: true };
     if (!vault.canDecrypt(info.raw, dek)) return { mismatch: true };
     var n = vault.applyPacked(info.raw, dek);

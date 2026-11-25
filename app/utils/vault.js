@@ -136,6 +136,34 @@ function unwrapDekWithPassword(password, header) {
   return hex;
 }
 
+/**
+ * 用服务端派生 KEK 包裹当前 DEK，写入本机 header（kdf:'server'）。
+ * 之后换设备/重装，只要拿到同一 openid 的 KEK 就能解回来。
+ */
+function wrapDekWithServerKek(kekHex) {
+  var dekHex = getDekHex();
+  if (!dekHex) return Promise.reject({ errMsg: '本机还没有密钥' });
+  var key = crypto.hexKey(kekHex);
+  if (!key) return Promise.reject({ errMsg: 'KEK 无效' });
+  return crypto.encrypt(dekHex, key).then(function (wrappedDek) {
+    var header = { kdf: 'server', wrappedDek: wrappedDek };
+    setHeader(header);
+    return header;
+  });
+}
+
+/** 用服务端 KEK 解开 header，成功则写入本机 DEK */
+function unwrapDekWithServerKek(header, kekHex) {
+  if (!header || header.kdf !== 'server' || !header.wrappedDek) return null;
+  var key = crypto.hexKey(kekHex);
+  if (!key) return null;
+  var dekHex = crypto.decrypt(header.wrappedDek, key);
+  if (!dekHex) return null;
+  setDekHex(dekHex);
+  setHeader(header);
+  return dekHex;
+}
+
 /* ---------------- 恢复码（DEK 的可读备份） ---------------- */
 
 /** DEK → 恢复码（Base32，32 字节 → 52 字符） */
@@ -185,6 +213,8 @@ module.exports = {
   applyPacked: applyPacked,
   canDecrypt: canDecrypt,
   getHeader: getHeader,
+  wrapDekWithServerKek: wrapDekWithServerKek,
+  unwrapDekWithServerKek: unwrapDekWithServerKek,
   setHeader: setHeader,
   wrapDekWithPassword: wrapDekWithPassword,
   unwrapDekWithPassword: unwrapDekWithPassword,

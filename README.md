@@ -4,7 +4,7 @@
 
 # 双因子密码验证器
 
-**本地优先的 TOTP / HOTP 多因素认证小程序 · 端到端加密云同步 · 二维码换机迁移**
+**本地优先的 TOTP / HOTP 多因素认证小程序 · 加密云同步（可选端到端） · 二维码换机迁移**
 
 <img alt="license" src="https://img.shields.io/badge/license-MIT-2563eb">
 <img alt="version" src="https://img.shields.io/badge/version-1.3.1-2563eb">
@@ -219,6 +219,15 @@ node tools/test_migrate_e2e.js      # 迁移令牌：一次性 / 过期 / 同账
 | 无暗色模式 | 仅提供亮色主题 |
 
 ## 更新日志
+
+### 1.3.3
+- **零配置密钥找回**：新增 `GET /api/wrap-key`，`KEK = HMAC-SHA256(VAULT_SECRET, openid)`；
+  首次同步会用 KEK 包裹 DEK 一并上传，换设备/重装无需任何输入即可自动恢复
+- **加密模型说明**：该模式下服务端可推导 KEK 解密数据（非端到端），但数据库单独泄露
+  不足以解密（还缺 `VAULT_SECRET`）；需要真端到端可在设置里改用口令包裹
+- **覆盖保护修复**：移除首次启动植入示例账号；推送前先探测云端，本地为空 / 无密钥 /
+  密钥不匹配一律拒绝，避免重装后覆盖云端数据
+- **启动自动恢复**：本机为空且云端有数据时自动拉取，失败时明确提示需要密钥
 
 ### 1.3.2
 - **移除头像昵称功能**：微信 `chooseAvatar` / `input type="nickname"` 在部分环境（尤其开发者工具）

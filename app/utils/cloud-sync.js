@@ -63,6 +63,11 @@ function health() {
   return callContainer('/api/health', 'GET');
 }
 
+/** 取服务端派生的 KEK（HKDF(openid + VAULT_SECRET)），用于零配置找回密钥 */
+function getWrapKey() {
+  return callContainer('/api/wrap-key', 'GET');
+}
+
 /** 生成迁移令牌 + 二维码（返回 { token, expiresAt, qr, payload }） */
 function issueMigrate(dekHex) {
   return callContainer('/api/migrate/issue', 'POST', { dek: dekHex });
@@ -78,6 +83,7 @@ module.exports = {
   upload: upload,
   download: download,
   health: health,
+  getWrapKey: getWrapKey,
   issueMigrate: issueMigrate,
   claimMigrate: claimMigrate,
   ENV: ENV,

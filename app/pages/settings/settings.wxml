@@ -51,7 +51,7 @@
     <view class="field" bindtap="openPwSheet">
       <view class="field-body">
         <view class="field-name">云端密钥备份</view>
-        <view class="field-desc">{{hasCloudKey ? '已开启（口令加密）' : '设置口令，重装后可找回'}}</view>
+        <view class="field-desc">{{keyMode === 'server' ? '已开启（零配置，换机自动恢复）' : (keyMode === 'password' ? '已开启（口令保护）' : '首次同步后自动开启')}}</view>
       </view>
       <view class="ico ico-chevron field-arrow"></view>
     </view>
