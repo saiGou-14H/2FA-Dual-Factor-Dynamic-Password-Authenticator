@@ -7,7 +7,7 @@
 **本地优先的 TOTP / HOTP 多因素认证小程序 · 加密云同步（可选端到端） · 二维码换机迁移**
 
 <img alt="license" src="https://img.shields.io/badge/license-MIT-2563eb">
-<img alt="version" src="https://img.shields.io/badge/version-1.3.1-2563eb">
+<img alt="version" src="https://img.shields.io/badge/version-1.3.4-2563eb">
 <img alt="platform" src="https://img.shields.io/badge/platform-%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F-07c160">
 <img alt="tests" src="https://img.shields.io/badge/tests-13%20suites%20%7C%20266%20asserts-brightgreen">
 
